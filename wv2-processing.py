@@ -4,7 +4,7 @@
 
 from argparse import ArgumentParser
 
-from wv2_processing import main
+from wv2_processing.main import main
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='short desc of projname goes here')
