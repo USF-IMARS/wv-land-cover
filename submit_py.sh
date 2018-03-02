@@ -5,6 +5,7 @@
 #SBATCH --time=03:00:00
 #SBATCH --array=0
 
+slurm_id=$SLURM_ARRAY_TASK_ID
 
 ## Setup input arguments & file locations
 images1=`ls $WORK/tmp/test/sunglint/*.ntf`
@@ -22,10 +23,7 @@ loc='testnew'
 
 # Run Python code
 images1a=($images1)
-image=${images1a[$SLURM_ARRAY_TASK_ID]}
-
-python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyramids $image $output_dir1
-
+image=${images1a[$slurm_id]}
 
 # Setup file location
 images2=`ls $WORK/tmp/test/ortho/*.tif`
@@ -34,11 +32,12 @@ images2=`ls $WORK/tmp/test/ortho/*.tif`
 module add apps/matlab/r2013b
 
 images2=($images2)
-image2=${images2[$SLURM_ARRAY_TASK_ID]}
+image2=${images2[$slurm_id]}
 met=($met)
-met=${met[$SLURM_ARRAY_TASK_ID]}
+met=${met[$slurm_id]}
 
-matlab -nodisplay -nodesktop -r "WV2_Processing('$image2','$met','$crd_sys','$dt','$sgw','$filt','$stat','$loc','$SLURM_ARRAY_TASK_ID','$rrs_out','$class_out')"
+python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyramids $image $output_dir1 && \
+matlab -nodisplay -nodesktop -r "WV2_Processing('$image2','$met','$crd_sys','$dt','$sgw','$filt','$stat','$loc','$slurm_id','$rrs_out','$class_out')"
 
 # Python code to check processing time:
 #    starttime = datetime.today()
@@ -48,4 +47,3 @@ matlab -nodisplay -nodesktop -r "WV2_Processing('$image2','$met','$crd_sys','$dt
 #    endtime = datetime.today()
 #    td = (endtime-starttime)
 #    LogMsg("Total Processing Time: %s\n" %(td))
-
