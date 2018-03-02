@@ -30,7 +30,7 @@ python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyr
 ## Run Matlab code
 module add apps/matlab/r2013b
 
-image2="$output_dir1${image}_uint164326.tif"
+image2="$output_dir1${basename -s .ntf $image}_uint164326.tif"
 met=($met)
 met=${met[$SLURM_ARRAY_TASK_ID]}
 
