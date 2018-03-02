@@ -7,8 +7,8 @@
 
 
 ## Setup input arguments & file locations
-images1=`ls $WORK/tmp/test/sunglint/*.ntf`
-met=`ls $WORK/tmp/test/sunglint/*.xml`
+images1=`ls $WORK/tmp/test/sunglint/test2/*.ntf`
+met=`ls $WORK/tmp/test/sunglint/test2/*.xml`
 output_dir1=/work/m/mjm8/tmp/test/ortho/
 rrs_out=/work/m/mjm8/tmp/test/output/
 class_out=/work/m/mjm8/tmp/test/output/
@@ -27,14 +27,10 @@ image=${images1a[$SLURM_ARRAY_TASK_ID]}
 python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyramids $image $output_dir1
 
 
-# Setup file location
-images2=`ls $WORK/tmp/test/ortho/*.tif`
-
 ## Run Matlab code
 module add apps/matlab/r2013b
 
-images2=($images2)
-image2=${images2[$SLURM_ARRAY_TASK_ID]}
+image2="$output_dir1${image}_uint164326.tif"
 met=($met)
 met=${met[$SLURM_ARRAY_TASK_ID]}
 
@@ -48,4 +44,3 @@ matlab -nodisplay -nodesktop -r "WV2_Processing('$image2','$met','$crd_sys','$dt
 #    endtime = datetime.today()
 #    td = (endtime-starttime)
 #    LogMsg("Total Processing Time: %s\n" %(td))
-
