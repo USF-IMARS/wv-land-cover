@@ -1,8 +1,5 @@
 # wv2-processing
-
-## filestructure notes
-* `./submit.py` is the script which handles command line arguments so we can use scripts from a shell command line.
-* `wv2_processing` contains python scripts which do the actual work (the stuff that used to be done by matlab)
+Processing scripts for decision-tree land use classification on worldview 2 imagery.
 
 ## github basics
 
