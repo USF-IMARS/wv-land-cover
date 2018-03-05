@@ -11,7 +11,7 @@ WORK_DIR="$WORK/tmp/test/sunglint/test2"
 OUT_DIR="/work/m/mjm8/tmp/test"
 
 # uncomment these for testing
-SLURM_ARRAY_TASK_ID=0
+SLURM_ARRAY_TASK_ID=1
 WORK_DIR="/home/tylar/wv2-processing/test/work"
 OUT_DIR="/home/tylar/wv2-processing/test/out"
 
@@ -32,8 +32,9 @@ loc='testnew'
 # Run Python code
 images1a=($images1)
 image=${images1a[$SLURM_ARRAY_TASK_ID]}
+echo "processing work file $image..."
 input_img_basename=`basename -s .ntf $image`
-echo "processing work file $input_img_basename..."
+echo "basename is: $input_img_basename"
 
 # python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyramids $image $output_dir1
 
