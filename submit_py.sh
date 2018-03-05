@@ -34,6 +34,11 @@ images1a=($images1)
 image=${images1a[$SLURM_ARRAY_TASK_ID]}
 echo "processing work file $image..."
 input_img_basename=`basename -s .ntf $image`
+echo "basename result: $input_img_basename"
+input_img_basename=`echo $image | cut -d '.' -f1 | rev | cut -d '/' -f1 | rev`
+echo "   cut   result: $input_img_basename"
+input_img_basename=`echo $image | awk -F. '{print $1}' | awk -F/ '{print $NF}'`
+echo "   awk   result: $input_img_basename"
 echo "basename is: $input_img_basename"
 
 # python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyramids $image $output_dir1
