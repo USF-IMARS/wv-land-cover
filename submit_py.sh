@@ -2,25 +2,20 @@
 #SBATCH --job-name ="wv2_classification_py"
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=20480
-#SBATCH --time=03:00:00
-#SBATCH --array=0
+#SBATCH --time=3:00:00
+#SBATCH --array=0-3
+
+# Python code to check processing time:
+    starttime = datetime.today()
+    LogMsg('Image: %s' %(info.srcfn))
 
 
 ## Setup input arguments & file locations
-WORK_DIR="$WORK/tmp/test/sunglint/test2"
-OUT_DIR="/work/m/mjm8/tmp/test"
-
-# uncomment these for testing
-# SLURM_ARRAY_TASK_ID=1
-# WORK_DIR="/home/tylar/wv2-processing/test/work"
-# OUT_DIR="/home/tylar/wv2-processing/test/out"
-
-images1=`ls $WORK_DIR/*.ntf`
-met=`ls $WORK_DIR/*.xml`
-
-output_dir1="$OUT_DIR/ortho/"
-rrs_out="$OUT_DIR/output/"
-class_out="$OUT_DIR/output/"
+images1=`ls $WORK/tmp/test/sunglint/*.ntf`
+met=`ls $WORK/tmp/test/sunglint/*.xml`
+output_dir1=/work/m/mjm8/tmp/test/ortho/
+rrs_out=/work/m/mjm8/tmp/test/output/
+class_out=/work/m/mjm8/tmp/test/output/
 
 crd_sys=EPSG:4326
 dt=0
@@ -29,35 +24,31 @@ filt=0
 stat=3
 loc='testnew'
 
-# Run Python code
+## Run Python code
 images1a=($images1)
 image=${images1a[$SLURM_ARRAY_TASK_ID]}
-echo "processing work file $image..."
-input_img_basename=`basename -s .ntf $image`
-echo "basename result: $input_img_basename"
-input_img_basename=`echo $image | cut -d '.' -f1 | rev | cut -d '/' -f1 | rev`
-echo "   cut   result: $input_img_basename"
-input_img_basename=`echo $image | awk -F. '{print $1}' | awk -F/ '{print $NF}'`
-echo "   awk   result: $input_img_basename"
-echo "basename is: $input_img_basename"
 
 python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyramids $image $output_dir1
 
 
 ## Run Matlab code
 module add apps/matlab/r2013b
-image2="$output_dir1${input_img_basename}_uint164326.tif"
+
+#images2=`ls $WORK/tmp/test/ortho/*.tif`
+#images2=($images2)
+#image2=${images2[$SLURM_ARRAY_TASK_ID]}
+
+input_img_basename=$(basename "$image" .ntf)
+echo $input_img_basename
+image2="$output_dir1${input_img_basename}_u16ns4326.tif"
+echo $image2
 met=($met)
 met=${met[$SLURM_ARRAY_TASK_ID]}
-echo "proccessing ortho file $image2..."
 
 matlab -nodisplay -nodesktop -r "WV2_Processing('$image2','$met','$crd_sys','$dt','$sgw','$filt','$stat','$loc','$SLURM_ARRAY_TASK_ID','$rrs_out','$class_out')"
 
-# Python code to check processing time:
-#    starttime = datetime.today()
-#    LogMsg('Image: %s' %(info.srcfn))
 
 #    #### Calculate Total Time
-#    endtime = datetime.today()
-#    td = (endtime-starttime)
-#    LogMsg("Total Processing Time: %s\n" %(td))
+    endtime = datetime.today()
+    td = (endtime-starttime)
+    LogMsg("Total Processing Time: %s\n" %(td))
