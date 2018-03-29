@@ -11,8 +11,8 @@
 
 
 ## Setup input arguments & file locations
-images1=`ls $WORK/tmp/test/sunglint/*.ntf`
-met=`ls $WORK/tmp/test/sunglint/*.xml`
+images1=`ls $WORK/tmp/test/sunglint/*.[nN][tT][fF]`
+met=`ls $WORK/tmp/test/sunglint/*.[xX][mM][lL]`
 output_dir1=/work/m/mjm8/tmp/test/ortho/
 rrs_out=/work/m/mjm8/tmp/test/output/
 class_out=/work/m/mjm8/tmp/test/output/
@@ -34,11 +34,11 @@ python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyr
 ## Run Matlab code
 module add apps/matlab/r2013b
 
-#images2=`ls $WORK/tmp/test/ortho/*.tif`
+#images2=`ls $WORK/tmp/test/ortho/*.[tT][iI][fF]`
 #images2=($images2)
 #image2=${images2[$SLURM_ARRAY_TASK_ID]}
 
-input_img_basename=$(basename "$image" .ntf)
+input_img_basename=$(basename "${image%.[nN][tT][fF]")
 echo $input_img_basename
 image2="$output_dir1${input_img_basename}_u16ns4326.tif"
 echo $image2
