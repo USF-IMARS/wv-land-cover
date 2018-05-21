@@ -1,5 +1,8 @@
 # wv2-processing
-Processing scripts for decision-tree land use classification on worldview 2 imagery.
+Processing scripts for decision-tree land use classification on WorldView-2 images.
+ 
+The submit_py.sh file is what I use in Circe to call the pgc_ortho.py script, which has a number of sub-scripts called. 
+The submit_py.sh also contains the Matlab script call, so you'll want to comment out those lines before testing it.
 
 ## github basics
 
