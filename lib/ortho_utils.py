@@ -246,7 +246,7 @@ def processImage(srcfp,dstfp,opt):
                 for fpi in copy_list:
                     fpo = os.path.join(wd,os.path.basename(fpi))
                     if not os.path.isfile(fpo):
-                        shutil.copy2(fpi,fpo)
+                        shutil.copy(fpi,fpo)
                
             else:
                 LogMsg("Source images does not exist: %s" %info.srcfp)
@@ -295,7 +295,7 @@ def processImage(srcfp,dstfp,opt):
             for fpi in glob.glob("%s.*" %os.path.splitext(info.localdst)[0]):
                 fpo = os.path.join(info.dstdir,os.path.basename(fpi))
                 if not os.path.isfile(fpo):
-                    shutil.copy2(fpi,fpo)
+                    shutil.copy(fpi,fpo)
         if not opt.save_temps:
             deleteTempFiles([info.localdst])
 
@@ -411,15 +411,15 @@ def stackIkBands(dstfp, members):
         for fpi in glob.glob(os.path.join(srcdir,"%s.*" %os.path.splitext(srcfn)[0])):
             fpo = os.path.join(dstdir,os.path.basename(fpi).replace("blu","msi"))
             if not os.path.isfile(fpo) and not os.path.basename(fpi) == srcfn:
-                shutil.copy2(fpi,fpo)
+                shutil.copy(fpi,fpo)
         for fpi in glob.glob(os.path.join(srcdir,"%s.*" %os.path.splitext(srcfn)[0].replace("blu","rgb"))):
             fpo = os.path.join(dstdir,os.path.basename(fpi).replace("rgb","msi"))
             if not os.path.isfile(fpo) and not os.path.basename(fpi) == srcfn:
-                shutil.copy2(fpi,fpo)
+                shutil.copy(fpi,fpo)
         for fpi in glob.glob(os.path.join(srcdir,"%s.txt" %os.path.splitext(srcfn)[0].replace("blu","pan"))):
             fpo = os.path.join(dstdir,os.path.basename(fpi).replace("pan","msi"))
             if not os.path.isfile(fpo):
-                shutil.copy2(fpi,fpo)
+                shutil.copy(fpi,fpo)
 
     else:
         rc = 1
