@@ -13,27 +13,29 @@
 # Optionally smooths results through moving-window filter
 # Outputs images as GEOTIFF files with geospatial information.
 
+from os import path
+
 ## Assign input and output locations
-loc = 'RB' # Typically the estuary acronym
-coor_sys = 4326 # Change coordinate system code here
-Rrs_write = 0 # 1=write Rrs geotiff; 0=do not write
-d_t = 1 # 0=End after Rrs conversion; 1 = rrs, bathy, DT; 2 = rrs, bathy & DT
-filter = 3 # 0=None, 1=3x3, 3=7x7, 5=11x11
-# sgw = 0; # Sunglint moving-window box = sgw*2 +1 (i.e. 2 = 5x5 box)
-# sgwid = num2str(sgw)
+loc = 'RB'  # Typically the estuary acronym
+coor_sys = 4326  # Change coordinate system code here
+Rrs_write = 0  # 1=write Rrs geotiff; 0=do not write
+d_t = 1  # 0=End after Rrs conversion; 1 = rrs, bathy, DT; 2 = rrs, bathy & DT
+filter = 3  # 0=None, 1=3x3, 3=7x7, 5=11x11
+# sgw = 0;  # Sunglint moving-window box = sgw*2 +1 (i.e. 2 = 5x5 box)
+# sgwid =  num2str(sgw)
 
 loc_in = '/home1/mmccarthy/Matt/USF/Other/NERRS_Mapping/Processing/Ortho/'
 met_in = '/home1/mmccarthy/Matt/USF/Other/NERRS_Mapping/Processing/Raw/'
 loc_out = '/home1/mmccarthy/Matt/USF/Other/NERRS_Mapping/Processing/Output/'
-matfiles = dir(fullfile('Matt','USF','Other','NERRS_Mapping','Processing','Ortho','*.tif'))
+matfiles = path.join('Matt','USF','Other','NERRS_Mapping','Processing','Ortho','*.tif')
 # TODO: Revise this to find both all-caps and all lower-case extensions
-matfiles2 = dir(fullfile('Matt','USF','Other','NERRS_Mapping','Processing','Raw','*.xml'))
+matfiles2 = path.join'Matt','USF','Other','NERRS_Mapping','Processing','Raw','*.xml'))
 
 # loc_in = ['/home1/mmccarthy/Matt/USF/Other/Seagrass/test/']
 # met_in = ['/home1/mmccarthy/Matt/USF/Other/Seagrass/test/']
 # loc_out = ['/home1/mmccarthy/Matt/USF/Other/Seagrass/test/Rrs/']
-# matfiles = dir(fullfile('Matt','USF','Other','Seagrass','test','*.tif'))
-# matfiles2 = dir(fullfile('Matt','USF','Other','Seagrass','test','*.xml'))
+# matfiles = path.join'Matt','USF','Other','Seagrass','test','*.tif'))
+# matfiles2 = path.join'Matt','USF','Other','Seagrass','test','*.xml'))
 
 
 sz_files = size(matfiles(:,1),1)
