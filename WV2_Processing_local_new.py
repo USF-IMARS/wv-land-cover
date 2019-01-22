@@ -1,6 +1,7 @@
 # WV2 Processing
 # Loads TIFF WorldView-2 image files preprocessed through Polar Geospatial
-# Laboratory python code, which orthorectifies and projects .NTF files and outputs as
+# Laboratory python code, which orthorectifies and projects .NTF files and
+# outputs as
 # TIFF files
 # Radiometrically calibrates digital count data
 # Atmospherically corrects images by subtracting Rayleigh Path Radiance
@@ -12,15 +13,11 @@
 # Optionally smooths results through moving-window filter
 # Outputs images as GEOTIFF files with geospatial information.
 
-
-clear all
-tic
-
 ## Assign input and output locations
 loc = 'RB'; # Typically the estuary acronym
 coor_sys = 4326; # Change coordinate system code here
 Rrs_write = 0; # 1=write Rrs geotiff; 0=do not write
-d_t = 1; # 0=End after Rrs conversion; 1 = rrs, bathy, DT; 2 = rrs, bathy and DT
+d_t = 1; # 0=End after Rrs conversion; 1 = rrs, bathy, DT; 2 = rrs, bathy & DT
 filter = 3; # 0=None, 1=3x3, 3=7x7, 5=11x11
 # sgw = 0; # Sunglint moving-window box = sgw*2 +1 (i.e. 2 = 5x5 box)
 # sgwid = num2str(sgw)
@@ -29,7 +26,8 @@ loc_in = '/home1/mmccarthy/Matt/USF/Other/NERRS_Mapping/Processing/Ortho/';
 met_in = '/home1/mmccarthy/Matt/USF/Other/NERRS_Mapping/Processing/Raw/';
 loc_out = '/home1/mmccarthy/Matt/USF/Other/NERRS_Mapping/Processing/Output/';
 matfiles = dir(fullfile('Matt','USF','Other','NERRS_Mapping','Processing','Ortho','*.tif'));
-matfiles2 = dir(fullfile('Matt','USF','Other','NERRS_Mapping','Processing','Raw','*.xml')); ## Revise this to find both all-caps and all lower-case extensions
+# TODO: Revise this to find both all-caps and all lower-case extensions
+matfiles2 = dir(fullfile('Matt','USF','Other','NERRS_Mapping','Processing','Raw','*.xml'));
 
 # loc_in = ['/home1/mmccarthy/Matt/USF/Other/Seagrass/test/'];
 # met_in = ['/home1/mmccarthy/Matt/USF/Other/Seagrass/test/'];
@@ -40,23 +38,28 @@ matfiles2 = dir(fullfile('Matt','USF','Other','NERRS_Mapping','Processing','Raw'
 
 sz_files = size(matfiles(:,1),1)
 
-# Assign constants for all images
-ebw = 0.001*[47.3 54.3 63.0 37.4 57.4 39.3 98.9 99.6]; # Effective Bandwidth per band (nm converted to um units; from IMD metadata files)
-irr = [1758.2229 1974.2416 1856.4104 1738.4791 1559.4555 1342.0695 1069.7302 861.2866]; # Band-averaged Solar Spectral Irradiance (W/m2/um units)
-cw = [.4273 .4779 .5462 .6078 .6588 .7237 .8313 .9080]; # Center wavelength (used for Rayleigh correction; from Radiometric Use of WorldView-2 Imagery)
-gamma = 0.01*[1.499 1.471 1.442 1.413 1.413 1.413 1.384 1.384]; # Factor used in Rayleigh Phase Function equation (Bucholtz 1995)
+# === Assign constants for all images
+# Effective Bandwidth per band (nm converted to um units; from IMD metadata files)
+ebw = 0.001*[47.3 54.3 63.0 37.4 57.4 39.3 98.9 99.6];
+# Band-averaged Solar Spectral Irradiance (W/m2/um units)
+irr = [1758.2229 1974.2416 1856.4104 1738.4791 1559.4555 1342.0695 1069.7302 861.2866];
+# Center wavelength (used for Rayleigh correction; from Radiometric Use of WorldView-2 Imagery)
+cw = [.4273 .4779 .5462 .6078 .6588 .7237 .8313 .9080];
+# Factor used in Rayleigh Phase Function equation (Bucholtz 1995)
+gamma = 0.01*[1.499 1.471 1.442 1.413 1.413 1.413 1.384 1.384];
 
-for z = 1;#:sz_files;
+for z = 1;  #:sz_files;
 id = matfiles(z,1).name(1:19)
 
-X = [loc_in, matfiles(z,1).name]; # Change location of MS Tiff images here
-Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
+X = [loc_in, matfiles(z,1).name];  # Change location of MS Tiff images here
+Z = [met_in, matfiles2(z,1).name];  # Change location of XML files here
 
     [A, R] = geotiffread(X);
     szA = size(A);
      s = xml2struct(Z);
 #    save XMLtest.mat s
-        # Extract calibration factors and acquisition time from metadata for each band
+        # Extract calibration factors & acquisition time from
+        # metadata for each band
         if isfield(s,'IMD') == 1
             c = struct2cell(s.Children(2).Children(:));
         	idx{1} = strfind(c(1,:),'NUMROWS');
@@ -106,14 +109,22 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
 	         kf(6,1) = str2num(s.isd.IMD.BAND_RE.ABSCALFACTOR.Text);
 	         kf(7,1) = str2num(s.isd.IMD.BAND_N.ABSCALFACTOR.Text);
 	         kf(8,1) = str2num(s.isd.IMD.BAND_N2.ABSCALFACTOR.Text);
-	         aqyear = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(1:4)); # Extract Acquisition Time from metadata
-	         aqmonth = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(6:7)); # Extract Acquisition Time from metadata
-    	   	 aqday = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(9:10)); # Extract Acquisition Time from metadata
-           	 aqhour = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(12:13)); # Extract Acquisition Time from metadata
-             aqminute = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(15:16)); # Extract Acquisition Time from metadata
-	    	 aqsecond = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(18:26)); # Extract Acquisition Time from metadata
-	    	 sunel = str2num(s.isd.IMD.IMAGE.MEANSUNEL.Text); # Extract Mean Sun Elevation angle from metadata
-             satview = str2num(s.isd.IMD.IMAGE.MEANOFFNADIRVIEWANGLE.Text); # Extract Mean Off Nadir View angle from metadata
+             # Extract Acquisition Time from metadata
+	         aqyear = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(1:4));
+             # Extract Acquisition Time from metadata
+	         aqmonth = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(6:7));
+             # Extract Acquisition Time from metadata
+    	   	 aqday = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(9:10));
+             # Extract Acquisition Time from metadata
+           	 aqhour = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(12:13));
+             # Extract Acquisition Time from metadata
+             aqminute = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(15:16));
+             # Extract Acquisition Time from metadata
+	    	 aqsecond = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME
+             # Extract Mean Sun Elevation angle from metadata.Text(18:26));
+	    	 sunel = str2num(s.isd.IMD.IMAGE.MEANSUNEL.Text);
+             # Extract Mean Off Nadir View angle from metadata
+             satview = str2num(s.isd.IMD.IMAGE.MEANOFFNADIRVIEWANGLE.Text);
 	         sunaz = str2num(s.isd.IMD.IMAGE.MEANSUNAZ.Text);
              sensaz = str2num(s.isd.IMD.IMAGE.MEANSATAZ.Text);
              satel = str2num(s.isd.IMD.IMAGE.MEANSATEL.Text);
@@ -130,20 +141,30 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
 	    else year = aqyear;
 	        month = aqmonth;
 	    end
-	    UT = aqhour + (aqminute/60.0) + (aqsecond/3600.0); # Convert time to UT
+        # Convert time to UT
+	    UT = aqhour + (aqminute/60.0) + (aqsecond/3600.0);
 	    B1 = int64(year/100);
 	    B2 = 2-B1+int64(B1/4);
-	    JD = (int64(365.25*(year+4716)) +int64(30.6001*(month+1)) + aqday + UT/24.0 + B2 - 1524.5); # Julian date
+        # Julian date
+	    JD = (int64(365.25*(year+4716)) +int64(30.6001*(month+1)) + aqday + UT/24.0 + B2 - 1524.5);
 	    D = JD - 2451545.0;
 	    degs = double(357.529 + 0.98560028*D); # Degrees
-	    ESd = 1.00014 - 0.01671*cosd(degs) - 0.00014*cosd(2*degs); # Earth-Sun distance at given date (should be between 0.983 and 1.017)
+        # Earth-Sun distance at given date (should be between 0.983 and 1.017)
+	    ESd = 1.00014 - 0.01671*cosd(degs) - 0.00014*cosd(2*degs);
 
 	    inc_ang = 90.0 - sunel;
-	    TZ = cosd(inc_ang); # Atmospheric spectral transmittance in solar path with solar zenith angle
-	    TV = cosd(satview); # Atmospheric spectral transmittance in view path with satellite view angle
+        # Atmospheric spectral transmittance in solar path with solar
+        # zenith angle
+        TZ = cosd(inc_ang);
+        # Atmospheric spectral transmittance in view path with satellite
+        # view angle
+	    TV = cosd(satview);
 
-	    ## Calculate Rayleigh Path Radiance (Dash et al. 2012 and references therein)
-	    if sunaz > 180 # For the following equations, azimuths should be between -180 and +180 degrees
+	    ## Calculate Rayleigh Path Radiance
+        # (Dash et al. 2012 and references therein)
+        # For the following equations, azimuths should be
+        # between -180 and +180 degrees
+	    if sunaz > 180
 	        sunaz = sunaz - 360;
 	    end
 	    if sensaz > 180
@@ -151,45 +172,65 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
 	    end
 
 	    az = abs(sensaz - 180 - sunaz); # Relative azimuth angle
-	    thetaplus = acosd(cosd(90-sunel)*cosd(90-satel) - sind(90-sunel)*sind(90-satel)*cosd(az)); # Scattering angles
+        # Scattering angles
+	    thetaplus = acosd(cosd(90-sunel)*cosd(90-satel) - sind(90-sunel)*sind(90-satel)*cosd(az));
 
         for d = 1:8
-            Pr(d) = (3/(4*(1+2*gamma(d))))*((1+3*gamma(d))+(1-gamma(d))*cosd(thetaplus)^2); # Rayleigh scattering phase function (described in Bucholtz 1995)
+            # Rayleigh scattering phase function (described in Bucholtz 1995)
+            Pr(d) = (3/(4*(1+2*gamma(d))))*((1+3*gamma(d))+(1-gamma(d))*cosd(thetaplus)^2);
         end
 
 	    for d = 1:8;
-	        tau(d) =(0.008569*(cw(d)^-4)*(1 + 0.0113*(cw(d)^-2) + 0.00013*cw(d)^-4)); # Rayleigh optical thickness (assume standard pressure of 1013.25 mb)
+            # Rayleigh optical thickness (assume std pressure of 1013.25 mb)
+	        tau(d) =(0.008569*(cw(d)^-4)*(1 + 0.0113*(cw(d)^-2) + 0.00013*cw(d)^-4));
 	    end
 
 	    # Rayleigh calculation (Dash et al., 2012)
 	    for d = 1:8;
-	        ray_rad{1,1}(d) = ((irr(1,d)/ESd)*1*tau(d)*Pr(d))/(4*pi*cosd(90-satel)); # Assume standard pressure (1013.25 mb)
+            # Assume standard pressure (1013.25 mb)
+	        ray_rad{1,1}(d) = ((irr(1,d)/ESd)*1*tau(d)*Pr(d))/(4*pi*cosd(90-satel));
 	    end
 
 	    # rrs constant calculation (Kerr et al. 2018 and Mobley 1994)
 	    G = single(1.56); # constant (Kerr eq. 3)
         na = 1.00029; # Refractive index of air
         nw = 1.34; # Refractive index seawater
-        inc_ang2 = real(asind(sind(90-satel)*nw/na)); # Incident angle for water-air from Snell's Law
-        trans_aw = real(asind(sind(inc_ang)*na/nw)); # Transmission angle for air-water incident light from Snell's Law
-	    trans_wa = 90-satel; # Transmission angle for water-air incident light from Snell's Law
-	    pf1 = real(0.5*((sind(inc_ang - trans_aw)/(sind(inc_ang + trans_aw)))^2 + (tand(inc_ang - trans_aw)/(tand(inc_ang + trans_aw)))^2)); # Fresnel reflectance for air-water incident light (Mobley 1994)
+        # Incident angle for water-air from Snell's Law
+        inc_ang2 = real(asind(sind(90-satel)*nw/na));
+        # Transmission angle for air-water incident light from Snell's Law
+        trans_aw = real(asind(sind(inc_ang)*na/nw));
+        # Transmission angle for water-air incident light from Snell's Law
+	    trans_wa = 90-satel;
+        # Fresnel reflectance for air-water incident light (Mobley 1994)
+	    pf1 = real(0.5*((sind(inc_ang - trans_aw)/(sind(inc_ang + trans_aw)))^2 + (tand(inc_ang - trans_aw)/(tand(inc_ang + trans_aw)))^2));
 	    pf2 = real(0.5*((sind(inc_ang2 - trans_wa)/(sind(inc_ang2 + trans_wa)))^2 + (tand(inc_ang2 - trans_wa)/(tand(inc_ang2 + trans_wa)))^2));
-	    zeta = real(single((1-pf1)*(1-pf2)/(nw^2))); # rrs constant (~0.52) from Mobley 1994
+        # rrs constant (~0.52) from Mobley 1994
+        zeta = real(single((1-pf1)*(1-pf2)/(nw^2)));
 
 
-        # Adjust file size: Input file (A) warped may contain more or fewer columns/rows than original NITF file, and some may be corrupt.
+        # Adjust file size: Input file (A) warped may contain more or fewer
+        # columns/rows than original NITF file, and some may be corrupt.
         sz(1) = min(szA(1),szB(1));
         sz(2) = min(szA(2),szB(2));
         sz(3) = 8;
 
-            ## Assign NaN to no-data pixels and radiometrically calibrate and convert to Rrs
-            Rrs = single(zeros(szA(1),szA(2),8)); # Create empty matrix for Rrs output
+            ## Assign NaN to no-data pixels and radiometrically calibrate and
+            # convert to Rrs
+            # Create empty matrix for Rrs output
+            Rrs = single(zeros(szA(1),szA(2),8));
             for j = 1:sz(1); # Assign NaN to pixels of no data
-                for k = 1:sz(2); # If a pixel contains data values other than "zero" or "two thousand and forty seven" in any band, it is calibrated; otherwise, it is considered "no-data" - this avoids a problem created during the orthorectification process wherein reprojecting the image may resample data
+                # If a pixel contains data values other than "zero" or
+                # "two thousand and forty seven" in any band, it is calibrated;
+                # otherwise, it is considered "no-data" - this avoids a
+                # problem created during the orthorectification process
+                # wherein reprojecting the image may resample data
+                for k = 1:sz(2);
                     if (A(j,k,1)) ~= 0 && (A(j,k,1)) ~= 2047 || (A(j,k,2)) ~= 0 && (A(j,k,2)) ~= 2047 || (A(j,k,3)) ~= 0 && (A(j,k,3)) ~= 2047 || (A(j,k,4)) ~= 0 && (A(j,k,4)) ~= 2047 || (A(j,k,5)) ~= 0 && (A(j,k,5)) ~= 2047 || (A(j,k,6)) ~= 0 && (A(j,k,6)) ~= 2047 || (A(j,k,7)) ~= 0 && (A(j,k,7)) ~= 2047 || (A(j,k,8)) ~= 0 && (A(j,k,8)) ~= 2047;
                         for d = 1:8;
-                            Rrs(j,k,d) = single((pi*((single(A(j,k,d))*kf(d,1)/ebw(1,d)) - ray_rad{1,1}(1,d))*ESd^2)/(irr(1,d)*TZ*TV)); # Radiometrically calibrate and convert to Rrs (adapted from Radiometric Use of WorldView-2 Imagery(
+                            # Radiometrically calibrate and convert to Rrs
+                            # (adapted from Radiometric Use of
+                            # WorldView-2 Imagery(
+                            Rrs(j,k,d) = single((pi*((single(A(j,k,d))*kf(d,1)/ebw(1,d)) - ray_rad{1,1}(1,d))*ESd^2)/(irr(1,d)*TZ*TV));
                         end
                     else Rrs(j,k,:) = NaN;
                     end
@@ -206,9 +247,12 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
 
 	if d_t > 0; # Run DT and/or rrs conversion; otherwise end
 
-	    # Calculate Kd (water column attenuation coefficient) from Chuanmin Hu's Rrs_Kd_Model.xlsx sheet
+	    # Calculate Kd (water column attenuation coefficient) from
+        # Chuanmin Hu's Rrs_Kd_Model.xlsx sheet
 # 		sunzen = 90.0-sunel;
-# 		c1 = 0.005; # c1-4 hard-coded, but v1 and v2 change with modified values of aph(440), adg(440),bbp(440), Sdg, Y
+        # c1-4 hard-coded, but v1 and v2 change with modified values of
+        # aph(440), adg(440),bbp(440), Sdg, Y
+# 		c1 = 0.005;
 # 		c2 = 4.18;
 # 		c3 = 0.52;
 # 		c4 = 10.8;
@@ -241,15 +285,21 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
 	        for k = 1:sz(2)
 	            if isnan(Rrs(j,k,1)) == 0
                     num_pix = num_pix +1; # Count number of non-NaN pixels
-                    c_val(num_pix) = Rrs(j,k,1); # Record coastal band value for use in cloud mask prediction
+                    # Record coastal band value for use in cloud mask prediction
+                    c_val(num_pix) = Rrs(j,k,1);
                     if (Rrs(j,k,7) - Rrs(j,k,2))/(Rrs(j,k,7) + Rrs(j,k,2)) < 0.65 && Rrs(j,k,5) > Rrs(j,k,4) && Rrs(j,k,4) > Rrs(j,k,3) # Sand & Developed
                         sum_SD(b) = sum(Rrs(j,k,6:8));
                         b = b+1;
-                    elseif (Rrs(j,k,8) - Rrs(j,k,5))/(Rrs(j,k,8) + Rrs(j,k,5)) > 0.6 && Rrs(j,k,7) > Rrs(j,k,3); # Identify vegetation (excluding grass)
+                    # Identify vegetation (excluding grass)
+                    elseif (Rrs(j,k,8) - Rrs(j,k,5))/(Rrs(j,k,8) + Rrs(j,k,5)) > 0.6 && Rrs(j,k,7) > Rrs(j,k,3);
                         if ((Rrs(j,k,7) - Rrs(j,k,2))/(Rrs(j,k,7) + Rrs(j,k,2))) > 0.20; # Shadow filter
-	                        sum_veg(t) = sum(Rrs(j,k,3:5)); # Sum bands 3-5 for selected veg to distinguish wetland from upland
+                            # Sum bands 3-5 for selected veg to distinguish
+                            # wetland from upland
+                            sum_veg(t) = sum(Rrs(j,k,3:5));
                             sum_veg2(t) = sum(Rrs(j,k,7:8));
-                            dead_veg(t) = (((Rrs(j,k,7) - Rrs(j,k,4))/3) + Rrs(j,k,4)) - Rrs(j,k,5); # Compute difference of predicted B5 value from actual valute
+                            # Compute difference of predicted B5 value from
+                            # actual valute
+                            dead_veg(t) = (((Rrs(j,k,7) - Rrs(j,k,4))/3) + Rrs(j,k,4)) - Rrs(j,k,5);
 	                        t = t+1;
                         end
         			elseif Rrs(j,k,8) < 0.11 && Rrs(j,k,1) > 0 && Rrs(j,k,2) > 0 && Rrs(j,k,3) > 0 && Rrs(j,k,4) > 0 && Rrs(j,k,5) > 0 && Rrs(j,k,6) > 0 && Rrs(j,k,7) > 0 && Rrs(j,k,8) > 0; # Identify glint-free water
@@ -286,15 +336,18 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
 	            end
 	        end
 	    end
-		n_water = u; # Number of water pixels used to derive E_glint relationships
+        # Number of water pixels used to derive E_glint relationships
+		n_water = u;
 		n_glinted = v; # Number of glinted water pixels
 
 		idx = find(water(:,1) == 0);
 		water(idx,:) = [];
         water7 = water(:,7);
         water8 = water(:,8);
-        mnNIR1 = min(water7(water7>0)); # Positive minimum Band 7 value used for deglinting
-        mnNIR2 = min(water8(water8>0)); # Positive minimum Band 8 value used for deglinting
+        # Positive minimum Band 7 value used for deglinting
+        mnNIR1 = min(water7(water7>0));
+        # Positive minimum Band 8 value used for deglinting
+        mnNIR2 = min(water8(water8>0));
 
         idx_gf = find(water(:,9)==1); # Glint-free water
 
@@ -305,7 +358,9 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
 #             idx_w2 = find(water(:,9)==3); # Glinted water array2>array1
 #             water1 = [water(idx_gf,1:8);water(idx_w1,1:8)];
 #             water2 = [water(idx_gf,1:8);water(idx_w2,1:8)];
-                	for b = 1:6 ## Calculate linear fitting of all MS bands vs NIR1 & NIR2 for deglinting in DT (Hedley et al. 2005)
+                    # Calculate linear fitting of all MS bands vs NIR1 & NIR2
+                    # for deglinting in DT (Hedley et al. 2005)
+                    for b = 1:6
                         	if b == 1 || b == 4 || b == 6
                                 slope1 = water(:,b)\water(:,8);
                		        else slope1 = water(:,b)\water(:,7);
@@ -347,11 +402,13 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
 
         ## Determine Rrs-infinite from glint-free water pixels
 #         water_gf = water(idx_gf,1:8);
-#         dp_max_sort = sortrows(water_gf,8,'ascend'); # Sort all values in water by NIR2 column (assumes deepest water is darkest is NIR2)
+# Sort all values in water by NIR2 column (assumes deepest water is darkest is NIR2)
+#         dp_max_sort = sortrows(water_gf,8,'ascend');
 #         idx_dp = round(size(dp_max_sort,1)*0.001); # Use "deepest" 0.1# pixels
 #         dp_pct = dp_max_sort(1:idx_dp,:);
 #         dp_rrs = dp_pct(:,1:8)./(zeta + G.*dp_pct(:,1:8)); # Convert to subsurface rrs
-#         rrs_inf = min(dp_rrs(:,1:8)); #median(dp_rrs(:,1:8)) - 2*std(dp_rrs(:,1:8)); # Mean and Median values too high
+#         # Mean and Median values too high
+#         rrs_inf = min(dp_rrs(:,1:8)); #median(dp_rrs(:,1:8)) - 2*std(dp_rrs(:,1:8));
 # #         rrs_inf = [0.00512 0.00686 0.008898 0.002553 0.001506 0.000403]; # Derived from Rrs_Kd_Model.xlsx for Default values
 # #         plot(rrs_inf)
         ## Calculate target class metrics
@@ -365,8 +422,12 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
         avg_water_sum = mean(sum_water_rrs(:));
 
 	    if cl_cov > 0
-		    num_cld_pix = round(num_pix*cl_cov*0.01); # Number of cloud pixels (rounded down to nearest integer) based on metadata-reported percent cloud cover
-		    srt_c = sort(c_val,'descend'); # Sort all pixel blue-values in descending order. Cloud mask threshold will be num_cld_pix'th highest value
+            # Number of cloud pixels (rounded down to nearest integer) based on
+            #  metadata-reported percent cloud cover
+		    num_cld_pix = round(num_pix*cl_cov*0.01);
+            # Sort all pixel blue-values in descending order. Cloud mask
+            # threshold will be num_cld_pix'th highest value
+            srt_c = sort(c_val,'descend');
 		    cld_mask = srt_c(num_cld_pix); # Set cloud mask threshold
 	    else cld_mask = max(c_val)+1;
 	    end
@@ -375,7 +436,8 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
 	    Bathy = single(zeros(szA(1),szA(2))); # Preallocate for Bathymetry
 	    Rrs_deglint = single(zeros(5,1)); # Preallocate for deglinted Rrs
 	    Rrs_0 = single(zeros(5,1)); #Preallocation for water-column corrected Rrs
- 	    map = zeros(szA(1),szA(2),'uint8'); # Create empty matrix for classification output
+        # Create empty matrix for classification output
+        map = zeros(szA(1),szA(2),'uint8');
 
 	if d_t == 1; # Execute Deglinting rrs and Bathymetry
         if v > u*0.25
@@ -388,10 +450,13 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
             Rrs_deglint(6,1) = (Rrs(j,k,6) - (E_glint(6)*(Rrs(j,k,8) - mnNIR2)));
 
             # Convert above-surface Rrs to below-surface rrs (Kerr et al. 2018)
-            Rrs(j,k,1:6) = Rrs_deglint(1:6)./(zeta + G.*Rrs_deglint(1:6)); # Was Rrs_0=
+            # Was Rrs_0=
+            Rrs(j,k,1:6) = Rrs_deglint(1:6)./(zeta + G.*Rrs_deglint(1:6));
 
             # Relative depth estimate
-            dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3))); # Calculate relative depth (Stumpf 2003 ratio transform scaled to 1-10)
+            # Calculate relative depth
+            # (Stumpf 2003 ratio transform scaled to 1-10)
+            dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)));
             if dp > 0 && dp < 2
                 Bathy(j,k) = dp;
             else dp = 0;
@@ -401,8 +466,11 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
 #                                 end
 
         else # For glint-free/low-glint images
-            Rrs(j,k,1:6) = Rrs(j,k,1:6)./(zeta + G.*Rrs(j,k,1:6)); # Convert above-surface Rrs to subsurface rrs (Kerr et al. 2018, Lee et al. 1998)
-            dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3))); # Calculate relative depth (Stumpf 2003 ratio transform)
+            # Convert above-surface Rrs to subsurface rrs
+            # (Kerr et al. 2018, Lee et al. 1998)
+            Rrs(j,k,1:6) = Rrs(j,k,1:6)./(zeta + G.*Rrs(j,k,1:6));
+            # Calculate relative depth (Stumpf 2003 ratio transform)
+            dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)));
             if dp > 0 && dp < 2
                 Bathy(j,k) = dp;
             else dp = 0;
@@ -442,15 +510,19 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
                            if Rrs(j,k,7) > Rrs(j,k,2) && ((Rrs(j,k,7) - Rrs(j,k,2))/(Rrs(j,k,7) + Rrs(j,k,2))) < 0.20 && (Rrs(j,k,7) - Rrs(j,k,8))/(Rrs(j,k,7) + Rrs(j,k,8)) > 0.01; # Shadowed-vegetation filter (B7/B8 ratio excludes marsh, which tends to have very similar values here)
                                map(j,k) = 0; # Shadow
                            elseif sum(Rrs(j,k,3:5)) < avg_veg_sum
-                                if ((Rrs(j,k,2) - Rrs(j,k,5))/(Rrs(j,k,2) + Rrs(j,k,5))) < 0.4# Agriculture filter based on elevated Blue band values
+                                # Agriculture filter based on elevated Blue
+                                # band values
+                                if ((Rrs(j,k,2) - Rrs(j,k,5))/(Rrs(j,k,2) + Rrs(j,k,5))) < 0.4
                                     if Rrs(j,k,7) > 0.12 && sum(Rrs(j,k,7:8))/sum(Rrs(j,k,3:5)) > 2
                                         map(j,k) = 33; # Forested Wetland
-                                    else map(j,k) = 31; # Dead vegetation or Marsh
+                                    # Dead vegetation or Marsh
+                                    else map(j,k) = 31;
                                     end
                                 else map(j,k) = 32; # Forested Upland (most likely agriculture)
                                 end
                            elseif sum(Rrs(j,k,7:8)) < avg_mang_sum
-                               if ((Rrs(j,k,2) - Rrs(j,k,5))/(Rrs(j,k,2) + Rrs(j,k,5))) < 0.4# Agriculture filter based on elevated Blue band values
+                               # Agriculture filter based on elevated Blue band values
+                               if ((Rrs(j,k,2) - Rrs(j,k,5))/(Rrs(j,k,2) + Rrs(j,k,5))) < 0.4
                                    if Rrs(j,k,7) > 0.12 && sum(Rrs(j,k,7:8))/sum(Rrs(j,k,3:5)) > 2
                                        map(j,k) = 33; # Forested Wetland
                                    else map(j,k) = 31; # Marsh or Dead Vegetation
@@ -483,7 +555,9 @@ Z = [met_in, matfiles2(z,1).name]; # Change location of XML files here
                                 Rrs(j,k,1:6) = Rrs_deglint(1:6)./(zeta + G.*Rrs_deglint(1:6)); # Was Rrs_0=
 
                                 # Relative depth estimate
-                                dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3))); # Calculate relative depth (Stumpf 2003 ratio transform scaled to 1-10)
+                                # Calculate relative depth
+                                # (Stumpf 2003 ratio transform scaled to 1-10)
+                                dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)));
                                 if dp > 0 && dp < 2
                                     Bathy(j,k) = dp;
                                 else dp = 0;
