@@ -58,220 +58,233 @@ irr = [
 ]
 # Center wavelength
 # (used for Rayleigh correction; from Radiometric Use of WorldView-2 Imagery)
-cw = [.4273, .4779, .5462, .6078, .6588, .7237, .8313, .9080]
+cw = [0.4273, 0.4779, 0.5462, 0.6078, 0.6588, 0.7237, 0.8313, 0.9080]
 # Factor used in Rayleigh Phase Function equation (Bucholtz 1995)
 gamma = [
     g * 0.01 for g in [1.499, 1.471, 1.442, 1.413, 1.413, 1.413, 1.384, 1.384]
 ]
 
 for z in range(sz_files):
-    id = matfiles[z].name(1:19)
+    fname = path.basename(matfiles[z])
+    id = fname[1:19]
 
-    X = [loc_in, matfiles(z, 1).name]  # Change location of MS Tiff images here
-    Z = [met_in, matfiles2(z, 1).name]  # Change location of XML files here
+    X = [loc_in, fname]  # Change location of MS Tiff images here
+    Z = [met_in, fname]  # Change location of XML files here
 
     [A, R] = geotiffread(X)
     szA = size(A)
-     s = xml2struct(Z)
-#    save XMLtest.mat s
-        # Extract calibration factors & acquisition time from
-        # metadata for each band
-        if isfield(s, 'IMD') == 1
-            c = struct2cell(s.Children(2).Children(:))
-            idx{1} = strfind(c(1, :), 'NUMROWS')
-            idx{2} = strfind(c(1, :), 'NUMCOLUMNS')
-            idx{3} = strfind(c(1, :), 'BAND_C')
-            idx{4} = strfind(c(1, :), 'BAND_B')
-            idx{5} = strfind(c(1, :), 'BAND_G')
-            idx{6} = strfind(c(1, :), 'BAND_Y')
-            idx{7} = strfind(c(1, :), 'BAND_R')
-            idx{8} = strfind(c(1, :), 'BAND_RE')
-            idx{9} = strfind(c(1, :), 'BAND_N')
-            idx{10} = strfind(c(1, :), 'BAND_N2')
-            idx{11} = strfind(c(1, :), 'IMAGE')
-            for i = 1:11
-                idxb(i, 1:2) = find(not(cellfun('isempty', idx{i})))
-            end
-            szB(1) = str2num(s.Children(2).Children(idxb(1)).Children.Data)
-            szB(2) = str2num(s.Children(2).Children(idxb(2)).Children.Data)
-            kf(1, 1) = str2num(s.Children(2).Children(idxb(3)).Children(26).Children.Data)
-            kf(2, 1) = str2num(s.Children(2).Children(idxb(4)).Children(26).Children.Data)
-            kf(3, 1) = str2num(s.Children(2).Children(idxb(5)).Children(26).Children.Data)
-            kf(4, 1) = str2num(s.Children(2).Children(idxb(6)).Children(26).Children.Data)
-            kf(5, 1) = str2num(s.Children(2).Children(idxb(7, 1)).Children(26).Children.Data)
-            kf(6, 1) = str2num(s.Children(2).Children(idxb(8)).Children(26).Children.Data)
-            kf(7, 1) = str2num(s.Children(2).Children(idxb(9, 1)).Children(26).Children.Data)
-            kf(8, 1) = str2num(s.Children(2).Children(idxb(10)).Children(26).Children.Data)
-            aqyear = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(1:4))
-            aqmonth = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(6:7))
-            aqday = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(9:10))
-            aqhour = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(12:13))
-            aqminute = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(15:16))
-            aqsecond = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(18:26))
-            sunel = str2num(s.Children(2).Children(idxb(11, 2)).Children(56).Children.Data)
-            sunaz = str2num(s.Children(2).Children(idxb(11, 2)).Children(50).Children.Data)
-            satview = str2num(s.Children(2).Children(idxb(11, 2)).Children(86).Children.Data)
-            sensaz = str2num(s.Children(2).Children(idxb(11, 2)).Children(62).Children.Data)
-            satel = str2num(s.Children(2).Children(idxb(11, 2)).Children(68).Children.Data)
-            cl_cov = str2num(s.Children(2).Children(idxb(11, 2)).Children(90).Children.Data)
-        else
-             szB(1) = str2num(s.isd.IMD.NUMROWS.Text)
-             szB(2) = str2num(s.isd.IMD.NUMCOLUMNS.Text)
-             kf(1, 1) = str2num(s.isd.IMD.BAND_C.ABSCALFACTOR.Text)
-                kf(2, 1) = str2num(s.isd.IMD.BAND_B.ABSCALFACTOR.Text)
-             kf(3, 1) = str2num(s.isd.IMD.BAND_G.ABSCALFACTOR.Text)
-             kf(4, 1) = str2num(s.isd.IMD.BAND_Y.ABSCALFACTOR.Text)
-             kf(5, 1) = str2num(s.isd.IMD.BAND_R.ABSCALFACTOR.Text)
-             kf(6, 1) = str2num(s.isd.IMD.BAND_RE.ABSCALFACTOR.Text)
-             kf(7, 1) = str2num(s.isd.IMD.BAND_N.ABSCALFACTOR.Text)
-             kf(8, 1) = str2num(s.isd.IMD.BAND_N2.ABSCALFACTOR.Text)
-             # Extract Acquisition Time from metadata
-             aqyear = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(1:4))
-             # Extract Acquisition Time from metadata
-             aqmonth = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(6:7))
-             # Extract Acquisition Time from metadata
-                aqday = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(9:10))
-             # Extract Acquisition Time from metadata
-                aqhour = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(12:13))
-             # Extract Acquisition Time from metadata
-             aqminute = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(15:16))
-             # Extract Acquisition Time from metadata
-             aqsecond = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME
-             # Extract Mean Sun Elevation angle from metadata.Text(18:26))
-             sunel = str2num(s.isd.IMD.IMAGE.MEANSUNEL.Text)
-             # Extract Mean Off Nadir View angle from metadata
-             satview = str2num(s.isd.IMD.IMAGE.MEANOFFNADIRVIEWANGLE.Text)
-             sunaz = str2num(s.isd.IMD.IMAGE.MEANSUNAZ.Text)
-             sensaz = str2num(s.isd.IMD.IMAGE.MEANSATAZ.Text)
-             satel = str2num(s.isd.IMD.IMAGE.MEANSATEL.Text)
-             cl_cov = str2num(s.isd.IMD.IMAGE.CLOUDCOVER.Text)
+
+    # ==================================================================
+    # === read values from xml file
+    # ==================================================================
+    s = xml2struct(Z)
+    # save XMLtest.mat s
+    # Extract calibration factors & acquisition time from
+    # metadata for each band
+    if isfield(s, 'IMD') == 1:
+        c = struct2cell(s.Children(2).Children(:))
+        idx{1} = strfind(c(1, :), 'NUMROWS')
+        idx{2} = strfind(c(1, :), 'NUMCOLUMNS')
+        idx{3} = strfind(c(1, :), 'BAND_C')
+        idx{4} = strfind(c(1, :), 'BAND_B')
+        idx{5} = strfind(c(1, :), 'BAND_G')
+        idx{6} = strfind(c(1, :), 'BAND_Y')
+        idx{7} = strfind(c(1, :), 'BAND_R')
+        idx{8} = strfind(c(1, :), 'BAND_RE')
+        idx{9} = strfind(c(1, :), 'BAND_N')
+        idx{10} = strfind(c(1, :), 'BAND_N2')
+        idx{11} = strfind(c(1, :), 'IMAGE')
+        for i = 1:11
+            idxb(i, 1:2) = find(not(cellfun('isempty', idx{i})))
         end
+        szB(1) = str2num(s.Children(2).Children(idxb(1)).Children.Data)
+        szB(2) = str2num(s.Children(2).Children(idxb(2)).Children.Data)
+        kf(1, 1) = str2num(s.Children(2).Children(idxb(3)).Children(26).Children.Data)
+        kf(2, 1) = str2num(s.Children(2).Children(idxb(4)).Children(26).Children.Data)
+        kf(3, 1) = str2num(s.Children(2).Children(idxb(5)).Children(26).Children.Data)
+        kf(4, 1) = str2num(s.Children(2).Children(idxb(6)).Children(26).Children.Data)
+        kf(5, 1) = str2num(s.Children(2).Children(idxb(7, 1)).Children(26).Children.Data)
+        kf(6, 1) = str2num(s.Children(2).Children(idxb(8)).Children(26).Children.Data)
+        kf(7, 1) = str2num(s.Children(2).Children(idxb(9, 1)).Children(26).Children.Data)
+        kf(8, 1) = str2num(s.Children(2).Children(idxb(10)).Children(26).Children.Data)
+        aqyear = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(1:4))
+        aqmonth = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(6:7))
+        aqday = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(9:10))
+        aqhour = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(12:13))
+        aqminute = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(15:16))
+        aqsecond = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(18:26))
+        sunel = str2num(s.Children(2).Children(idxb(11, 2)).Children(56).Children.Data)
+        sunaz = str2num(s.Children(2).Children(idxb(11, 2)).Children(50).Children.Data)
+        satview = str2num(s.Children(2).Children(idxb(11, 2)).Children(86).Children.Data)
+        sensaz = str2num(s.Children(2).Children(idxb(11, 2)).Children(62).Children.Data)
+        satel = str2num(s.Children(2).Children(idxb(11, 2)).Children(68).Children.Data)
+        cl_cov = str2num(s.Children(2).Children(idxb(11, 2)).Children(90).Children.Data)
+    else
+        szB(1) = str2num(s.isd.IMD.NUMROWS.Text)
+        szB(2) = str2num(s.isd.IMD.NUMCOLUMNS.Text)
+        kf(1, 1) = str2num(s.isd.IMD.BAND_C.ABSCALFACTOR.Text)
+        kf(2, 1) = str2num(s.isd.IMD.BAND_B.ABSCALFACTOR.Text)
+        kf(3, 1) = str2num(s.isd.IMD.BAND_G.ABSCALFACTOR.Text)
+        kf(4, 1) = str2num(s.isd.IMD.BAND_Y.ABSCALFACTOR.Text)
+        kf(5, 1) = str2num(s.isd.IMD.BAND_R.ABSCALFACTOR.Text)
+        kf(6, 1) = str2num(s.isd.IMD.BAND_RE.ABSCALFACTOR.Text)
+        kf(7, 1) = str2num(s.isd.IMD.BAND_N.ABSCALFACTOR.Text)
+        kf(8, 1) = str2num(s.isd.IMD.BAND_N2.ABSCALFACTOR.Text)
+        # Extract Acquisition Time from metadata
+        aqyear = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(1:4))
+        # Extract Acquisition Time from metadata
+        aqmonth = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(6:7))
+        # Extract Acquisition Time from metadata
+        aqday = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(9:10))
+        # Extract Acquisition Time from metadata
+        aqhour = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(12:13))
+        # Extract Acquisition Time from metadata
+        aqminute = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(15:16))
+        # Extract Acquisition Time from metadata
+        aqsecond = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME
+        # Extract Mean Sun Elevation angle from metadata.Text(18:26))
+        sunel = str2num(s.isd.IMD.IMAGE.MEANSUNEL.Text)
+        # Extract Mean Off Nadir View angle from metadata
+        satview = str2num(s.isd.IMD.IMAGE.MEANOFFNADIRVIEWANGLE.Text)
+        sunaz = str2num(s.isd.IMD.IMAGE.MEANSUNAZ.Text)
+        sensaz = str2num(s.isd.IMD.IMAGE.MEANSATAZ.Text)
+        satel = str2num(s.isd.IMD.IMAGE.MEANSATEL.Text)
+        cl_cov = str2num(s.isd.IMD.IMAGE.CLOUDCOVER.Text)
+    end
+    # ==================================================================
 
-        szB(3) = 8
+    szB(3) = 8
 
+    # ==================================================================
+    # === Calculate Earth-Sun distance and relevant geometry
+    # ==================================================================
+    if aqmonth == 1 || aqmonth == 2:
+        year = aqyear - 1
+        month = aqmonth + 12
+    else:
+        year = aqyear
+        month = aqmonth
+    end
+    # Convert time to UT
+    UT = aqhour + (aqminute/60.0) + (aqsecond/3600.0)
+    B1 = int64(year/100)
+    B2 = 2-B1+int64(B1/4)
+    # Julian date
+    JD = (int64(365.25*(year+4716)) +int64(30.6001*(month+1)) + aqday + UT/24.0 + B2 - 1524.5)
+    D = JD - 2451545.0
+    degs = double(357.529 + 0.98560028*D) # Degrees
+    # Earth-Sun distance at given date (should be between 0.983 and 1.017)
+    ESd = 1.00014 - 0.01671*cosd(degs) - 0.00014*cosd(2*degs)
 
-        ## Calculate Earth-Sun distance and relevant geometry
-        if aqmonth == 1 || aqmonth == 2
-            year = aqyear -1
-            month = aqmonth + 12
-        else year = aqyear
-            month = aqmonth
-        end
-        # Convert time to UT
-        UT = aqhour + (aqminute/60.0) + (aqsecond/3600.0)
-        B1 = int64(year/100)
-        B2 = 2-B1+int64(B1/4)
-        # Julian date
-        JD = (int64(365.25*(year+4716)) +int64(30.6001*(month+1)) + aqday + UT/24.0 + B2 - 1524.5)
-        D = JD - 2451545.0
-        degs = double(357.529 + 0.98560028*D) # Degrees
-        # Earth-Sun distance at given date (should be between 0.983 and 1.017)
-        ESd = 1.00014 - 0.01671*cosd(degs) - 0.00014*cosd(2*degs)
+    inc_ang = 90.0 - sunel
+    # Atmospheric spectral transmittance in solar path with solar
+    # zenith angle
+    TZ = cosd(inc_ang)
+    # Atmospheric spectral transmittance in view path with satellite
+    # view angle
+    TV = cosd(satview)
+    # ==================================================================
 
-        inc_ang = 90.0 - sunel
-        # Atmospheric spectral transmittance in solar path with solar
-        # zenith angle
-        TZ = cosd(inc_ang)
-        # Atmospheric spectral transmittance in view path with satellite
-        # view angle
-        TV = cosd(satview)
+    # ==================================================================
+    # === Calculate Rayleigh Path Radiance
+    # ==================================================================
+    # (Dash et al. 2012 and references therein)
+    # For the following equations, azimuths should be
+    # between -180 and +180 degrees
+    if sunaz > 180:
+        sunaz = sunaz - 360
+    end
+    if sensaz > 180:
+        sensaz = sensaz - 360
+    end
 
-        ## Calculate Rayleigh Path Radiance
-        # (Dash et al. 2012 and references therein)
-        # For the following equations, azimuths should be
-        # between -180 and +180 degrees
-        if sunaz > 180
-            sunaz = sunaz - 360
-        end
-        if sensaz > 180
-            sensaz = sensaz - 360
-        end
+    az = abs(sensaz - 180 - sunaz) # Relative azimuth angle
+    # Scattering angles
+    thetaplus = acosd(cosd(90-sunel)*cosd(90-satel) - sind(90-sunel)*sind(90-satel)*cosd(az))
 
-        az = abs(sensaz - 180 - sunaz) # Relative azimuth angle
-        # Scattering angles
-        thetaplus = acosd(cosd(90-sunel)*cosd(90-satel) - sind(90-sunel)*sind(90-satel)*cosd(az))
+    for d = 1:8
+        # Rayleigh scattering phase function (described in Bucholtz 1995)
+        Pr(d) = (3/(4*(1+2*gamma(d))))*((1+3*gamma(d))+(1-gamma(d))*cosd(thetaplus)^2)
+    end
 
-        for d = 1:8
-            # Rayleigh scattering phase function (described in Bucholtz 1995)
-            Pr(d) = (3/(4*(1+2*gamma(d))))*((1+3*gamma(d))+(1-gamma(d))*cosd(thetaplus)^2)
-        end
+    for d = 1:8
+        # Rayleigh optical thickness (assume std pressure of 1013.25 mb)
+        tau(d) =(0.008569*(cw(d)^-4)*(1 + 0.0113*(cw(d)^-2) + 0.00013*cw(d)^-4))
+    end
 
-        for d = 1:8
-            # Rayleigh optical thickness (assume std pressure of 1013.25 mb)
-            tau(d) =(0.008569*(cw(d)^-4)*(1 + 0.0113*(cw(d)^-2) + 0.00013*cw(d)^-4))
-        end
+    # Rayleigh calculation (Dash et al., 2012)
+    for d = 1:8
+        # Assume standard pressure (1013.25 mb)
+        ray_rad{1, 1}(d) = ((irr(1, d)/ESd)*1*tau(d)*Pr(d))/(4*pi*cosd(90-satel))
+    end
 
-        # Rayleigh calculation (Dash et al., 2012)
-        for d = 1:8
-            # Assume standard pressure (1013.25 mb)
-            ray_rad{1, 1}(d) = ((irr(1, d)/ESd)*1*tau(d)*Pr(d))/(4*pi*cosd(90-satel))
-        end
+    # rrs constant calculation (Kerr et al. 2018 and Mobley 1994)
+    G = single(1.56) # constant (Kerr eq. 3)
+    na = 1.00029 # Refractive index of air
+    nw = 1.34 # Refractive index seawater
+    # Incident angle for water-air from Snell's Law
+    inc_ang2 = real(asind(sind(90-satel)*nw/na))
+    # Transmission angle for air-water incident light from Snell's Law
+    trans_aw = real(asind(sind(inc_ang)*na/nw))
+    # Transmission angle for water-air incident light from Snell's Law
+    trans_wa = 90-satel
+    # Fresnel reflectance for air-water incident light (Mobley 1994)
+    pf1 = real(0.5*((sind(inc_ang - trans_aw)/(sind(inc_ang + trans_aw)))^2 + (tand(inc_ang - trans_aw)/(tand(inc_ang + trans_aw)))^2))
+    pf2 = real(0.5*((sind(inc_ang2 - trans_wa)/(sind(inc_ang2 + trans_wa)))^2 + (tand(inc_ang2 - trans_wa)/(tand(inc_ang2 + trans_wa)))^2))
+    # rrs constant (~0.52) from Mobley 1994
+    zeta = real(single((1-pf1)*(1-pf2)/(nw^2)))
+    # ==================================================================
 
-        # rrs constant calculation (Kerr et al. 2018 and Mobley 1994)
-        G = single(1.56) # constant (Kerr eq. 3)
-        na = 1.00029 # Refractive index of air
-        nw = 1.34 # Refractive index seawater
-        # Incident angle for water-air from Snell's Law
-        inc_ang2 = real(asind(sind(90-satel)*nw/na))
-        # Transmission angle for air-water incident light from Snell's Law
-        trans_aw = real(asind(sind(inc_ang)*na/nw))
-        # Transmission angle for water-air incident light from Snell's Law
-        trans_wa = 90-satel
-        # Fresnel reflectance for air-water incident light (Mobley 1994)
-        pf1 = real(0.5*((sind(inc_ang - trans_aw)/(sind(inc_ang + trans_aw)))^2 + (tand(inc_ang - trans_aw)/(tand(inc_ang + trans_aw)))^2))
-        pf2 = real(0.5*((sind(inc_ang2 - trans_wa)/(sind(inc_ang2 + trans_wa)))^2 + (tand(inc_ang2 - trans_wa)/(tand(inc_ang2 + trans_wa)))^2))
-        # rrs constant (~0.52) from Mobley 1994
-        zeta = real(single((1-pf1)*(1-pf2)/(nw^2)))
+    # Adjust file size: Input file (A) warped may contain more or fewer
+    # columns/rows than original NITF file, and some may be corrupt.
+    sz(1) = min(szA(1), szB(1))
+    sz(2) = min(szA(2), szB(2))
+    sz(3) = 8
 
-
-        # Adjust file size: Input file (A) warped may contain more or fewer
-        # columns/rows than original NITF file, and some may be corrupt.
-        sz(1) = min(szA(1), szB(1))
-        sz(2) = min(szA(2), szB(2))
-        sz(3) = 8
-
-            ## Assign NaN to no-data pixels and radiometrically calibrate and
-            # convert to Rrs
-            # Create empty matrix for Rrs output
-            Rrs = single(zeros(szA(1), szA(2), 8))
-            for j = 1:sz(1) # Assign NaN to pixels of no data
-                # If a pixel contains data values other than "zero" or
-                # "two thousand and forty seven" in any band, it is calibrated;
-                # otherwise, it is considered "no-data" - this avoids a
-                # problem created during the orthorectification process
-                # wherein reprojecting the image may resample data
-                for k = 1:sz(2)
-                    if (
-                        (A(j, k, 1)) ~= 0
-                        && (A(j, k, 1)) ~= 2047 || (A(j, k, 2)) ~= 0
-                        && (A(j, k, 2)) ~= 2047 || (A(j, k, 3)) ~= 0
-                        && (A(j, k, 3)) ~= 2047 || (A(j, k, 4)) ~= 0
-                        && (A(j, k, 4)) ~= 2047 || (A(j, k, 5)) ~= 0
-                        && (A(j, k, 5)) ~= 2047 || (A(j, k, 6)) ~= 0
-                        && (A(j, k, 6)) ~= 2047 || (A(j, k, 7)) ~= 0
-                        && (A(j, k, 7)) ~= 2047 || (A(j, k, 8)) ~= 0
-                        && (A(j, k, 8)) ~= 2047
-                    ):
-                        for d = 1:8
-                            # Radiometrically calibrate and convert to Rrs
-                            # (adapted from Radiometric Use of
-                            # WorldView-2 Imagery(
-                            Rrs(j, k, d) = single((pi*((single(A(j, k, d))*kf(d, 1)/ebw(1, d)) - ray_rad{1, 1}(1, d))*ESd^2)/(irr(1, d)*TZ*TV))
-                        end
-                    else Rrs(j, k, :) = NaN
-                    end
+    ## Assign NaN to no-data pixels and radiometrically calibrate and
+    # convert to Rrs
+    # Create empty matrix for Rrs output
+    Rrs = single(zeros(szA(1), szA(2), 8))
+    for j = 1:sz(1):
+        # Assign NaN to pixels of no data
+        # If a pixel contains data values other than "zero" or
+        # "two thousand and forty seven" in any band, it is calibrated;
+        # otherwise, it is considered "no-data" - this avoids a
+        # problem created during the orthorectification process
+        # wherein reprojecting the image may resample data
+        for k = 1:sz(2):
+            if (
+                (A(j, k, 1)) ~= 0
+                && (A(j, k, 1)) ~= 2047 || (A(j, k, 2)) ~= 0
+                && (A(j, k, 2)) ~= 2047 || (A(j, k, 3)) ~= 0
+                && (A(j, k, 3)) ~= 2047 || (A(j, k, 4)) ~= 0
+                && (A(j, k, 4)) ~= 2047 || (A(j, k, 5)) ~= 0
+                && (A(j, k, 5)) ~= 2047 || (A(j, k, 6)) ~= 0
+                && (A(j, k, 6)) ~= 2047 || (A(j, k, 7)) ~= 0
+                && (A(j, k, 7)) ~= 2047 || (A(j, k, 8)) ~= 0
+                && (A(j, k, 8)) ~= 2047
+            ):
+                for d = 1:8
+                    # Radiometrically calibrate and convert to Rrs
+                    # (adapted from Radiometric Use of
+                    # WorldView-2 Imagery(
+                    Rrs(j, k, d) = single((pi*((single(A(j, k, d))*kf(d, 1)/ebw(1, d)) - ray_rad{1, 1}(1, d))*ESd^2)/(irr(1, d)*TZ*TV))
                 end
+            else Rrs(j, k, :) = NaN
             end
+        end
+    end
 
-            clear A
+    clear A
 
-            ## Output reflectance image
-            if Rrs_write == 1
-                Z = [loc_out, id, '_', loc, '_Rrs']
-                geotiffwrite(Z, Rrs, R(1, 1), 'CoordRefSysCode', coor_sys)
-            end
+    ## Output reflectance image
+    if Rrs_write == 1:
+        Z = [loc_out, id, '_', loc, '_Rrs']
+        geotiffwrite(Z, Rrs, R(1, 1), 'CoordRefSysCode', coor_sys)
+    end
 
-    if d_t > 0 # Run DT and/or rrs conversion; otherwise end
+    if d_t > 0:
+        # Run DT and/or rrs conversion; otherwise end
 
         # Calculate Kd (water column attenuation coefficient) from
         # Chuanmin Hu's Rrs_Kd_Model.xlsx sheet
@@ -282,19 +295,36 @@ for z in range(sz_files):
 #         c2 = 4.18
 #         c3 = 0.52
 #         c4 = 10.8
-#          v2 = [0.023277868 0.020883561 0.018975346 0.017605058 0.016771098 0.015875283 0.072734281 0.068046578] # bb (backscatter)
-#        v1 = [0.22024 0.142972 0.099157 0.286342 0.443809 1.491289 2.276262 2.223947] # at (total absorption) DEFAULT CHL (0.1 0.1 0.01 0.015 0.5)
-#         v1 = [0.069177389 0.041529229 0.061338823 0.268134177 0.411563873 1.489684614 2.275464564 2.22325881] # Belize test
-#         v2 = [0.023277868 0.020883561 0.018975346 0.017605058 0.016771098 0.015875283 0.049505144 0.046268752]
-#        v1 = [0.006921 0.013933 0.051193 0.264353 0.409819 1.489006 2.275336 2.223238] # at (total absorption) LOWER CHL
-#        v2 = [0.023277868 0.020883561 0.018975346 0.017605058 0.016771098 0.015875283 0.000869138 0.00067143] # bb (backscatter)
-#
-#         for b = 1:8
-#             Kd(b) = single((1+c1*sunzen)*v1(b)+c2*(1-c3*exp(-c4*v1(b)))*v2(b))
-#         end
+        v2 = [  # bb (backscatter)
+            0.023277868 0.020883561 0.018975346 0.017605058 0.016771098
+            0.015875283 0.072734281 0.068046578
+        ]
+        v1 = [  # at (total absorption) DEFAULT CHL (0.1 0.1 0.01 0.015 0.5)
+            0.22024 0.142972 0.099157 0.286342 0.443809 1.491289
+            2.276262 2.223947
+        ]
+        v1 = [  # Belize test
+            0.069177389 0.041529229 0.061338823 0.268134177 0.411563873
+            1.489684614 2.275464564 2.22325881
+        ]
+        v2 = [
+            0.023277868 0.020883561 0.018975346 0.017605058 0.016771098
+            0.015875283 0.049505144 0.046268752
+        ]
+        v1 = [  # at (total absorption) LOWER CHL
+            0.006921 0.013933 0.051193 0.264353 0.409819 1.489006
+            2.275336 2.223238
+        ]
+        v2 = [  # bb (backscatter)
+            0.023277868 0.020883561 0.018975346 0.017605058 0.016771098
+            0.015875283 0.000869138 0.00067143
+        ]
+
+        for b in range(1,8):
+            Kd(b) = single((1+c1*sunzen)*v1(b)+c2*(1-c3*exp(-c4*v1(b)))*v2(b))
+        end
 
 #         Kd = [0.036 0.037 0.075 0.32 0.484 1.416]
-
 
         ## Setup for Deglint, Bathymetry, and Decision Tree
         b = 1
@@ -310,26 +340,43 @@ for z in range(sz_files):
         for j = 1:sz(1)
             for k = 1:sz(2)
                 if isnan(Rrs(j, k, 1)) == 0
-                    num_pix = num_pix +1 # Count number of non-NaN pixels
-                    # Record coastal band value for use in cloud mask prediction
+                    num_pix = num_pix + 1 # Count number of non-NaN pixels
+                    # Record coastal band value for cloud mask prediction
                     c_val(num_pix) = Rrs(j, k, 1)
                     if (
-                        (Rrs(j, k, 7) - Rrs(j, k, 2))/(Rrs(j, k, 7) + Rrs(j, k, 2)) < 0.65
+                        (
+                            Rrs(j, k, 7) - Rrs(j, k, 2)) /
+                            (Rrs(j, k, 7) + Rrs(j, k, 2)
+                        ) < 0.65
                         && Rrs(j, k, 5) > Rrs(j, k, 4)
-                        && Rrs(j, k, 4) > Rrs(j, k, 3) # Sand & Developed
+                        && Rrs(j, k, 4) > Rrs(j, k, 3)  # Sand & Developed
                     ):
                         sum_SD(b) = sum(Rrs(j, k, 6:8))
                         b = b+1
                     # Identify vegetation (excluding grass)
-                    elseif (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) > 0.6 && Rrs(j, k, 7) > Rrs(j, k, 3)
-                        if ((Rrs(j, k, 7) - Rrs(j, k, 2))/(Rrs(j, k, 7) + Rrs(j, k, 2))) > 0.20 # Shadow filter
+                    elif (
+                        (
+                            Rrs(j, k, 8) - Rrs(j, k, 5)) /
+                            (Rrs(j, k, 8) + Rrs(j, k, 5)
+                        ) > 0.6
+                        && Rrs(j, k, 7) > Rrs(j, k, 3)
+                    ):
+                        if (  # Shadow filter
+                            (
+                                (Rrs(j, k, 7) - Rrs(j, k, 2)) /
+                                (Rrs(j, k, 7) + Rrs(j, k, 2))
+                            ) > 0.20
+                        ):
                             # Sum bands 3-5 for selected veg to distinguish
                             # wetland from upland
                             sum_veg(t) = sum(Rrs(j, k, 3:5))
                             sum_veg2(t) = sum(Rrs(j, k, 7:8))
                             # Compute difference of predicted B5 value from
                             # actual valute
-                            dead_veg(t) = (((Rrs(j, k, 7) - Rrs(j, k, 4))/3) + Rrs(j, k, 4)) - Rrs(j, k, 5)
+                            dead_veg(t) = (
+                                (((Rrs(j, k, 7) - Rrs(j, k, 4))/3)
+                                + Rrs(j, k, 4)) - Rrs(j, k, 5)
+                            )
                             t = t+1
                         end
                     elseif (  # Identify glint-free water
@@ -345,8 +392,12 @@ for z in range(sz_files):
                     ):
                         water(u, 1:8) = double(Rrs(j, k, :))
                         water_rrs(1:6) = Rrs(j, k, 1:6)./(zeta + G.*Rrs(j, k, 1:6))
-                        if water_rrs(4) > water_rrs(2) && water_rrs(4) < 0.12 && water_rrs(5) < water_rrs(3)
-                                sum_water_rrs(u) = sum(water_rrs(3:5))
+                        if (
+                            water_rrs(4) > water_rrs(2)
+                            && water_rrs(4) < 0.12
+                            && water_rrs(5) < water_rrs(3)
+                        ):
+                            sum_water_rrs(u) = sum(water_rrs(3:5))
                         end
                         u = u+1
                         # NDGI to identify glinted water pixels
@@ -359,27 +410,28 @@ for z in range(sz_files):
                             && Rrs(j, k, 4)<Rrs(j, k, 3)
                         ):
                             v = v+1
-                            water(u, 9) = 2 # Mark array2<array1 glinted pixels
+                            water(u, 9) = 2  # Mark array2<array1 glinted pixels
                         elseif(
                             Rrs(j, k, 8) > Rrs(j, k, 7)
-                            && Rrs(j, k, 6)>Rrs(j, k, 7)
-                            && Rrs(j, k, 6)>Rrs(j, k, 5)
-                            && Rrs(j, k, 4)>Rrs(j, k, 5)
-                            && Rrs(j, k, 4)>Rrs(j, k, 3)
+                            && Rrs(j, k, 6) > Rrs(j, k, 7)
+                            && Rrs(j, k, 6) > Rrs(j, k, 5)
+                            && Rrs(j, k, 4) > Rrs(j, k, 5)
+                            && Rrs(j, k, 4) > Rrs(j, k, 3)
                         ):
                             v = v+1
-                            water(u, 9) = 3 # Mark array2>array1 glinted pixels
-                        else water(u, 9) = 1 # Mark records of glint-free water
+                            water(u, 9) = 3  # Mark array2>array1 glinted pixels
+                        else:
+                            water(u, 9) = 1  # Mark records of glint-free water
                         end
                     elseif(
-                        Rrs(j, k, 8)<Rrs(j, k, 7)
-                        && Rrs(j, k, 6)<Rrs(j, k, 7)
-                        && Rrs(j, k, 6)<Rrs(j, k, 5)
-                        && Rrs(j, k, 4)<Rrs(j, k, 5)
-                        && Rrs(j, k, 4)<Rrs(j, k, 3)
+                        Rrs(j, k, 8) < Rrs(j, k, 7)
+                        && Rrs(j, k, 6) < Rrs(j, k, 7)
+                        && Rrs(j, k, 6) < Rrs(j, k, 5)
+                        && Rrs(j, k, 4) < Rrs(j, k, 5)
+                        && Rrs(j, k, 4) < Rrs(j, k, 3)
                     ):
                         water(u, 1:8) = double(Rrs(j, k, :))
-                        water(u, 9) = 2 # Mark array2<array1 glinted pixels
+                        water(u, 9) = 2  # Mark array2<array1 glinted pixels
                         u = u+1
                         v = v+1
                     elseif (
@@ -430,7 +482,7 @@ for z in range(sz_files):
 
         idx_gf = find(water(:, 9)==1) # Glint-free water
 
-        if v > 0.25*u
+        if v > 0.25 * u:
             Update = 'Deglinting'
             id2 = 'deglinted'
 #             idx_w1 = find(water(:, 9)==2) # Glinted water array1>array2
@@ -742,8 +794,3 @@ for z in range(sz_files):
     end # If dt = 1
    end # If dt>0
 end
-
-
-    wtime = toc
-    time_min = wtime/60
-    fprintf(1, 'Matlab CPU time (minutes) = #f\n',  time_min)
