@@ -48,20 +48,27 @@ matfiles2 = glob(path.join(
 sz_files = len(matfiles)
 
 # === Assign constants for all images
-# Effective Bandwidth per band (nm converted to um units; from IMD metadata files)
-ebw = 0.001*[47.3 54.3 63.0 37.4 57.4 39.3 98.9 99.6]
+# Effective Bandwidth per band
+# (nm converted to um units; from IMD metadata files)
+ebw = [e * 0.001 * e for e in [47.3, 54.3, 63.0, 37.4, 57.4, 39.3, 98.9, 99.6]]
 # Band-averaged Solar Spectral Irradiance (W/m2/um units)
-irr = [1758.2229 1974.2416 1856.4104 1738.4791 1559.4555 1342.0695 1069.7302 861.2866]
-# Center wavelength (used for Rayleigh correction; from Radiometric Use of WorldView-2 Imagery)
-cw = [.4273 .4779 .5462 .6078 .6588 .7237 .8313 .9080]
+irr = [
+    1758.2229, 1974.2416, 1856.4104, 1738.4791, 1559.4555, 1342.0695,
+    1069.7302, 861.2866
+]
+# Center wavelength
+# (used for Rayleigh correction; from Radiometric Use of WorldView-2 Imagery)
+cw = [.4273, .4779, .5462, .6078, .6588, .7237, .8313, .9080]
 # Factor used in Rayleigh Phase Function equation (Bucholtz 1995)
-gamma = 0.01*[1.499 1.471 1.442 1.413 1.413 1.413 1.384 1.384]
+gamma = [
+    g * 0.01 for g in [1.499, 1.471, 1.442, 1.413, 1.413, 1.413, 1.384, 1.384]
+]
 
-for z = 1  #:sz_files;
-id = matfiles(z, 1).name(1:19)
+for z in range(sz_files):
+    id = matfiles[z].name(1:19)
 
-X = [loc_in, matfiles(z, 1).name]  # Change location of MS Tiff images here
-Z = [met_in, matfiles2(z, 1).name]  # Change location of XML files here
+    X = [loc_in, matfiles(z, 1).name]  # Change location of MS Tiff images here
+    Z = [met_in, matfiles2(z, 1).name]  # Change location of XML files here
 
     [A, R] = geotiffread(X)
     szA = size(A)
