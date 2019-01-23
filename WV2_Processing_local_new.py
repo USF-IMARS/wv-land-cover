@@ -14,6 +14,7 @@
 # Outputs images as GEOTIFF files with geospatial information.
 
 from os import path
+from glob import glob
 
 ## Assign input and output locations
 loc = 'RB'  # Typically the estuary acronym
@@ -28,13 +29,14 @@ DATA_DIR = '/home1/mmccarthy/Matt/USF/Other/NERRS_Mapping/Processing'
 loc_in = DATA_DIR + '/Ortho/'
 met_in = DATA_DIR + '/Raw/'
 loc_out = DATA_DIR + '/Output/'
-matfiles = path.join(
+# === get list of all product files in directory
+matfiles = glob(path.join(
     'Matt', 'USF', 'Other', 'NERRS_Mapping', 'Processing', 'Ortho', '*.tif'
-)
+))
 # TODO: Revise this to find both all-caps and all lower-case extensions
-matfiles2 = path.join(
+matfiles2 = glob(path.join(
     'Matt', 'USF', 'Other', 'NERRS_Mapping', 'Processing', 'Raw', '*.xml'
-)
+))
 
 # loc_in = ['/home1/mmccarthy/Matt/USF/Other/Seagrass/test/']
 # met_in = ['/home1/mmccarthy/Matt/USF/Other/Seagrass/test/']
@@ -43,7 +45,7 @@ matfiles2 = path.join(
 # matfiles2 = path.join'Matt', 'USF', 'Other', 'Seagrass', 'test', '*.xml'))
 
 
-sz_files = size(matfiles(:, 1), 1)
+sz_files = len(matfiles)
 
 # === Assign constants for all images
 # Effective Bandwidth per band (nm converted to um units; from IMD metadata files)
