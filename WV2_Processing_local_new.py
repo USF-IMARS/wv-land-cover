@@ -224,8 +224,8 @@ for z in range(sz_files):
     B2 = 2-B1+int64(B1/4)
     # Julian date
     JD = (
-        int64(365.25*(year+4716)) + int64(30.6001*(month+1)) + aqday + UT/24.0
-        + B2 - 1524.5
+        int64(365.25*(year+4716)) + int64(30.6001*(month+1)) + aqday +
+        UT/24.0 + B2 - 1524.5
     )
     D = JD - 2451545.0
     degs = double(357.529 + 0.98560028*D)  # Degrees
@@ -263,8 +263,8 @@ for z in range(sz_files):
     for d in range(8):
         # Rayleigh scattering phase function (described in Bucholtz 1995)
         Pr(d) = (
-            (3/(4*(1+2*gamma(d))))
-            * ((1+3*gamma(d))+(1-gamma(d))*cosd(thetaplus)**2)
+            (3/(4*(1+2*gamma(d)))) *
+            ((1+3*gamma(d))+(1-gamma(d))*cosd(thetaplus)**2)
         )
     end
 
@@ -295,12 +295,12 @@ for z in range(sz_files):
     trans_wa = 90-satel
     # Fresnel reflectance for air-water incident light (Mobley 1994)
     pf1 = real(0.5*(
-        (sind(inc_ang - trans_aw)/(sind(inc_ang + trans_aw)))**2
-        + (tand(inc_ang - trans_aw)/(tand(inc_ang + trans_aw)))**2
+        (sind(inc_ang - trans_aw)/(sind(inc_ang + trans_aw)))**2 +
+        (tand(inc_ang - trans_aw)/(tand(inc_ang + trans_aw)))**2
     ))
     pf2 = real(0.5*(
-        (sind(inc_ang2 - trans_wa)/(sind(inc_ang2 + trans_wa)))**2
-        + (tand(inc_ang2 - trans_wa)/(tand(inc_ang2 + trans_wa)))**2
+        (sind(inc_ang2 - trans_wa)/(sind(inc_ang2 + trans_wa)))**2 +
+        (tand(inc_ang2 - trans_wa)/(tand(inc_ang2 + trans_wa)))**2
     ))
     # rrs constant (~0.52) from Mobley 1994
     zeta = real(single((1-pf1)*(1-pf2)/(nw**2)))
@@ -325,21 +325,28 @@ for z in range(sz_files):
         # wherein reprojecting the image may resample data
         for k in range(sz(2)):
             if (
-                (A(j, k, 1)) != 0
-                and (A(j, k, 1)) != 2047 or (A(j, k, 2)) != 0
-                and (A(j, k, 2)) != 2047 or (A(j, k, 3)) != 0
-                and (A(j, k, 3)) != 2047 or (A(j, k, 4)) != 0
-                and (A(j, k, 4)) != 2047 or (A(j, k, 5)) != 0
-                and (A(j, k, 5)) != 2047 or (A(j, k, 6)) != 0
-                and (A(j, k, 6)) != 2047 or (A(j, k, 7)) != 0
-                and (A(j, k, 7)) != 2047 or (A(j, k, 8)) != 0
-                and (A(j, k, 8)) != 2047
+                (A(j, k, 1)) != 0 and
+                (A(j, k, 1)) != 2047 or (A(j, k, 2)) != 0 and
+                (A(j, k, 2)) != 2047 or (A(j, k, 3)) != 0 and
+                (A(j, k, 3)) != 2047 or (A(j, k, 4)) != 0 and
+                (A(j, k, 4)) != 2047 or (A(j, k, 5)) != 0 and
+                (A(j, k, 5)) != 2047 or (A(j, k, 6)) != 0 and
+                (A(j, k, 6)) != 2047 or (A(j, k, 7)) != 0 and
+                (A(j, k, 7)) != 2047 or (A(j, k, 8)) != 0 and
+                (A(j, k, 8)) != 2047
             ):
                 for d in range(8):
                     # Radiometrically calibrate and convert to Rrs
                     # (adapted from Radiometric Use of
                     # WorldView-2 Imagery(
-                    Rrs(j, k, d) = single((pi*((single(A(j, k, d))*kf(d, 1)/ebw(1, d)) - ray_rad{1, 1}(1, d))*ESd**2)/(irr(1, d)*TZ*TV))
+                    Rrs(j, k, d) = single(
+                        (
+                            pi*(
+                                (single(A(j, k, d))*kf(d, 1)/ebw(1, d)) -
+                                ray_rad{1, 1}(1, d)
+                            )*ESd**2
+                        ) / (irr(1, d)*TZ*TV)
+                    )
                 end
             else Rrs(j, k, :) = NaN
             end
@@ -418,9 +425,9 @@ for z in range(sz_files):
                         (
                             (Rrs(j, k, 7) - Rrs(j, k, 2)) /
                             (Rrs(j, k, 7) + Rrs(j, k, 2))
-                        ) < 0.65
-                        and Rrs(j, k, 5) > Rrs(j, k, 4)
-                        and Rrs(j, k, 4) > Rrs(j, k, 3)  # Sand & Developed
+                        ) < 0.65 and
+                        Rrs(j, k, 5) > Rrs(j, k, 4) and
+                        Rrs(j, k, 4) > Rrs(j, k, 3)  # Sand & Developed
                     ):
                         sum_SD(b) = sum(Rrs(j, k, 6:8))
                         b = b+1
@@ -429,8 +436,8 @@ for z in range(sz_files):
                         (
                             (Rrs(j, k, 8) - Rrs(j, k, 5)) /
                             (Rrs(j, k, 8) + Rrs(j, k, 5))
-                        ) > 0.6
-                        and Rrs(j, k, 7) > Rrs(j, k, 3)
+                        ) > 0.6 and
+                        Rrs(j, k, 7) > Rrs(j, k, 3)
                     ):
                         if (  # Shadow filter
                             (
@@ -446,22 +453,22 @@ for z in range(sz_files):
                             # actual valute
                             dead_veg(t) = (
                                 (
-                                    ((Rrs(j, k, 7) - Rrs(j, k, 4))/3)
-                                    + Rrs(j, k, 4)
+                                    ((Rrs(j, k, 7) - Rrs(j, k, 4))/3) +
+                                    Rrs(j, k, 4)
                                 ) - Rrs(j, k, 5)
                             )
                             t = t+1
                         end
                     elseif (  # Identify glint-free water
-                        Rrs(j, k, 8) < 0.11
-                        and Rrs(j, k, 1) > 0
-                        and Rrs(j, k, 2) > 0
-                        and Rrs(j, k, 3) > 0
-                        and Rrs(j, k, 4) > 0
-                        and Rrs(j, k, 5) > 0
-                        and Rrs(j, k, 6) > 0
-                        and Rrs(j, k, 7) > 0
-                        and Rrs(j, k, 8) > 0
+                        Rrs(j, k, 8) < 0.11 and
+                        Rrs(j, k, 1) > 0 and
+                        Rrs(j, k, 2) > 0 and
+                        Rrs(j, k, 3) > 0 and
+                        Rrs(j, k, 4) > 0 and
+                        Rrs(j, k, 5) > 0 and
+                        Rrs(j, k, 6) > 0 and
+                        Rrs(j, k, 7) > 0 and
+                        Rrs(j, k, 8) > 0
                     ):
                         water(u, 1:8) = double(Rrs(j, k, :))
                         water_rrs(1:6) = Rrs(j, k, 1:6)./(zeta + G.*Rrs(j, k, 1:6))
@@ -476,43 +483,43 @@ for z in range(sz_files):
                         # NDGI to identify glinted water pixels
                         # (some confusion w/ clouds)
                         if (
-                            Rrs(j, k, 8) < Rrs(j, k, 7)
-                            and Rrs(j, k, 6) < Rrs(j, k, 7)
-                            and Rrs(j, k, 6) < Rrs(j, k, 5)
-                            and Rrs(j, k, 4) < Rrs(j, k, 5)
-                            and Rrs(j, k, 4) < Rrs(j, k, 3)
+                            Rrs(j, k, 8) < Rrs(j, k, 7) and
+                            Rrs(j, k, 6) < Rrs(j, k, 7) and
+                            Rrs(j, k, 6) < Rrs(j, k, 5) and
+                            Rrs(j, k, 4) < Rrs(j, k, 5) and
+                            Rrs(j, k, 4) < Rrs(j, k, 3)
                         ):
                             v = v+1
-                            water(u, 9) = 2  # Mark array2<array1 glinted pixels
+                            water(u, 9) = 2  # Mark array2<array1 glinted pixls
                         elseif(
-                            Rrs(j, k, 8) > Rrs(j, k, 7)
-                            and Rrs(j, k, 6) > Rrs(j, k, 7)
-                            and Rrs(j, k, 6) > Rrs(j, k, 5)
-                            and Rrs(j, k, 4) > Rrs(j, k, 5)
-                            and Rrs(j, k, 4) > Rrs(j, k, 3)
+                            Rrs(j, k, 8) > Rrs(j, k, 7) and
+                            Rrs(j, k, 6) > Rrs(j, k, 7) and
+                            Rrs(j, k, 6) > Rrs(j, k, 5) and
+                            Rrs(j, k, 4) > Rrs(j, k, 5) and
+                            Rrs(j, k, 4) > Rrs(j, k, 3)
                         ):
                             v = v+1
-                            water(u, 9) = 3  # Mark array2>array1 glinted pixels
+                            water(u, 9) = 3  # Mark array2>array1 glinted pixls
                         else:
                             water(u, 9) = 1  # Mark records of glint-free water
                         end
                     elseif(
-                        Rrs(j, k, 8) < Rrs(j, k, 7)
-                        and Rrs(j, k, 6) < Rrs(j, k, 7)
-                        and Rrs(j, k, 6) < Rrs(j, k, 5)
-                        and Rrs(j, k, 4) < Rrs(j, k, 5)
-                        and Rrs(j, k, 4) < Rrs(j, k, 3)
+                        Rrs(j, k, 8) < Rrs(j, k, 7) and
+                        Rrs(j, k, 6) < Rrs(j, k, 7) and
+                        Rrs(j, k, 6) < Rrs(j, k, 5) and
+                        Rrs(j, k, 4) < Rrs(j, k, 5) and
+                        Rrs(j, k, 4) < Rrs(j, k, 3)
                     ):
                         water(u, 1:8) = double(Rrs(j, k, :))
                         water(u, 9) = 2  # Mark array2<array1 glinted pixels
                         u = u+1
                         v = v+1
                     elseif (
-                        Rrs(j, k, 8) > Rrs(j, k, 7)
-                        and Rrs(j, k, 6) > Rrs(j, k, 7)
-                        and Rrs(j, k, 6) > Rrs(j, k, 5)
-                        and Rrs(j, k, 4) > Rrs(j, k, 5)
-                        and Rrs(j, k, 4) > Rrs(j, k, 3)
+                        Rrs(j, k, 8) > Rrs(j, k, 7) and
+                        Rrs(j, k, 6) > Rrs(j, k, 7) and
+                        Rrs(j, k, 6) > Rrs(j, k, 5) and
+                        Rrs(j, k, 4) > Rrs(j, k, 5) and
+                        Rrs(j, k, 4) > Rrs(j, k, 3)
                     ):
                         water(u, 9) = 3  # Mark array2>array1 glinted pixels
                         water(u, 1:8) = double(Rrs(j, k, :))
@@ -568,7 +575,7 @@ for z in range(sz_files):
                             if b == 1 or b == 4 or b == 6:
                                 # linear regression:
                                 slope1 = water(:, b)\water(:, 8)
-                               else slope1 = water(:, b)\water(:, 7)
+                            else slope1 = water(:, b)\water(:, 7)
                             end
                     E_glint(1, b) = single(slope1)
                     end
