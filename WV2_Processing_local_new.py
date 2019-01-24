@@ -459,7 +459,7 @@ for z in range(sz_files):
                             )
                             t = t+1
                         end
-                    elseif (  # Identify glint-free water
+                    elif (  # Identify glint-free water
                         Rrs(j, k, 8) < 0.11 and
                         Rrs(j, k, 1) > 0 and
                         Rrs(j, k, 2) > 0 and
@@ -491,7 +491,7 @@ for z in range(sz_files):
                         ):
                             v = v+1
                             water(u, 9) = 2  # Mark array2<array1 glinted pixls
-                        elseif(
+                        elif(
                             Rrs(j, k, 8) > Rrs(j, k, 7) and
                             Rrs(j, k, 6) > Rrs(j, k, 7) and
                             Rrs(j, k, 6) > Rrs(j, k, 5) and
@@ -503,7 +503,7 @@ for z in range(sz_files):
                         else:
                             water(u, 9) = 1  # Mark records of glint-free water
                         end
-                    elseif(
+                    elif(
                         Rrs(j, k, 8) < Rrs(j, k, 7) and
                         Rrs(j, k, 6) < Rrs(j, k, 7) and
                         Rrs(j, k, 6) < Rrs(j, k, 5) and
@@ -514,7 +514,7 @@ for z in range(sz_files):
                         water(u, 9) = 2  # Mark array2<array1 glinted pixels
                         u = u+1
                         v = v+1
-                    elseif (
+                    elif (
                         Rrs(j, k, 8) > Rrs(j, k, 7) and
                         Rrs(j, k, 6) > Rrs(j, k, 7) and
                         Rrs(j, k, 6) > Rrs(j, k, 5) and
@@ -525,7 +525,7 @@ for z in range(sz_files):
                         water(u, 1:8) = double(Rrs(j, k, :))
                         u = u + 1
                         v = v + 1
-                    # elseif (
+                    # elif (
                     #     (Rrs(j,k,4)-Rrs(j,k,8))/(Rrs(j,k,4)+Rrs(j,k,8)) < 0.55
                     #     and Rrs(j,k,8) < 0.2
                     #     and (Rrs(j,k,7)-Rrs(j,k,2))/(Rrs(j,k,7)+Rrs(j,k,2)) < 0.1
@@ -690,7 +690,7 @@ for z in range(sz_files):
         end
 
 
-    elseif d_t == 2 # Execute Deglinting rrs, Bathymetery, and Decision Tree
+    elif d_t == 2 # Execute Deglinting rrs, Bathymetery, and Decision Tree
         update = 'Running DT'
               for j = 1:szA(1)
                for k = 1:szA(2)
@@ -699,29 +699,29 @@ for z in range(sz_files):
                        if (Rrs(j, k, 7) - Rrs(j, k, 2))/(Rrs(j, k, 7) + Rrs(j, k, 2)) < 0.60 and Rrs(j, k, 5) > Rrs(j, k, 4) and Rrs(j, k, 4) > Rrs(j, k, 3)
                             if Rrs(j, k, 7) < Rrs(j, k, 2) and Rrs(j, k, 8) > Rrs(j, k, 5)
                                 map(j, k) = 0 # Shadow
-                            elseif (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.01 and Rrs(j, k, 8) > 0.05 # Buildings & bright sand
+                            elif (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.01 and Rrs(j, k, 8) > 0.05 # Buildings & bright sand
                                 if BW(j, k) == 1
                                     map(j, k) = 11 # Developed
-                                elseif sum(Rrs(j, k, 6:8)) < avg_SD_sum
+                                elif sum(Rrs(j, k, 6:8)) < avg_SD_sum
                                     map(j, k) = 22 # Mud (intertidal?)
                                 else map(j, k) = 21 # Beach/sand/soil
                                 end
-                            elseif Rrs(j, k, 5) > (Rrs(j, k, 2)+((Rrs(j, k, 7)-Rrs(j, k, 2))/5)*2)
+                            elif Rrs(j, k, 5) > (Rrs(j, k, 2)+((Rrs(j, k, 7)-Rrs(j, k, 2))/5)*2)
                                 map(j, k) = 21 # Beach/sand/soil
-                            elseif Rrs(j, k, 5) < (((Rrs(j, k, 7) - Rrs(j, k, 2))/5)*3+Rrs(j, k, 2))*0.60 and Rrs(j, k, 7) > 0.2
+                            elif Rrs(j, k, 5) < (((Rrs(j, k, 7) - Rrs(j, k, 2))/5)*3+Rrs(j, k, 2))*0.60 and Rrs(j, k, 7) > 0.2
                                 map(j, k) = 31 # Marsh grass
                             else map(j, k) = 22 # Mud
                             end
-                       elseif Rrs(j, k, 2) > Rrs(j, k, 3) and Rrs(j, k, 7) > Rrs(j, k, 3) and Rrs(j, k, 2) < 0.1 and (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.20or Rrs(j, k, 8) > 0.05 and Rrs(j, k, 7) > Rrs(j, k, 2) and (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.1
+                       elif Rrs(j, k, 2) > Rrs(j, k, 3) and Rrs(j, k, 7) > Rrs(j, k, 3) and Rrs(j, k, 2) < 0.1 and (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.20or Rrs(j, k, 8) > 0.05 and Rrs(j, k, 7) > Rrs(j, k, 2) and (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.1
                            if BW(j, k) == 1
                                map(j, k) = 11 # Shadow/Developed
                            else map(j, k) = 22 # Mud
                            end
                        ## Vegetation
-                       elseif (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) > 0.20 and Rrs(j, k, 7) > Rrs(j, k, 3) # Vegetation pixels (NDVI)
+                       elif (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) > 0.20 and Rrs(j, k, 7) > Rrs(j, k, 3) # Vegetation pixels (NDVI)
                            if Rrs(j, k, 7) > Rrs(j, k, 2) and ((Rrs(j, k, 7) - Rrs(j, k, 2))/(Rrs(j, k, 7) + Rrs(j, k, 2))) < 0.20 and (Rrs(j, k, 7) - Rrs(j, k, 8))/(Rrs(j, k, 7) + Rrs(j, k, 8)) > 0.01 # Shadowed-vegetation filter (B7/B8 ratio excludes marsh, which tends to have very similar values here)
                                map(j, k) = 0 # Shadow
-                           elseif sum(Rrs(j, k, 3:5)) < avg_veg_sum
+                           elif sum(Rrs(j, k, 3:5)) < avg_veg_sum
                                 # Agriculture filter based on elevated Blue
                                 # band values
                                 if ((Rrs(j, k, 2) - Rrs(j, k, 5))/(Rrs(j, k, 2) + Rrs(j, k, 5))) < 0.4
@@ -732,7 +732,7 @@ for z in range(sz_files):
                                     end
                                 else map(j, k) = 32 # Forested Upland (most likely agriculture)
                                 end
-                           elseif sum(Rrs(j, k, 7:8)) < avg_mang_sum
+                           elif sum(Rrs(j, k, 7:8)) < avg_mang_sum
                                # Agriculture filter based on elevated Blue band values
                                if ((Rrs(j, k, 2) - Rrs(j, k, 5))/(Rrs(j, k, 2) + Rrs(j, k, 5))) < 0.4
                                    if Rrs(j, k, 7) > 0.12 and sum(Rrs(j, k, 7:8))/sum(Rrs(j, k, 3:5)) > 2
@@ -741,17 +741,17 @@ for z in range(sz_files):
                                    end
                                 else map(j, k) = 32 # Forested Upland (most likely agriculture)
                                 end
-                           elseif (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) > 0.65 # NDVI for high upland values
+                           elif (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) > 0.65 # NDVI for high upland values
                                 map(j, k) = 32 # Upland Forest/Grass
-                           elseif Rrs(j, k, 5) > (((Rrs(j, k, 7) - Rrs(j, k, 2))/5)*3+Rrs(j, k, 2))*0.60 and Rrs(j, k, 7) < 0.2 # Difference of B5 from predicted B5 by slope of B7:B4 to distinguish marsh (old: live vs dead trees/grass/marsh)
+                           elif Rrs(j, k, 5) > (((Rrs(j, k, 7) - Rrs(j, k, 2))/5)*3+Rrs(j, k, 2))*0.60 and Rrs(j, k, 7) < 0.2 # Difference of B5 from predicted B5 by slope of B7:B4 to distinguish marsh (old: live vs dead trees/grass/marsh)
                                map(j, k) = 31 # Marsh grass
-                           elseif Rrs(j, k, 7) < 0.12
+                           elif Rrs(j, k, 7) < 0.12
                                map(j, k) = 30 # Dead vegetation
                            else
                                map(j, k) = 32 # Upland Forest/Grass
                            end
                        ## Water
-                       elseif Rrs(j, k, 8)<0.2 and Rrs(j, k, 8)>0or Rrs(j, k, 8)<Rrs(j, k, 7) and Rrs(j, k, 6)<Rrs(j, k, 7) and Rrs(j, k, 6)<Rrs(j, k, 5) and Rrs(j, k, 4)<Rrs(j, k, 5) and Rrs(j, k, 4)<Rrs(j, k, 3) and Rrs(j, k, 8)>0 or Rrs(j, k, 8)>Rrs(j, k, 7) and Rrs(j, k, 6)>Rrs(j, k, 7) and Rrs(j, k, 6)>Rrs(j, k, 5) and Rrs(j, k, 4)>Rrs(j, k, 5) and Rrs(j, k, 4)>Rrs(j, k, 3) and Rrs(j, k, 8)>0# Identify all water (glinted and glint-free)
+                       elif Rrs(j, k, 8)<0.2 and Rrs(j, k, 8)>0or Rrs(j, k, 8)<Rrs(j, k, 7) and Rrs(j, k, 6)<Rrs(j, k, 7) and Rrs(j, k, 6)<Rrs(j, k, 5) and Rrs(j, k, 4)<Rrs(j, k, 5) and Rrs(j, k, 4)<Rrs(j, k, 3) and Rrs(j, k, 8)>0 or Rrs(j, k, 8)>Rrs(j, k, 7) and Rrs(j, k, 6)>Rrs(j, k, 7) and Rrs(j, k, 6)>Rrs(j, k, 5) and Rrs(j, k, 4)>Rrs(j, k, 5) and Rrs(j, k, 4)>Rrs(j, k, 3) and Rrs(j, k, 8)>0# Identify all water (glinted and glint-free)
 #                            map(j, k) = 5
 
                            if v > u*0.25
@@ -783,12 +783,12 @@ for z in range(sz_files):
                                 ## DT
                                if  Rrs(j, k, 6) < Rrs(j, k, 7)
                                    map(j, k) = 0 # Shadow
-                               elseif (Rrs(j, k, 3) - Rrs(j, k, 4))/(Rrs(j, k, 3) + Rrs(j, k, 4)) < 0.10 #(Rrs(j, k, 2) - Rrs(j, k, 4))/(Rrs(j, k, 2)+Rrs(j, k, 4)) < 0
+                               elif (Rrs(j, k, 3) - Rrs(j, k, 4))/(Rrs(j, k, 3) + Rrs(j, k, 4)) < 0.10 #(Rrs(j, k, 2) - Rrs(j, k, 4))/(Rrs(j, k, 2)+Rrs(j, k, 4)) < 0
                                     if Rrs(j, k, 4) > Rrs(j, k, 3) or Rrs(j, k, 5) > Rrs(j, k, 3)
                                         map(j, k) = 53 # Soft bottom
-                                    elseif sum(Rrs(j, k, 3:5)) > avg_water_sum and (Rrs(j, k, 5) - Rrs(j, k, 2))/(Rrs(j, k, 5) + Rrs(j, k, 2)) > 0.1 # NEW from 0.05
+                                    elif sum(Rrs(j, k, 3:5)) > avg_water_sum and (Rrs(j, k, 5) - Rrs(j, k, 2))/(Rrs(j, k, 5) + Rrs(j, k, 2)) > 0.1 # NEW from 0.05
                                         map(j, k) = 52 # Soft bottom
-                                    elseif Rrs(j, k, 4) > Rrs(j, k, 2) and (Rrs(j, k, 3) - Rrs(j, k, 6))/(Rrs(j, k, 3) + Rrs(j, k, 6)) < 0.60 # Separate seagrass from dark water NEW
+                                    elif Rrs(j, k, 4) > Rrs(j, k, 2) and (Rrs(j, k, 3) - Rrs(j, k, 6))/(Rrs(j, k, 3) + Rrs(j, k, 6)) < 0.60 # Separate seagrass from dark water NEW
                                         if (Rrs(j, k, 3) - Rrs(j, k, 5))/(Rrs(j, k, 3) + Rrs(j, k, 5)) > 0.10 # Separate seagrass from turbid water NEW
                                             map(j, k) = 54 # Seagrass
                                         else map(j, k) = 55 # Turbid water
@@ -814,12 +814,12 @@ for z in range(sz_files):
                                 ## DT
                                if  Rrs(j, k, 6) < Rrs(j, k, 7)
                                    map(j, k) = 0 # Shadow
-                               elseif (Rrs(j, k, 3) - Rrs(j, k, 4))/(Rrs(j, k, 3) + Rrs(j, k, 4)) < 0.10 #(Rrs(j, k, 2) - Rrs(j, k, 4))/(Rrs(j, k, 2)+Rrs(j, k, 4)) < 0
+                               elif (Rrs(j, k, 3) - Rrs(j, k, 4))/(Rrs(j, k, 3) + Rrs(j, k, 4)) < 0.10 #(Rrs(j, k, 2) - Rrs(j, k, 4))/(Rrs(j, k, 2)+Rrs(j, k, 4)) < 0
                                     if Rrs(j, k, 4) > Rrs(j, k, 3) or Rrs(j, k, 5) > Rrs(j, k, 3)
                                         map(j, k) = 53 # Soft bottom
-                                    elseif sum(Rrs(j, k, 3:5)) > avg_water_sum and (Rrs(j, k, 5) - Rrs(j, k, 2))/(Rrs(j, k, 5) + Rrs(j, k, 2)) > 0.1
+                                    elif sum(Rrs(j, k, 3:5)) > avg_water_sum and (Rrs(j, k, 5) - Rrs(j, k, 2))/(Rrs(j, k, 5) + Rrs(j, k, 2)) > 0.1
                                         map(j, k) = 52 # Soft bottom
-                                    elseif Rrs(j, k, 4) > Rrs(j, k, 2) and (Rrs(j, k, 3) - Rrs(j, k, 6))/(Rrs(j, k, 3) + Rrs(j, k, 6)) < 0.60 # Separate seagrass from dark water
+                                    elif Rrs(j, k, 4) > Rrs(j, k, 2) and (Rrs(j, k, 3) - Rrs(j, k, 6))/(Rrs(j, k, 3) + Rrs(j, k, 6)) < 0.60 # Separate seagrass from dark water
                                         if (Rrs(j, k, 3) - Rrs(j, k, 5))/(Rrs(j, k, 3) + Rrs(j, k, 5)) > 0.10 # Separate seagrass from turbid water
                                             map(j, k) = 54 # Seagrass
                                         else map(j, k) = 55 # Turbid water
