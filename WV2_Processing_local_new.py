@@ -270,13 +270,17 @@ for z in range(sz_files):
 
     for d in range(8):
         # Rayleigh optical thickness (assume std pressure of 1013.25 mb)
-        tau(d) =(0.008569*(cw(d)**-4)*(1 + 0.0113*(cw(d)**-2) + 0.00013*cw(d)**-4))
+        tau(d) = (
+            0.008569*(cw(d)**-4)*(1 + 0.0113*(cw(d)**-2) + 0.00013*cw(d)**-4)
+        )
     end
 
     # Rayleigh calculation (Dash et al., 2012)
     for d in range(8):
         # Assume standard pressure (1013.25 mb)
-        ray_rad{1, 1}(d) = ((irr(1, d)/ESd)*1*tau(d)*Pr(d))/(4*pi*cosd(90-satel))
+        ray_rad{1, 1}(d) = (
+            ((irr(1, d)/ESd)*1*tau(d)*Pr(d))/(4*pi*cosd(90-satel))
+        )
     end
 
     # rrs constant calculation (Kerr et al. 2018 and Mobley 1994)
@@ -290,8 +294,14 @@ for z in range(sz_files):
     # Transmission angle for water-air incident light from Snell's Law
     trans_wa = 90-satel
     # Fresnel reflectance for air-water incident light (Mobley 1994)
-    pf1 = real(0.5*((sind(inc_ang - trans_aw)/(sind(inc_ang + trans_aw)))**2 + (tand(inc_ang - trans_aw)/(tand(inc_ang + trans_aw)))**2))
-    pf2 = real(0.5*((sind(inc_ang2 - trans_wa)/(sind(inc_ang2 + trans_wa)))**2 + (tand(inc_ang2 - trans_wa)/(tand(inc_ang2 + trans_wa)))**2))
+    pf1 = real(0.5*(
+        (sind(inc_ang - trans_aw)/(sind(inc_ang + trans_aw)))**2
+        + (tand(inc_ang - trans_aw)/(tand(inc_ang + trans_aw)))**2
+    ))
+    pf2 = real(0.5*(
+        (sind(inc_ang2 - trans_wa)/(sind(inc_ang2 + trans_wa)))**2
+        + (tand(inc_ang2 - trans_wa)/(tand(inc_ang2 + trans_wa)))**2
+    ))
     # rrs constant (~0.52) from Mobley 1994
     zeta = real(single((1-pf1)*(1-pf2)/(nw**2)))
     # ==================================================================
@@ -306,14 +316,14 @@ for z in range(sz_files):
     # convert to Rrs
     # Create empty matrix for Rrs output
     Rrs = single(zeros(szA(1), szA(2), 8))
-    for j = 1:sz(1):
+    for j in range(sz(1)):
         # Assign NaN to pixels of no data
         # If a pixel contains data values other than "zero" or
         # "two thousand and forty seven" in any band, it is calibrated;
         # otherwise, it is considered "no-data" - this avoids a
         # problem created during the orthorectification process
         # wherein reprojecting the image may resample data
-        for k = 1:sz(2):
+        for k in range(sz(2)):
             if (
                 (A(j, k, 1)) ~= 0
                 and (A(j, k, 1)) ~= 2047 or (A(j, k, 2)) ~= 0
@@ -325,7 +335,7 @@ for z in range(sz_files):
                 and (A(j, k, 7)) ~= 2047 or (A(j, k, 8)) ~= 0
                 and (A(j, k, 8)) ~= 2047
             ):
-                for d = 1:8
+                for d in range(8):
                     # Radiometrically calibrate and convert to Rrs
                     # (adapted from Radiometric Use of
                     # WorldView-2 Imagery(
@@ -349,13 +359,13 @@ for z in range(sz_files):
 
         # Calculate Kd (water column attenuation coefficient) from
         # Chuanmin Hu's Rrs_Kd_Model.xlsx sheet
-#         sunzen = 90.0-sunel
+        # sunzen = 90.0-sunel
         # c1-4 hard-coded, but v1 and v2 change with modified values of
         # aph(440), adg(440), bbp(440), Sdg, Y
-#         c1 = 0.005
-#         c2 = 4.18
-#         c3 = 0.52
-#         c4 = 10.8
+        # c1 = 0.005
+        # c2 = 4.18
+        # c3 = 0.52
+        # c4 = 10.8
         v2 = [  # bb (backscatter)
             0.023277868 0.020883561 0.018975346 0.017605058 0.016771098
             0.015875283 0.072734281 0.068046578
@@ -381,7 +391,7 @@ for z in range(sz_files):
             0.015875283 0.000869138 0.00067143
         ]
 
-        for b in range(1,8):
+        for b in range(8):
             Kd(b) = single((1+c1*sunzen)*v1(b)+c2*(1-c3*exp(-c4*v1(b)))*v2(b))
         end
 
@@ -398,16 +408,16 @@ for z in range(sz_files):
         dead_veg(t) = 0
         sz_ar = sz(1)*sz(2)
         water = zeros(sz_ar, 9)
-        for j = 1:sz(1)
-            for k = 1:sz(2)
-                if isnan(Rrs(j, k, 1)) == 0
-                    num_pix = num_pix + 1 # Count number of non-NaN pixels
+        for j in range(sz(1)):
+            for k in range(sz(2)):
+                if isnan(Rrs(j, k, 1)) == 0:
+                    num_pix = num_pix + 1  # Count number of non-NaN pixels
                     # Record coastal band value for cloud mask prediction
                     c_val(num_pix) = Rrs(j, k, 1)
                     if (
                         (
-                            Rrs(j, k, 7) - Rrs(j, k, 2)) /
-                            (Rrs(j, k, 7) + Rrs(j, k, 2)
+                            (Rrs(j, k, 7) - Rrs(j, k, 2)) /
+                            (Rrs(j, k, 7) + Rrs(j, k, 2))
                         ) < 0.65
                         and Rrs(j, k, 5) > Rrs(j, k, 4)
                         and Rrs(j, k, 4) > Rrs(j, k, 3)  # Sand & Developed
@@ -417,8 +427,8 @@ for z in range(sz_files):
                     # Identify vegetation (excluding grass)
                     elif (
                         (
-                            Rrs(j, k, 8) - Rrs(j, k, 5)) /
-                            (Rrs(j, k, 8) + Rrs(j, k, 5)
+                            (Rrs(j, k, 8) - Rrs(j, k, 5)) /
+                            (Rrs(j, k, 8) + Rrs(j, k, 5))
                         ) > 0.6
                         and Rrs(j, k, 7) > Rrs(j, k, 3)
                     ):
@@ -435,8 +445,10 @@ for z in range(sz_files):
                             # Compute difference of predicted B5 value from
                             # actual valute
                             dead_veg(t) = (
-                                (((Rrs(j, k, 7) - Rrs(j, k, 4))/3)
-                                + Rrs(j, k, 4)) - Rrs(j, k, 5)
+                                (
+                                    ((Rrs(j, k, 7) - Rrs(j, k, 4))/3)
+                                    + Rrs(j, k, 4)
+                                ) - Rrs(j, k, 5)
                             )
                             t = t+1
                         end
@@ -465,10 +477,10 @@ for z in range(sz_files):
                         # (some confusion w/ clouds)
                         if (
                             Rrs(j, k, 8) < Rrs(j, k, 7)
-                            and Rrs(j, k, 6)<Rrs(j, k, 7)
-                            and Rrs(j, k, 6)<Rrs(j, k, 5)
-                            and Rrs(j, k, 4)<Rrs(j, k, 5)
-                            and Rrs(j, k, 4)<Rrs(j, k, 3)
+                            and Rrs(j, k, 6) < Rrs(j, k, 7)
+                            and Rrs(j, k, 6) < Rrs(j, k, 5)
+                            and Rrs(j, k, 4) < Rrs(j, k, 5)
+                            and Rrs(j, k, 4) < Rrs(j, k, 3)
                         ):
                             v = v+1
                             water(u, 9) = 2  # Mark array2<array1 glinted pixels
@@ -496,16 +508,16 @@ for z in range(sz_files):
                         u = u+1
                         v = v+1
                     elseif (
-                        Rrs(j, k, 8)>Rrs(j, k, 7)
-                        and Rrs(j, k, 6)>Rrs(j, k, 7)
-                        and Rrs(j, k, 6)>Rrs(j, k, 5)
-                        and Rrs(j, k, 4)>Rrs(j, k, 5)
-                        and Rrs(j, k, 4)>Rrs(j, k, 3)
+                        Rrs(j, k, 8) > Rrs(j, k, 7)
+                        and Rrs(j, k, 6) > Rrs(j, k, 7)
+                        and Rrs(j, k, 6) > Rrs(j, k, 5)
+                        and Rrs(j, k, 4) > Rrs(j, k, 5)
+                        and Rrs(j, k, 4) > Rrs(j, k, 3)
                     ):
-                        water(u, 9) = 3 # Mark array2>array1 glinted pixels
-                        water(u,1:8) = double(Rrs(j,k,:))
-                        u = u+1
-                        v = v+1
+                        water(u, 9) = 3  # Mark array2>array1 glinted pixels
+                        water(u, 1:8) = double(Rrs(j, k, :))
+                        u = u + 1
+                        v = v + 1
                     # elseif (
                     #     (Rrs(j,k,4)-Rrs(j,k,8))/(Rrs(j,k,4)+Rrs(j,k,8)) < 0.55
                     #     and Rrs(j,k,8) < 0.2
@@ -530,18 +542,18 @@ for z in range(sz_files):
         end
         # Number of water pixels used to derive E_glint relationships
         n_water = u
-        n_glinted = v # Number of glinted water pixels
+        n_glinted = v  # Number of glinted water pixels
 
         idx = find(water(:, 1) == 0)
         water(idx, :) = []
         water7 = water(:, 7)
         water8 = water(:, 8)
         # Positive minimum Band 7 value used for deglinting
-        mnNIR1 = min(water7(water7>0))
+        mnNIR1 = min(water7(water7 > 0))
         # Positive minimum Band 8 value used for deglinting
-        mnNIR2 = min(water8(water8>0))
+        mnNIR2 = min(water8(water8 > 0))
 
-        idx_gf = find(water(:, 9)==1) # Glint-free water
+        idx_gf = find(water(:, 9) == 1) # Glint-free water
 
         if v > 0.25 * u:
             Update = 'Deglinting'
@@ -552,8 +564,8 @@ for z in range(sz_files):
 #             water2 = [water(idx_gf, 1:8);water(idx_w2, 1:8)];
                     # Calculate linear fitting of all MS bands vs NIR1 & NIR2
                     # for deglinting in DT (Hedley et al. 2005)
-                    for b = 1:6
-                            if b == 1 or b == 4 or b == 6
+                    for b in range(6):
+                            if b == 1 or b == 4 or b == 6:
                                 # linear regression:
                                 slope1 = water(:, b)\water(:, 8)
                                else slope1 = water(:, b)\water(:, 7)
