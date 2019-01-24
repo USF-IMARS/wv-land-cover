@@ -77,80 +77,133 @@ for z in range(sz_files):
     # ==================================================================
     # === read values from xml file
     # ==================================================================
+    # TODO: replace w/ python xml.etree.ElementTree
     s = xml2struct(Z)
     # save XMLtest.mat s
     # Extract calibration factors & acquisition time from
     # metadata for each band
-    if isfield(s, 'IMD') == 1:
-        c = struct2cell(s.Children(2).Children(:))
-        idx{1} = strfind(c(1, :), 'NUMROWS')
-        idx{2} = strfind(c(1, :), 'NUMCOLUMNS')
-        idx{3} = strfind(c(1, :), 'BAND_C')
-        idx{4} = strfind(c(1, :), 'BAND_B')
-        idx{5} = strfind(c(1, :), 'BAND_G')
-        idx{6} = strfind(c(1, :), 'BAND_Y')
-        idx{7} = strfind(c(1, :), 'BAND_R')
-        idx{8} = strfind(c(1, :), 'BAND_RE')
-        idx{9} = strfind(c(1, :), 'BAND_N')
-        idx{10} = strfind(c(1, :), 'BAND_N2')
-        idx{11} = strfind(c(1, :), 'IMAGE')
-        for i = 1:11
-            idxb(i, 1:2) = find(not(cellfun('isempty', idx{i})))
-        end
-        szB(1) = str2num(s.Children(2).Children(idxb(1)).Children.Data)
-        szB(2) = str2num(s.Children(2).Children(idxb(2)).Children.Data)
-        kf(1, 1) = str2num(s.Children(2).Children(idxb(3)).Children(26).Children.Data)
-        kf(2, 1) = str2num(s.Children(2).Children(idxb(4)).Children(26).Children.Data)
-        kf(3, 1) = str2num(s.Children(2).Children(idxb(5)).Children(26).Children.Data)
-        kf(4, 1) = str2num(s.Children(2).Children(idxb(6)).Children(26).Children.Data)
-        kf(5, 1) = str2num(s.Children(2).Children(idxb(7, 1)).Children(26).Children.Data)
-        kf(6, 1) = str2num(s.Children(2).Children(idxb(8)).Children(26).Children.Data)
-        kf(7, 1) = str2num(s.Children(2).Children(idxb(9, 1)).Children(26).Children.Data)
-        kf(8, 1) = str2num(s.Children(2).Children(idxb(10)).Children(26).Children.Data)
-        aqyear = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(1:4))
-        aqmonth = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(6:7))
-        aqday = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(9:10))
-        aqhour = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(12:13))
-        aqminute = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(15:16))
-        aqsecond = str2num(s.Children(2).Children(idxb(11, 2)).Children(16).Children.Data(18:26))
-        sunel = str2num(s.Children(2).Children(idxb(11, 2)).Children(56).Children.Data)
-        sunaz = str2num(s.Children(2).Children(idxb(11, 2)).Children(50).Children.Data)
-        satview = str2num(s.Children(2).Children(idxb(11, 2)).Children(86).Children.Data)
-        sensaz = str2num(s.Children(2).Children(idxb(11, 2)).Children(62).Children.Data)
-        satel = str2num(s.Children(2).Children(idxb(11, 2)).Children(68).Children.Data)
-        cl_cov = str2num(s.Children(2).Children(idxb(11, 2)).Children(90).Children.Data)
-    else
-        szB(1) = str2num(s.isd.IMD.NUMROWS.Text)
-        szB(2) = str2num(s.isd.IMD.NUMCOLUMNS.Text)
-        kf(1, 1) = str2num(s.isd.IMD.BAND_C.ABSCALFACTOR.Text)
-        kf(2, 1) = str2num(s.isd.IMD.BAND_B.ABSCALFACTOR.Text)
-        kf(3, 1) = str2num(s.isd.IMD.BAND_G.ABSCALFACTOR.Text)
-        kf(4, 1) = str2num(s.isd.IMD.BAND_Y.ABSCALFACTOR.Text)
-        kf(5, 1) = str2num(s.isd.IMD.BAND_R.ABSCALFACTOR.Text)
-        kf(6, 1) = str2num(s.isd.IMD.BAND_RE.ABSCALFACTOR.Text)
-        kf(7, 1) = str2num(s.isd.IMD.BAND_N.ABSCALFACTOR.Text)
-        kf(8, 1) = str2num(s.isd.IMD.BAND_N2.ABSCALFACTOR.Text)
-        # Extract Acquisition Time from metadata
-        aqyear = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(1:4))
-        # Extract Acquisition Time from metadata
-        aqmonth = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(6:7))
-        # Extract Acquisition Time from metadata
-        aqday = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(9:10))
-        # Extract Acquisition Time from metadata
-        aqhour = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(12:13))
-        # Extract Acquisition Time from metadata
-        aqminute = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(15:16))
-        # Extract Acquisition Time from metadata
-        aqsecond = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME
-        # Extract Mean Sun Elevation angle from metadata.Text(18:26))
-        sunel = str2num(s.isd.IMD.IMAGE.MEANSUNEL.Text)
-        # Extract Mean Off Nadir View angle from metadata
-        satview = str2num(s.isd.IMD.IMAGE.MEANOFFNADIRVIEWANGLE.Text)
-        sunaz = str2num(s.isd.IMD.IMAGE.MEANSUNAZ.Text)
-        sensaz = str2num(s.isd.IMD.IMAGE.MEANSATAZ.Text)
-        satel = str2num(s.isd.IMD.IMAGE.MEANSATEL.Text)
-        cl_cov = str2num(s.isd.IMD.IMAGE.CLOUDCOVER.Text)
-    end
+    # if isfield(s, 'IMD') == 1:
+    #     c = struct2cell(s.Children(2).Children(:))
+    #     idx{1} = strfind(c(1, :), 'NUMROWS')
+    #     idx{2} = strfind(c(1, :), 'NUMCOLUMNS')
+    #     idx{3} = strfind(c(1, :), 'BAND_C')
+    #     idx{4} = strfind(c(1, :), 'BAND_B')
+    #     idx{5} = strfind(c(1, :), 'BAND_G')
+    #     idx{6} = strfind(c(1, :), 'BAND_Y')
+    #     idx{7} = strfind(c(1, :), 'BAND_R')
+    #     idx{8} = strfind(c(1, :), 'BAND_RE')
+    #     idx{9} = strfind(c(1, :), 'BAND_N')
+    #     idx{10} = strfind(c(1, :), 'BAND_N2')
+    #     idx{11} = strfind(c(1, :), 'IMAGE')
+    #     for i = 1:11
+    #         idxb(i, 1:2) = find(not(cellfun('isempty', idx{i})))
+    #     end
+    #     szB(1) = str2num(s.Children(2).Children(idxb(1)).Children.Data)
+    #     szB(2) = str2num(s.Children(2).Children(idxb(2)).Children.Data)
+    #     kf(1, 1) = str2num(
+    #         s.Children(2).Children(idxb(3)).Children(26).Children.Data
+    #     )
+    #     kf(2, 1) = str2num(
+    #         s.Children(2).Children(idxb(4)).Children(26).Children.Data
+    #     )
+    #     kf(3, 1) = str2num(
+    #         s.Children(2).Children(idxb(5)).Children(26).Children.Data
+    #     )
+    #     kf(4, 1) = str2num(
+    #         s.Children(2).Children(idxb(6)).Children(26).Children.Data
+    #     )
+    #     kf(5, 1) = str2num(
+    #         s.Children(2).Children(idxb(7, 1)).Children(26).Children.Data
+    #     )
+    #     kf(6, 1) = str2num(
+    #         s.Children(2).Children(idxb(8)).Children(26).Children.Data
+    #     )
+    #     kf(7, 1) = str2num(
+    #         s.Children(2).Children(idxb(9, 1)).Children(26).Children.Data
+    #     )
+    #     kf(8, 1) = str2num(
+    #         s.Children(2).Children(idxb(10)).Children(26).Children.Data
+    #     )
+    #     aqyear = str2num(
+    #         s.Children(2).Children(
+    #             idxb(11, 2)
+    #         ).Children(16).Children.Data(1:4)
+    #     )
+    #     aqmonth = str2num(
+    #         s.Children(2).Children(
+    #             idxb(11, 2)
+    #         ).Children(16).Children.Data(6:7)
+    #     )
+    #     aqday = str2num(
+    #         s.Children(2).Children(
+    #             idxb(11, 2)
+    #         ).Children(16).Children.Data(9:10)
+    #     )
+    #     aqhour = str2num(
+    #         s.Children(2).Children(
+    #             idxb(11, 2)
+    #         ).Children(16).Children.Data(12:13)
+    #     )
+    #     aqminute = str2num(
+    #         s.Children(2).Children(
+    #             idxb(11, 2)
+    #         ).Children(16).Children.Data(15:16)
+    #     )
+    #     aqsecond = str2num(
+    #         s.Children(2).Children(
+    #             idxb(11, 2)
+    #         ).Children(16).Children.Data(18:26)
+    #     )
+    #     sunel = str2num(
+    #         s.Children(2).Children(idxb(11, 2)).Children(56).Children.Data
+    #     )
+    #     sunaz = str2num(
+    #         s.Children(2).Children(idxb(11, 2)).Children(50).Children.Data
+    #     )
+    #     satview = str2num(
+    #         s.Children(2).Children(idxb(11, 2)).Children(86).Children.Data
+    #     )
+    #     sensaz = str2num(
+    #         s.Children(2).Children(idxb(11, 2)).Children(62).Children.Data
+    #     )
+    #     satel = str2num(
+    #         s.Children(2).Children(idxb(11, 2)).Children(68).Children.Data
+    #     )
+    #     cl_cov = str2num(
+    #         s.Children(2).Children(idxb(11, 2)).Children(90).Children.Data
+    #     )
+    # else
+    #     szB(1) = str2num(s.isd.IMD.NUMROWS.Text)
+    #     szB(2) = str2num(s.isd.IMD.NUMCOLUMNS.Text)
+    #     kf(1, 1) = str2num(s.isd.IMD.BAND_C.ABSCALFACTOR.Text)
+    #     kf(2, 1) = str2num(s.isd.IMD.BAND_B.ABSCALFACTOR.Text)
+    #     kf(3, 1) = str2num(s.isd.IMD.BAND_G.ABSCALFACTOR.Text)
+    #     kf(4, 1) = str2num(s.isd.IMD.BAND_Y.ABSCALFACTOR.Text)
+    #     kf(5, 1) = str2num(s.isd.IMD.BAND_R.ABSCALFACTOR.Text)
+    #     kf(6, 1) = str2num(s.isd.IMD.BAND_RE.ABSCALFACTOR.Text)
+    #     kf(7, 1) = str2num(s.isd.IMD.BAND_N.ABSCALFACTOR.Text)
+    #     kf(8, 1) = str2num(s.isd.IMD.BAND_N2.ABSCALFACTOR.Text)
+    #     # Extract Acquisition Time from metadata
+    #     aqyear = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(1:4))
+    #     # Extract Acquisition Time from metadata
+    #     aqmonth = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(6:7))
+    #     # Extract Acquisition Time from metadata
+    #     aqday = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(9:10))
+    #     # Extract Acquisition Time from metadata
+    #     aqhour = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(12:13))
+    #     # Extract Acquisition Time from metadata
+    #     aqminute = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(15:16))
+    #     # Extract Acquisition Time from metadata
+    #     aqsecond = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME
+    #     # Extract Mean Sun Elevation angle from metadata.Text(18:26))
+    #     sunel = str2num(s.isd.IMD.IMAGE.MEANSUNEL.Text)
+    #     # Extract Mean Off Nadir View angle from metadata
+    #     satview = str2num(s.isd.IMD.IMAGE.MEANOFFNADIRVIEWANGLE.Text)
+    #     sunaz = str2num(s.isd.IMD.IMAGE.MEANSUNAZ.Text)
+    #     sensaz = str2num(s.isd.IMD.IMAGE.MEANSATAZ.Text)
+    #     satel = str2num(s.isd.IMD.IMAGE.MEANSATEL.Text)
+    #     cl_cov = str2num(s.isd.IMD.IMAGE.CLOUDCOVER.Text)
+    # end
     # ==================================================================
 
     szB(3) = 8
@@ -170,9 +223,12 @@ for z in range(sz_files):
     B1 = int64(year/100)
     B2 = 2-B1+int64(B1/4)
     # Julian date
-    JD = (int64(365.25*(year+4716)) +int64(30.6001*(month+1)) + aqday + UT/24.0 + B2 - 1524.5)
+    JD = (
+        int64(365.25*(year+4716)) + int64(30.6001*(month+1)) + aqday + UT/24.0
+        + B2 - 1524.5
+    )
     D = JD - 2451545.0
-    degs = double(357.529 + 0.98560028*D) # Degrees
+    degs = double(357.529 + 0.98560028*D)  # Degrees
     # Earth-Sun distance at given date (should be between 0.983 and 1.017)
     ESd = 1.00014 - 0.01671*cosd(degs) - 0.00014*cosd(2*degs)
 
@@ -198,30 +254,35 @@ for z in range(sz_files):
         sensaz = sensaz - 360
     end
 
-    az = abs(sensaz - 180 - sunaz) # Relative azimuth angle
+    az = abs(sensaz - 180 - sunaz)  # Relative azimuth angle
     # Scattering angles
-    thetaplus = acosd(cosd(90-sunel)*cosd(90-satel) - sind(90-sunel)*sind(90-satel)*cosd(az))
+    thetaplus = acosd(
+        cosd(90-sunel)*cosd(90-satel) - sind(90-sunel)*sind(90-satel)*cosd(az)
+    )
 
-    for d = 1:8
+    for d in range(8):
         # Rayleigh scattering phase function (described in Bucholtz 1995)
-        Pr(d) = (3/(4*(1+2*gamma(d))))*((1+3*gamma(d))+(1-gamma(d))*cosd(thetaplus)^2)
+        Pr(d) = (
+            (3/(4*(1+2*gamma(d))))
+            * ((1+3*gamma(d))+(1-gamma(d))*cosd(thetaplus)^2)
+        )
     end
 
-    for d = 1:8
+    for d in range(8):
         # Rayleigh optical thickness (assume std pressure of 1013.25 mb)
         tau(d) =(0.008569*(cw(d)^-4)*(1 + 0.0113*(cw(d)^-2) + 0.00013*cw(d)^-4))
     end
 
     # Rayleigh calculation (Dash et al., 2012)
-    for d = 1:8
+    for d in range(8):
         # Assume standard pressure (1013.25 mb)
         ray_rad{1, 1}(d) = ((irr(1, d)/ESd)*1*tau(d)*Pr(d))/(4*pi*cosd(90-satel))
     end
 
     # rrs constant calculation (Kerr et al. 2018 and Mobley 1994)
-    G = single(1.56) # constant (Kerr eq. 3)
-    na = 1.00029 # Refractive index of air
-    nw = 1.34 # Refractive index seawater
+    G = single(1.56)  # constant (Kerr eq. 3)
+    na = 1.00029  # Refractive index of air
+    nw = 1.34  # Refractive index seawater
     # Incident angle for water-air from Snell's Law
     inc_ang2 = real(asind(sind(90-satel)*nw/na))
     # Transmission angle for air-water incident light from Snell's Law
