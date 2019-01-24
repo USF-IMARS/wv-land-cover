@@ -325,15 +325,15 @@ for z in range(sz_files):
         # wherein reprojecting the image may resample data
         for k in range(sz(2)):
             if (
-                (A(j, k, 1)) ~= 0
-                and (A(j, k, 1)) ~= 2047 or (A(j, k, 2)) ~= 0
-                and (A(j, k, 2)) ~= 2047 or (A(j, k, 3)) ~= 0
-                and (A(j, k, 3)) ~= 2047 or (A(j, k, 4)) ~= 0
-                and (A(j, k, 4)) ~= 2047 or (A(j, k, 5)) ~= 0
-                and (A(j, k, 5)) ~= 2047 or (A(j, k, 6)) ~= 0
-                and (A(j, k, 6)) ~= 2047 or (A(j, k, 7)) ~= 0
-                and (A(j, k, 7)) ~= 2047 or (A(j, k, 8)) ~= 0
-                and (A(j, k, 8)) ~= 2047
+                (A(j, k, 1)) != 0
+                and (A(j, k, 1)) != 2047 or (A(j, k, 2)) != 0
+                and (A(j, k, 2)) != 2047 or (A(j, k, 3)) != 0
+                and (A(j, k, 3)) != 2047 or (A(j, k, 4)) != 0
+                and (A(j, k, 4)) != 2047 or (A(j, k, 5)) != 0
+                and (A(j, k, 5)) != 2047 or (A(j, k, 6)) != 0
+                and (A(j, k, 6)) != 2047 or (A(j, k, 7)) != 0
+                and (A(j, k, 7)) != 2047 or (A(j, k, 8)) != 0
+                and (A(j, k, 8)) != 2047
             ):
                 for d in range(8):
                     # Radiometrically calibrate and convert to Rrs
