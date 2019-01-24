@@ -264,13 +264,13 @@ for z in range(sz_files):
         # Rayleigh scattering phase function (described in Bucholtz 1995)
         Pr(d) = (
             (3/(4*(1+2*gamma(d))))
-            * ((1+3*gamma(d))+(1-gamma(d))*cosd(thetaplus)^2)
+            * ((1+3*gamma(d))+(1-gamma(d))*cosd(thetaplus)**2)
         )
     end
 
     for d in range(8):
         # Rayleigh optical thickness (assume std pressure of 1013.25 mb)
-        tau(d) =(0.008569*(cw(d)^-4)*(1 + 0.0113*(cw(d)^-2) + 0.00013*cw(d)^-4))
+        tau(d) =(0.008569*(cw(d)**-4)*(1 + 0.0113*(cw(d)**-2) + 0.00013*cw(d)**-4))
     end
 
     # Rayleigh calculation (Dash et al., 2012)
@@ -290,10 +290,10 @@ for z in range(sz_files):
     # Transmission angle for water-air incident light from Snell's Law
     trans_wa = 90-satel
     # Fresnel reflectance for air-water incident light (Mobley 1994)
-    pf1 = real(0.5*((sind(inc_ang - trans_aw)/(sind(inc_ang + trans_aw)))^2 + (tand(inc_ang - trans_aw)/(tand(inc_ang + trans_aw)))^2))
-    pf2 = real(0.5*((sind(inc_ang2 - trans_wa)/(sind(inc_ang2 + trans_wa)))^2 + (tand(inc_ang2 - trans_wa)/(tand(inc_ang2 + trans_wa)))^2))
+    pf1 = real(0.5*((sind(inc_ang - trans_aw)/(sind(inc_ang + trans_aw)))**2 + (tand(inc_ang - trans_aw)/(tand(inc_ang + trans_aw)))**2))
+    pf2 = real(0.5*((sind(inc_ang2 - trans_wa)/(sind(inc_ang2 + trans_wa)))**2 + (tand(inc_ang2 - trans_wa)/(tand(inc_ang2 + trans_wa)))**2))
     # rrs constant (~0.52) from Mobley 1994
-    zeta = real(single((1-pf1)*(1-pf2)/(nw^2)))
+    zeta = real(single((1-pf1)*(1-pf2)/(nw**2)))
     # ==================================================================
 
     # Adjust file size: Input file (A) warped may contain more or fewer
@@ -329,7 +329,7 @@ for z in range(sz_files):
                     # Radiometrically calibrate and convert to Rrs
                     # (adapted from Radiometric Use of
                     # WorldView-2 Imagery(
-                    Rrs(j, k, d) = single((pi*((single(A(j, k, d))*kf(d, 1)/ebw(1, d)) - ray_rad{1, 1}(1, d))*ESd^2)/(irr(1, d)*TZ*TV))
+                    Rrs(j, k, d) = single((pi*((single(A(j, k, d))*kf(d, 1)/ebw(1, d)) - ray_rad{1, 1}(1, d))*ESd**2)/(irr(1, d)*TZ*TV))
                 end
             else Rrs(j, k, :) = NaN
             end
