@@ -211,7 +211,7 @@ for z in range(sz_files):
     # ==================================================================
     # === Calculate Earth-Sun distance and relevant geometry
     # ==================================================================
-    if aqmonth == 1 || aqmonth == 2:
+    if aqmonth == 1 or aqmonth == 2:
         year = aqyear - 1
         month = aqmonth + 12
     else:
@@ -316,13 +316,13 @@ for z in range(sz_files):
         for k = 1:sz(2):
             if (
                 (A(j, k, 1)) ~= 0
-                and (A(j, k, 1)) ~= 2047 || (A(j, k, 2)) ~= 0
-                and (A(j, k, 2)) ~= 2047 || (A(j, k, 3)) ~= 0
-                and (A(j, k, 3)) ~= 2047 || (A(j, k, 4)) ~= 0
-                and (A(j, k, 4)) ~= 2047 || (A(j, k, 5)) ~= 0
-                and (A(j, k, 5)) ~= 2047 || (A(j, k, 6)) ~= 0
-                and (A(j, k, 6)) ~= 2047 || (A(j, k, 7)) ~= 0
-                and (A(j, k, 7)) ~= 2047 || (A(j, k, 8)) ~= 0
+                and (A(j, k, 1)) ~= 2047 or (A(j, k, 2)) ~= 0
+                and (A(j, k, 2)) ~= 2047 or (A(j, k, 3)) ~= 0
+                and (A(j, k, 3)) ~= 2047 or (A(j, k, 4)) ~= 0
+                and (A(j, k, 4)) ~= 2047 or (A(j, k, 5)) ~= 0
+                and (A(j, k, 5)) ~= 2047 or (A(j, k, 6)) ~= 0
+                and (A(j, k, 6)) ~= 2047 or (A(j, k, 7)) ~= 0
+                and (A(j, k, 7)) ~= 2047 or (A(j, k, 8)) ~= 0
                 and (A(j, k, 8)) ~= 2047
             ):
                 for d = 1:8
@@ -553,7 +553,7 @@ for z in range(sz_files):
                     # Calculate linear fitting of all MS bands vs NIR1 & NIR2
                     # for deglinting in DT (Hedley et al. 2005)
                     for b = 1:6
-                            if b == 1 || b == 4 || b == 6
+                            if b == 1 or b == 4 or b == 6
                                 # linear regression:
                                 slope1 = water(:, b)\water(:, 8)
                                else slope1 = water(:, b)\water(:, 7)
@@ -693,7 +693,7 @@ for z in range(sz_files):
                                 map(j, k) = 31 # Marsh grass
                             else map(j, k) = 22 # Mud
                             end
-                       elseif Rrs(j, k, 2) > Rrs(j, k, 3) and Rrs(j, k, 7) > Rrs(j, k, 3) and Rrs(j, k, 2) < 0.1 and (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.20|| Rrs(j, k, 8) > 0.05 and Rrs(j, k, 7) > Rrs(j, k, 2) and (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.1
+                       elseif Rrs(j, k, 2) > Rrs(j, k, 3) and Rrs(j, k, 7) > Rrs(j, k, 3) and Rrs(j, k, 2) < 0.1 and (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.20or Rrs(j, k, 8) > 0.05 and Rrs(j, k, 7) > Rrs(j, k, 2) and (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.1
                            if BW(j, k) == 1
                                map(j, k) = 11 # Shadow/Developed
                            else map(j, k) = 22 # Mud
@@ -732,7 +732,7 @@ for z in range(sz_files):
                                map(j, k) = 32 # Upland Forest/Grass
                            end
                        ## Water
-                       elseif Rrs(j, k, 8)<0.2 and Rrs(j, k, 8)>0|| Rrs(j, k, 8)<Rrs(j, k, 7) and Rrs(j, k, 6)<Rrs(j, k, 7) and Rrs(j, k, 6)<Rrs(j, k, 5) and Rrs(j, k, 4)<Rrs(j, k, 5) and Rrs(j, k, 4)<Rrs(j, k, 3) and Rrs(j, k, 8)>0 || Rrs(j, k, 8)>Rrs(j, k, 7) and Rrs(j, k, 6)>Rrs(j, k, 7) and Rrs(j, k, 6)>Rrs(j, k, 5) and Rrs(j, k, 4)>Rrs(j, k, 5) and Rrs(j, k, 4)>Rrs(j, k, 3) and Rrs(j, k, 8)>0# Identify all water (glinted and glint-free)
+                       elseif Rrs(j, k, 8)<0.2 and Rrs(j, k, 8)>0or Rrs(j, k, 8)<Rrs(j, k, 7) and Rrs(j, k, 6)<Rrs(j, k, 7) and Rrs(j, k, 6)<Rrs(j, k, 5) and Rrs(j, k, 4)<Rrs(j, k, 5) and Rrs(j, k, 4)<Rrs(j, k, 3) and Rrs(j, k, 8)>0 or Rrs(j, k, 8)>Rrs(j, k, 7) and Rrs(j, k, 6)>Rrs(j, k, 7) and Rrs(j, k, 6)>Rrs(j, k, 5) and Rrs(j, k, 4)>Rrs(j, k, 5) and Rrs(j, k, 4)>Rrs(j, k, 3) and Rrs(j, k, 8)>0# Identify all water (glinted and glint-free)
 #                            map(j, k) = 5
 
                            if v > u*0.25
@@ -765,7 +765,7 @@ for z in range(sz_files):
                                if  Rrs(j, k, 6) < Rrs(j, k, 7)
                                    map(j, k) = 0 # Shadow
                                elseif (Rrs(j, k, 3) - Rrs(j, k, 4))/(Rrs(j, k, 3) + Rrs(j, k, 4)) < 0.10 #(Rrs(j, k, 2) - Rrs(j, k, 4))/(Rrs(j, k, 2)+Rrs(j, k, 4)) < 0
-                                    if Rrs(j, k, 4) > Rrs(j, k, 3) || Rrs(j, k, 5) > Rrs(j, k, 3)
+                                    if Rrs(j, k, 4) > Rrs(j, k, 3) or Rrs(j, k, 5) > Rrs(j, k, 3)
                                         map(j, k) = 53 # Soft bottom
                                     elseif sum(Rrs(j, k, 3:5)) > avg_water_sum and (Rrs(j, k, 5) - Rrs(j, k, 2))/(Rrs(j, k, 5) + Rrs(j, k, 2)) > 0.1 # NEW from 0.05
                                         map(j, k) = 52 # Soft bottom
@@ -796,7 +796,7 @@ for z in range(sz_files):
                                if  Rrs(j, k, 6) < Rrs(j, k, 7)
                                    map(j, k) = 0 # Shadow
                                elseif (Rrs(j, k, 3) - Rrs(j, k, 4))/(Rrs(j, k, 3) + Rrs(j, k, 4)) < 0.10 #(Rrs(j, k, 2) - Rrs(j, k, 4))/(Rrs(j, k, 2)+Rrs(j, k, 4)) < 0
-                                    if Rrs(j, k, 4) > Rrs(j, k, 3) || Rrs(j, k, 5) > Rrs(j, k, 3)
+                                    if Rrs(j, k, 4) > Rrs(j, k, 3) or Rrs(j, k, 5) > Rrs(j, k, 3)
                                         map(j, k) = 53 # Soft bottom
                                     elseif sum(Rrs(j, k, 3:5)) > avg_water_sum and (Rrs(j, k, 5) - Rrs(j, k, 2))/(Rrs(j, k, 5) + Rrs(j, k, 2)) > 0.1
                                         map(j, k) = 52 # Soft bottom
