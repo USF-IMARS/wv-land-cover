@@ -373,12 +373,13 @@ for z in range(sz_files):  # for each file
                         ) / (irr(1, d)*TZ*TV)
                     )
                 end
-            else Rrs[j, k, :] = NaN
+            else:
+                Rrs[j, k, :] = NaN
             end
         end
     end
 
-    clear A
+    # clear A
 
     ## Output reflectance image
     if Rrs_write == 1:
@@ -596,28 +597,28 @@ for z in range(sz_files):  # for each file
         if v > 0.25 * u:
             Update = 'Deglinting'
             id2 = 'deglinted'
-#             idx_w1 = find(water(:, 9)==2) # Glinted water array1>array2
-#             idx_w2 = find(water(:, 9)==3) # Glinted water array2>array1
-#             water1 = [water(idx_gf, 1:8);water(idx_w1, 1:8)];
-#             water2 = [water(idx_gf, 1:8);water(idx_w2, 1:8)];
-                    # Calculate linear fitting of all MS bands vs NIR1 & NIR2
-                    # for deglinting in DT (Hedley et al. 2005)
-                    for b in range(6):
-                            if b == 1 or b == 4 or b == 6:
-                                # slope1 = water(:, b)\water(:, 8)
-                                slope1 = do_regression(
-                                    water[:, b],
-                                    water[:, 8]
-                                )
-                            else:
-                                # slope1 = water(:, b)\water(:, 7)
-                                slope1 = do_regression(
-                                    water[:, b],
-                                    water[:, 7]
-                                )
-                            end
-                    E_glint(1, b) = single(slope1)
-                    end
+            # idx_w1 = find(water(:, 9)==2) # Glinted water array1>array2
+            # idx_w2 = find(water(:, 9)==3) # Glinted water array2>array1
+            # water1 = [water(idx_gf, 1:8);water(idx_w1, 1:8)];
+            # water2 = [water(idx_gf, 1:8);water(idx_w2, 1:8)];
+            # Calculate linear fitting of all MS bands vs NIR1 & NIR2
+            # for deglinting in DT (Hedley et al. 2005)
+            for b in range(6):
+                if b == 1 or b == 4 or b == 6:
+                    # slope1 = water(:, b)\water(:, 8)
+                    slope1 = do_regression(
+                        water[:, b],
+                        water[:, 8]
+                    )
+                else:
+                    # slope1 = water(:, b)\water(:, 7)
+                    slope1 = do_regression(
+                        water[:, b],
+                        water[:, 7]
+                    )
+                end
+            E_glint(1, b) = single(slope1)
+            end
             E_glint  # = [0.8075 0.7356 0.8697 0.7236 0.9482 0.7902]
         else:
             Update = 'Glint-free'
@@ -625,9 +626,9 @@ for z in range(sz_files):  # for each file
         end
 
         ## Edge Detection
-       img_sub = Rrs[:, :, 5]
-       BWbin = imbinarize(img_sub)
-       BW = imtophat(BWbin, strel('square', 10))
+        img_sub = Rrs[:, :, 5]
+        BWbin = imbinarize(img_sub)
+        BW = imtophat(BWbin, strel('square', 10))
 #        BW1 = edge(BWtop, 'canny')
 #        seDil = strel('square', 1)
 #        BWdil = imdilate(BW1, seDil)
