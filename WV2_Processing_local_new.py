@@ -72,6 +72,12 @@ def do_regression(X, y):
     return inv(X.T @ X) @ X.T @ y  # python
 
 
+def rdivide(A, B):
+    # TODO: how do this in python?
+    # https://www.mathworks.com/help/matlab/ref/rdivide.html
+    return None
+
+
 def read_xml(filename):
     # ==================================================================
     # === read values from xml file
@@ -448,7 +454,7 @@ for z in range(sz_files):  # for each file
                         Rrs(j, k, 5) > Rrs(j, k, 4) and
                         Rrs(j, k, 4) > Rrs(j, k, 3)  # Sand & Developed
                     ):
-                        sum_SD(b) = sum(Rrs(j, k, 6:8))
+                        sum_SD(b) = sum(Rrs[j, k, 6:8])
                         b = b+1
                     # Identify vegetation (excluding grass)
                     elif (
@@ -490,7 +496,10 @@ for z in range(sz_files):  # for each file
                         Rrs(j, k, 8) > 0
                     ):
                         water[u, 1:8] = double(Rrs[j, k, :])
-                        water_rrs[1:6] = Rrs[j, k, 1:6]./(zeta + G.*Rrs[j, k, 1:6])
+                        water_rrs[1:6] = rdivide(
+                            Rrs[j, k, 1:6],
+                            (zeta + G.*Rrs[j, k, 1:6])
+                        )
                         if (
                             water_rrs(4) > water_rrs(2) and
                             water_rrs(4) < 0.12 and
@@ -627,8 +636,14 @@ for z in range(sz_files):  # for each file
 
 #         ## Depth scaling
 #         water10(:, 1:2) = water(idx_gf, 2:3)
-#         water10(:, 1:2) = water10(:, 1:2)./(zeta + G.*water10(:, 1:2))
-#         waterdp = real(log(1000*(water10(:, 1)))./log(1000*(water10(:, 2))))
+#         water10(:, 1:2) = rdivide(
+#             water10(:, 1:2),
+#             (zeta + G.*water10(:, 1:2))
+#         )
+#         waterdp = rdivide(
+#             real(log(1000*(water10(:, 1))),
+#             log(1000*(water10(:, 2))))
+#         )
 #         water_dp = waterdp(waterdp>0 & waterdp<2)
 #         [N, X] = hist(water_dp)
 #         med_dp = median(water_dp)
@@ -646,7 +661,11 @@ for z in range(sz_files):  # for each file
 #         dp_max_sort = sortrows(water_gf, 8, 'ascend')
 #         idx_dp = round(size(dp_max_sort, 1)*0.001) # Use "deepest" 0.1# pixels
 #         dp_pct = dp_max_sort(1:idx_dp, :)
-#         dp_rrs = dp_pct(:, 1:8)./(zeta + G.*dp_pct(:, 1:8)) # Convert to subsurface rrs
+#         # Convert to subsurface rrs
+#         dp_rrs = rdivide(
+#             dp_pct(:, 1:8),
+#             (zeta + G.*dp_pct(:, 1:8))
+#         )
 #         # Mean and Median values too high
 #         rrs_inf = min(dp_rrs(:, 1:8)) #median(dp_rrs(:, 1:8)) - 2*std(dp_rrs(:, 1:8))
 # #         rrs_inf = [0.00512 0.00686 0.008898 0.002553 0.001506 0.000403] # Derived from Rrs_Kd_Model.xlsx for Default values
@@ -691,7 +710,10 @@ for z in range(sz_files):  # for each file
 
             # Convert above-surface Rrs to below-surface rrs (Kerr et al. 2018)
             # Was Rrs_0=
-            Rrs(j, k, 1:6) = Rrs_deglint(1:6)./(zeta + G.*Rrs_deglint(1:6))
+            Rrs(j, k, 1:6) = rdivide(
+                Rrs_deglint(1:6),
+                (zeta + G.*Rrs_deglint(1:6))
+            )
 
             # Relative depth estimate
             # Calculate relative depth
@@ -708,7 +730,10 @@ for z in range(sz_files):  # for each file
         else # For glint-free/low-glint images
             # Convert above-surface Rrs to subsurface rrs
             # (Kerr et al. 2018, Lee et al. 1998)
-            Rrs(j, k, 1:6) = Rrs(j, k, 1:6)./(zeta + G.*Rrs(j, k, 1:6))
+            Rrs(j, k, 1:6) = rdivide(
+                Rrs(j, k, 1:6),
+                (zeta + G.*Rrs(j, k, 1:6))
+            )
             # Calculate relative depth (Stumpf 2003 ratio transform)
             dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
             if dp > 0 and dp < 2
@@ -792,7 +817,10 @@ for z in range(sz_files):  # for each file
                                 Rrs_deglint(6, 1) = (Rrs(j, k, 6) - (E_glint(6)*(Rrs(j, k, 8) - mnNIR2)))
 
                                 # Convert above-surface Rrs to below-surface rrs (Kerr et al. 2018)
-                                Rrs(j, k, 1:6) = Rrs_deglint(1:6)./(zeta + G.*Rrs_deglint(1:6)) # Was Rrs_0=
+                                Rrs(j, k, 1:6) = rdivide(
+                                    Rrs_deglint(1:6),
+                                    (zeta + G.*Rrs_deglint(1:6)) # Was Rrs_0=
+                                )
 
                                 # Relative depth estimate
                                 # Calculate relative depth
@@ -828,7 +856,11 @@ for z in range(sz_files):  # for each file
 
 
                             else # For glint-free/low-glint images
-                                Rrs(j, k, 1:6) = Rrs(j, k, 1:6)./(zeta + G.*Rrs(j, k, 1:6)) # Convert above-surface Rrs to subsurface rrs (Kerr et al. 2018,  Lee et al. 1998)
+                                # Convert above-surface Rrs to subsurface rrs (Kerr et al. 2018,  Lee et al. 1998)
+                                Rrs(j, k, 1:6) = rdivide(
+                                    Rrs(j, k, 1:6),
+                                    (zeta + G.*Rrs(j, k, 1:6))
+                                )
                                 dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3))) # Calculate relative depth (Stumpf 2003 ratio transform)
                                 if dp > 0 and dp < 2
                                     Bathy(j, k) = dp
