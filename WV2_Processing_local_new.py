@@ -278,7 +278,8 @@ for z in range(sz_files):
     # Rayleigh calculation (Dash et al., 2012)
     for d in range(8):
         # Assume standard pressure (1013.25 mb)
-        ray_rad{1, 1}(d) = (
+        # TODO: why use matrix here? is this just a single (cell-array) value?
+        ray_rad{1, 1}(d) = (  # Rayleigh Radience
             ((irr(1, d)/ESd)*1*tau(d)*Pr(d))/(4*pi*cosd(90-satel))
         )
     end
@@ -315,7 +316,9 @@ for z in range(sz_files):
     ## Assign NaN to no-data pixels and radiometrically calibrate and
     # convert to Rrs
     # Create empty matrix for Rrs output
-    Rrs = single(zeros(szA(1), szA(2), 8))
+    # TODO: use numpy.array([interven[-N:]])
+    # numpy.array([szA(1), szA(2), 8])
+    Rrs = single(zeros(szA(1), szA(2), 8))  # 8 bands x input size
     for j in range(sz(1)):
         # Assign NaN to pixels of no data
         # If a pixel contains data values other than "zero" or
@@ -473,9 +476,9 @@ for z in range(sz_files):
                         water(u, 1:8) = double(Rrs(j, k, :))
                         water_rrs(1:6) = Rrs(j, k, 1:6)./(zeta + G.*Rrs(j, k, 1:6))
                         if (
-                            water_rrs(4) > water_rrs(2)
-                            and water_rrs(4) < 0.12
-                            and water_rrs(5) < water_rrs(3)
+                            water_rrs(4) > water_rrs(2) and
+                            water_rrs(4) < 0.12 and
+                            water_rrs(5) < water_rrs(3)
                         ):
                             sum_water_rrs(u) = sum(water_rrs(3:5))
                         end
@@ -560,7 +563,7 @@ for z in range(sz_files):
         # Positive minimum Band 8 value used for deglinting
         mnNIR2 = min(water8(water8 > 0))
 
-        idx_gf = find(water(:, 9) == 1) # Glint-free water
+        idx_gf = find(water(:, 9) == 1)  # Glint-free water
 
         if v > 0.25 * u:
             Update = 'Deglinting'
