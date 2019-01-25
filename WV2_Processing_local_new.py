@@ -72,16 +72,7 @@ def do_regression(X, y):
     return inv(X.T @ X) @ X.T @ y  # python
 
 
-for z in range(sz_files):  # for each file
-    fname = path.basename(matfiles[z])
-    id = fname[1:19]
-
-    X = [loc_in, fname]  # Change location of MS Tiff images here
-    Z = [met_in, fname]  # Change location of XML files here
-
-    [A, R] = geotiffread(X)
-    szA = size(A)
-
+def read_xml(filename):
     # ==================================================================
     # === read values from xml file
     # ==================================================================
@@ -213,6 +204,19 @@ for z in range(sz_files):  # for each file
     #     cl_cov = str2num(s.isd.IMD.IMAGE.CLOUDCOVER.Text)
     # end
     # ==================================================================
+
+
+for z in range(sz_files):  # for each file
+    fname = path.basename(matfiles[z])
+    id = fname[1:19]
+
+    X = [loc_in, fname]  # Change location of MS Tiff images here
+    Z = [met_in, fname]  # Change location of XML files here
+
+    [A, R] = geotiffread(X)
+    szA = size(A)
+
+    TODO_WHAT_GOES_HERE = read_xml(fname)
 
     szB(3) = 8
 
