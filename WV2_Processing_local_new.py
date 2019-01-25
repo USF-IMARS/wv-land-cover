@@ -290,10 +290,13 @@ for z in range(sz_files):  # for each file
     # Rayleigh calculation (Dash et al., 2012)
     for d in range(8):
         # Assume standard pressure (1013.25 mb)
-        # TODO: why use matrix here? is this just a single (cell-array) value?
-        ray_rad{1, 1}(d) = (  # Rayleigh Radience
+        # TODO: cell array -> list?
+        ray_rad.append(  # Rayleigh Radience
             ((irr(1, d)/ESd)*1*tau(d)*Pr(d))/(4*pi*cosd(90-satel))
         )
+        # ray_rad{1, 1}(d) = (  # Rayleigh Radience
+        #     ((irr(1, d)/ESd)*1*tau(d)*Pr(d))/(4*pi*cosd(90-satel))
+        # )
     end
 
     # rrs constant calculation (Kerr et al. 2018 and Mobley 1994)
@@ -358,12 +361,13 @@ for z in range(sz_files):  # for each file
                         (
                             pi*(
                                 (single(A(j, k, d))*kf(d, 1)/ebw(1, d)) -
-                                ray_rad{1, 1}(1, d)
+                                ray_rad[d]
+                                # ray_rad{1, 1}(1, d)
                             )*ESd**2
                         ) / (irr(1, d)*TZ*TV)
                     )
                 end
-            else Rrs(j, k, :) = NaN
+            else Rrs[j, k, :] = NaN
             end
         end
     end
@@ -462,8 +466,8 @@ for z in range(sz_files):  # for each file
                         ):
                             # Sum bands 3-5 for selected veg to distinguish
                             # wetland from upland
-                            sum_veg(t) = sum(Rrs(j, k, 3:5))
-                            sum_veg2(t) = sum(Rrs(j, k, 7:8))
+                            sum_veg(t) = sum(Rrs[j, k, 3:5])
+                            sum_veg2(t) = sum(Rrs[j, k, 7:8])
                             # Compute difference of predicted B5 value from
                             # actual valute
                             dead_veg(t) = (
@@ -485,14 +489,14 @@ for z in range(sz_files):  # for each file
                         Rrs(j, k, 7) > 0 and
                         Rrs(j, k, 8) > 0
                     ):
-                        water(u, 1:8) = double(Rrs(j, k, :))
-                        water_rrs(1:6) = Rrs(j, k, 1:6)./(zeta + G.*Rrs(j, k, 1:6))
+                        water[u, 1:8] = double(Rrs[j, k, :])
+                        water_rrs[1:6] = Rrs[j, k, 1:6]./(zeta + G.*Rrs[j, k, 1:6])
                         if (
                             water_rrs(4) > water_rrs(2) and
                             water_rrs(4) < 0.12 and
                             water_rrs(5) < water_rrs(3)
                         ):
-                            sum_water_rrs(u) = sum(water_rrs(3:5))
+                            sum_water_rrs(u) = sum(water_rrs[3:5])
                         end
                         u = u+1
                         # NDGI to identify glinted water pixels
@@ -525,7 +529,7 @@ for z in range(sz_files):  # for each file
                         Rrs(j, k, 4) < Rrs(j, k, 5) and
                         Rrs(j, k, 4) < Rrs(j, k, 3)
                     ):
-                        water(u, 1:8) = double(Rrs(j, k, :))
+                        water[u, 1:8] = double(Rrs[j, k, :])
                         water(u, 9) = 2  # Mark array2<array1 glinted pixels
                         u = u+1
                         v = v+1
@@ -537,7 +541,7 @@ for z in range(sz_files):  # for each file
                         Rrs(j, k, 4) > Rrs(j, k, 3)
                     ):
                         water(u, 9) = 3  # Mark array2>array1 glinted pixels
-                        water(u, 1:8) = double(Rrs(j, k, :))
+                        water[u, 1:8] = double(Rrs[j, k, :])
                         u = u + 1
                         v = v + 1
                     # elif (
@@ -566,16 +570,16 @@ for z in range(sz_files):  # for each file
         n_water = u
         n_glinted = v  # Number of glinted water pixels
 
-        idx = find(water(:, 1) == 0)
-        water(idx, :) = []
-        water7 = water(:, 7)
-        water8 = water(:, 8)
+        idx = find(water[:, 1] == 0)
+        water[idx, :] = []
+        water7 = water[:, 7]
+        water8 = water[:, 8]
         # Positive minimum Band 7 value used for deglinting
         mnNIR1 = min(water7(water7 > 0))
         # Positive minimum Band 8 value used for deglinting
         mnNIR2 = min(water8(water8 > 0))
 
-        idx_gf = find(water(:, 9) == 1)  # Glint-free water
+        idx_gf = find(water[:, 9] == 1)  # Glint-free water
 
         if v > 0.25 * u:
             Update = 'Deglinting'
@@ -588,27 +592,28 @@ for z in range(sz_files):  # for each file
                     # for deglinting in DT (Hedley et al. 2005)
                     for b in range(6):
                             if b == 1 or b == 4 or b == 6:
-                                #slope1 = water(:, b)\water(:, 8)
+                                # slope1 = water(:, b)\water(:, 8)
                                 slope1 = do_regression(
-                                    water(:, b),
-                                    water(:, 8)
+                                    water[:, b],
+                                    water[:, 8]
                                 )
                             else:
-                                #slope1 = water(:, b)\water(:, 7)
+                                # slope1 = water(:, b)\water(:, 7)
                                 slope1 = do_regression(
-                                    water(:, b),
-                                    water(:, 7)
+                                    water[:, b],
+                                    water[:, 7]
                                 )
                             end
                     E_glint(1, b) = single(slope1)
                     end
-            E_glint # = [0.8075    0.7356    0.8697    0.7236    0.9482    0.7902]
-        else Update = 'Glint-free'
+            E_glint  # = [0.8075    0.7356    0.8697    0.7236    0.9482    0.7902]
+        else:
+            Update = 'Glint-free'
             id2 = 'glintfree'
         end
 
         ## Edge Detection
-       img_sub = Rrs(:, :, 5)
+       img_sub = Rrs[:, :, 5]
        BWbin = imbinarize(img_sub)
        BW = imtophat(BWbin, strel('square', 10))
 #        BW1 = edge(BWtop, 'canny')
