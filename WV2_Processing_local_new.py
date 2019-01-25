@@ -64,7 +64,15 @@ gamma = [
     g * 0.01 for g in [1.499, 1.471, 1.442, 1.413, 1.413, 1.413, 1.384, 1.384]
 ]
 
-for z in range(sz_files):
+
+def do_regression(X, y):
+    # linear regression X\y AKA
+    # inv(X'*X)*X'*y;  % matlab
+    # beta = np.dot(np.dot(inv(np.dot(X.T, X)), X.T), y)  # for py <3.4
+    return inv(X.T @ X) @ X.T @ y  # python
+
+
+for z in range(sz_files):  # for each file
     fname = path.basename(matfiles[z])
     id = fname[1:19]
 
@@ -576,9 +584,17 @@ for z in range(sz_files):
                     # for deglinting in DT (Hedley et al. 2005)
                     for b in range(6):
                             if b == 1 or b == 4 or b == 6:
-                                # linear regression:
-                                slope1 = water(:, b)\water(:, 8)
-                            else slope1 = water(:, b)\water(:, 7)
+                                #slope1 = water(:, b)\water(:, 8)
+                                slope1 = do_regression(
+                                    water(:, b),
+                                    water(:, 8)
+                                )
+                            else:
+                                #slope1 = water(:, b)\water(:, 7)
+                                slope1 = do_regression(
+                                    water(:, b),
+                                    water(:, 7)
+                                )
                             end
                     E_glint(1, b) = single(slope1)
                     end
