@@ -554,10 +554,13 @@ for z in range(sz_files):  # for each file
                         u = u + 1
                         v = v + 1
                     # elif (
-                    #     (Rrs(j,k,4)-Rrs(j,k,8))/(Rrs(j,k,4)+Rrs(j,k,8)) < 0.55
+                    #     (Rrs(j,k,4)-Rrs(j,k,8)) /
+                    #     (Rrs(j,k,4)+Rrs(j,k,8)) < 0.55
                     #     and Rrs(j,k,8) < 0.2
-                    #     and (Rrs(j,k,7)-Rrs(j,k,2))/(Rrs(j,k,7)+Rrs(j,k,2)) < 0.1
-                    #     and (Rrs(j,k,8)-Rrs(j,k,5))/(Rrs(j,k,8)+Rrs(j,k,5)) < 0.3
+                    #     and (Rrs(j,k,7)-Rrs(j,k,2)) /
+                    #       (Rrs(j,k,7)+Rrs(j,k,2)) < 0.1
+                    #     and (Rrs(j,k,8)-Rrs(j,k,5)) /
+                    #       (Rrs(j,k,8)+Rrs(j,k,5)) < 0.3
                     #     and Rrs(j,k,1) > 0
                     #     and Rrs(j,k,2) > 0
                     #     and Rrs(j,k,3) > 0
@@ -615,7 +618,7 @@ for z in range(sz_files):  # for each file
                             end
                     E_glint(1, b) = single(slope1)
                     end
-            E_glint  # = [0.8075    0.7356    0.8697    0.7236    0.9482    0.7902]
+            E_glint  # = [0.8075 0.7356 0.8697 0.7236 0.9482 0.7902]
         else:
             Update = 'Glint-free'
             id2 = 'glintfree'
@@ -657,7 +660,8 @@ for z in range(sz_files):  # for each file
 
         ## Determine Rrs-infinite from glint-free water pixels
 #         water_gf = water(idx_gf, 1:8)
-# Sort all values in water by NIR2 column (assumes deepest water is darkest is NIR2)
+# Sort all values in water by NIR2 column
+# (assumes deepest water is darkest is NIR2)
 #         dp_max_sort = sortrows(water_gf, 8, 'ascend')
 #         idx_dp = round(size(dp_max_sort, 1)*0.001) # Use "deepest" 0.1# pixels
 #         dp_pct = dp_max_sort(1:idx_dp, :)
