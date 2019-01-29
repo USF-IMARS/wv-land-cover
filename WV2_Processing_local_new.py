@@ -431,7 +431,7 @@ for z in range(sz_files):  # for each file
 #         Kd = [0.036 0.037 0.075 0.32 0.484 1.416]
 
         # === Setup for Deglint, Bathymetry, and Decision Tree
-        b = 1
+        b = 1  # developed land counter?
         t = 1
         u = 1
         y = 0
@@ -441,6 +441,7 @@ for z in range(sz_files):  # for each file
         dead_veg(t) = 0
         sz_ar = sz(1)*sz(2)
         water = zeros(sz_ar, 9)
+        sum_SD = []  # sand & developed
         for j in range(sz(1)):
             for k in range(sz(2)):
                 if isnan(Rrs(j, k, 1)) == 0:
@@ -453,9 +454,9 @@ for z in range(sz_files):  # for each file
                             (Rrs(j, k, 7) + Rrs(j, k, 2))
                         ) < 0.65 and
                         Rrs(j, k, 5) > Rrs(j, k, 4) and
-                        Rrs(j, k, 4) > Rrs(j, k, 3)  # Sand & Developed
-                    ):
-                        sum_SD(b) = sum(Rrs[j, k, 6:8])
+                        Rrs(j, k, 4) > Rrs(j, k, 3)
+                    ):  # Sand & Developed
+                        sum_SD.append(sum(Rrs[j, k, 6:8]))
                         b = b+1
                     # Identify vegetation (excluding grass)
                     elif (
@@ -679,8 +680,8 @@ for z in range(sz_files):  # for each file
 # #         rrs_inf = [0.00512 0.00686 0.008898 0.002553 0.001506 0.000403]
 # #         plot(rrs_inf)
         # === Calculate target class metrics
-        avg_SD_sum = mean(sum_SD(:))
-        stdev_SD_sum = std(sum_SD(:))
+        avg_SD_sum = mean(sum_SD)
+        stdev_SD_sum = std(sum_SD)
         avg_veg_sum = mean(sum_veg(:))
         avg_dead_veg = mean(dead_veg(:))
         avg_mang_sum = mean(sum_veg2(:))
