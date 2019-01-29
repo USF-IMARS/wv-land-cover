@@ -431,9 +431,10 @@ for z in range(sz_files):  # for each file
 #         Kd = [0.036 0.037 0.075 0.32 0.484 1.416]
 
         # === Setup for Deglint, Bathymetry, and Decision Tree
+        # TODO: these counters are not needed now that list.append is used(?)
         b = 1  # developed land counter?
         t = 1  # veg counter?
-        u = 1
+        u = 1  # water counter?
         y = 0
         v = 0
         sum_SD = []  # sand & developed
@@ -441,6 +442,7 @@ for z in range(sz_files):  # for each file
         sum_veg = [0]
         sum_veg2 = []
         dead_veg = [0]
+        sum_water_rrs = []
         sz_ar = sz(1)*sz(2)
         water = zeros(sz_ar, 9)
         for j in range(sz(1)):
@@ -508,8 +510,10 @@ for z in range(sz_files):  # for each file
                             water_rrs(4) < 0.12 and
                             water_rrs(5) < water_rrs(3)
                         ):
-                            sum_water_rrs(u) = sum(water_rrs[3:5])
+                            sum_water_rrs.append(sum(water_rrs[3:5]))
                         end
+                        # WARN: u increments regardless sum_water_rrs append ?
+                        #       is this intentional and what does it mean?
                         u = u+1
                         # NDGI to identify glinted water pixels
                         # (some confusion w/ clouds)
@@ -688,7 +692,7 @@ for z in range(sz_files):  # for each file
         avg_mang_sum = mean(sum_veg2)
         idx_water2 = find(sum_water_rrs == 0)
         sum_water_rrs(idx_water2) = []
-        avg_water_sum = mean(sum_water_rrs(:))
+        avg_water_sum = mean(sum_water_rrs)
 
         if cl_cov > 0:
             # Number of cloud pixels (rounded down to nearest integer) based on
