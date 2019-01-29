@@ -499,7 +499,7 @@ for z in range(sz_files):  # for each file
                         water[u, 1:8] = double(Rrs[j, k, :])
                         water_rrs[1:6] = rdivide(
                             Rrs[j, k, 1:6],
-                            (zeta + G.*Rrs[j, k, 1:6])
+                            (zeta + G*Rrs[j, k, 1:6])
                         )
                         if (
                             water_rrs(4) > water_rrs(2) and
@@ -642,7 +642,7 @@ for z in range(sz_files):  # for each file
 #         water10(:, 1:2) = water(idx_gf, 2:3)
 #         water10(:, 1:2) = rdivide(
 #             water10(:, 1:2),
-#             (zeta + G.*water10(:, 1:2))
+#             (zeta + G*water10(:, 1:2))
 #         )
 #         waterdp = rdivide(
 #             real(log(1000*(water10(:, 1))),
@@ -669,7 +669,7 @@ for z in range(sz_files):  # for each file
 #         # Convert to subsurface rrs
 #         dp_rrs = rdivide(
 #             dp_pct(:, 1:8),
-#             (zeta + G.*dp_pct(:, 1:8))
+#             (zeta + G*dp_pct(:, 1:8))
 #         )
 #         # Mean and Median values too high
 #         rrs_inf = min(dp_rrs(:, 1:8)) #median(dp_rrs(:, 1:8)) - 2*std(dp_rrs(:, 1:8))
@@ -717,7 +717,7 @@ for z in range(sz_files):  # for each file
             # Was Rrs_0=
             Rrs(j, k, 1:6) = rdivide(
                 Rrs_deglint(1:6),
-                (zeta + G.*Rrs_deglint(1:6))
+                (zeta + G*Rrs_deglint(1:6))
             )
 
             # Relative depth estimate
@@ -737,7 +737,7 @@ for z in range(sz_files):  # for each file
             # (Kerr et al. 2018, Lee et al. 1998)
             Rrs(j, k, 1:6) = rdivide(
                 Rrs(j, k, 1:6),
-                (zeta + G.*Rrs(j, k, 1:6))
+                (zeta + G*Rrs(j, k, 1:6))
             )
             # Calculate relative depth (Stumpf 2003 ratio transform)
             dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
@@ -824,7 +824,7 @@ for z in range(sz_files):  # for each file
                                 # Convert above-surface Rrs to below-surface rrs (Kerr et al. 2018)
                                 Rrs(j, k, 1:6) = rdivide(
                                     Rrs_deglint(1:6),
-                                    (zeta + G.*Rrs_deglint(1:6)) # Was Rrs_0=
+                                    (zeta + G*Rrs_deglint(1:6)) # Was Rrs_0=
                                 )
 
                                 # Relative depth estimate
@@ -864,7 +864,7 @@ for z in range(sz_files):  # for each file
                                 # Convert above-surface Rrs to subsurface rrs (Kerr et al. 2018,  Lee et al. 1998)
                                 Rrs(j, k, 1:6) = rdivide(
                                     Rrs(j, k, 1:6),
-                                    (zeta + G.*Rrs(j, k, 1:6))
+                                    (zeta + G*Rrs(j, k, 1:6))
                                 )
                                 dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3))) # Calculate relative depth (Stumpf 2003 ratio transform)
                                 if dp > 0 and dp < 2
