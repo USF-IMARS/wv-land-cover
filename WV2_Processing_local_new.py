@@ -793,7 +793,7 @@ for z in range(sz_files):  # for each file
             num_cld_pix = round(num_pix*cl_cov*0.01)
             # Sort all pixel blue-values in descending order. Cloud mask
             # threshold will be num_cld_pix'th highest value
-            srt_c = sort(c_val, 'descend')
+            srt_c = list(c_val).sort(reverse=True)
             cld_mask = srt_c(num_cld_pix)  # Set cloud mask threshold
         else:
             cld_mask = max(c_val)+1
