@@ -580,14 +580,14 @@ for z in range(sz_files):  # for each file
                         Rrs[j, k, 8] > 0
                     ):
                         water[u, 1:8] = float(Rrs[j, k, :])
-                        water_rrs[1:6] = rdivide(
+                        water_rrs = rdivide(
                             Rrs[j, k, 1:6],
                             (zeta + G*Rrs[j, k, 1:6])
                         )
                         if (
-                            water_rrs(4) > water_rrs(2) and
-                            water_rrs(4) < 0.12 and
-                            water_rrs(5) < water_rrs(3)
+                            water_rrs[4] > water_rrs[2] and
+                            water_rrs[4] < 0.12 and
+                            water_rrs[5] < water_rrs[3]
                         ):
                             sum_water_rrs.append(sum(water_rrs[3:5]))
                         # end
