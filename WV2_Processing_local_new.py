@@ -84,6 +84,7 @@ def read_xml(filename):
     # ==================================================================
     # TODO: replace w/ python xml.etree.ElementTree
     s = xml2struct(Z)
+    szB = [0]*3
     # save XMLtest.mat s
     # Extract calibration factors & acquisition time from
     # metadata for each band
@@ -224,7 +225,7 @@ for z in range(sz_files):  # for each file
 
     TODO_WHAT_GOES_HERE = read_xml(fname)
 
-    szB(3) = 8
+    szB[3] = 8
 
     # ==================================================================
     # === Calculate Earth-Sun distance and relevant geometry
@@ -277,18 +278,19 @@ for z in range(sz_files):  # for each file
     thetaplus = acosd(
         cosd(90-sunel)*cosd(90-satel) - sind(90-sunel)*sind(90-satel)*cosd(az)
     )
-
+    Pr = [0]*8
     for d in range(8):
         # Rayleigh scattering phase function (described in Bucholtz 1995)
-        Pr(d) = (
+        Pr[d] = (
             (3/(4*(1+2*gamma(d)))) *
             ((1+3*gamma(d))+(1-gamma(d))*cosd(thetaplus)**2)
         )
     # end
 
+    tau = [0]*8
     for d in range(8):
         # Rayleigh optical thickness (assume std pressure of 1013.25 mb)
-        tau(d) = (
+        tau[d] = (
             0.008569*(cw(d)**-4)*(1 + 0.0113*(cw(d)**-2) + 0.00013*cw(d)**-4)
         )
     # end
@@ -330,9 +332,10 @@ for z in range(sz_files):  # for each file
 
     # Adjust file size: Input file (A) warped may contain more or fewer
     # columns/rows than original NITF file, and some may be corrupt.
-    sz(1) = min(szA(1), szB(1))
-    sz(2) = min(szA(2), szB(2))
-    sz(3) = 8
+    sz = [0]*3
+    sz[1] = min(szA(1), szB(1))
+    sz[2] = min(szA(2), szB(2))
+    sz[3] = 8
 
     # === Assign NaN to no-data pixels and radiometrically calibrate and
     # convert to Rrs
@@ -424,8 +427,9 @@ for z in range(sz_files):  # for each file
             0.015875283, 0.000869138, 0.00067143
         ]
 
+        Kd = [0]*8
         for b in range(8):
-            Kd(b) = single((1+c1*sunzen)*v1(b)+c2*(1-c3*exp(-c4*v1(b)))*v2(b))
+            Kd[b] = single((1+c1*sunzen)*v1(b)+c2*(1-c3*exp(-c4*v1(b)))*v2(b))
         # end
 
 #         Kd = [0.036 0.037 0.075 0.32 0.484 1.416]
@@ -445,12 +449,13 @@ for z in range(sz_files):  # for each file
         sum_water_rrs = []
         sz_ar = sz(1)*sz(2)
         water = zeros(sz_ar, 9)
+        c_val = []
         for j in range(sz(1)):
             for k in range(sz(2)):
                 if isnan(Rrs[j, k, 1]) == 0:
                     num_pix = num_pix + 1  # Count number of non-NaN pixels
                     # Record coastal band value for cloud mask prediction
-                    c_val(num_pix) = Rrs[j, k, 1]
+                    c_val.append(Rrs[j, k, 1])
                     if (
                         (
                             (Rrs[j, k, 7] - Rrs[j, k, 2]) /
@@ -525,7 +530,7 @@ for z in range(sz_files):  # for each file
                             Rrs[j, k, 4] < Rrs[j, k, 3]
                         ):
                             v = v+1
-                            water(u, 9) = 2  # Mark array2<array1 glinted pixls
+                            water[u, 9] = 2  # Mark array2<array1 glinted pixls
                         elif(
                             Rrs[j, k, 8] > Rrs[j, k, 7] and
                             Rrs[j, k, 6] > Rrs[j, k, 7] and
@@ -534,9 +539,9 @@ for z in range(sz_files):  # for each file
                             Rrs[j, k, 4] > Rrs[j, k, 3]
                         ):
                             v = v+1
-                            water(u, 9) = 3  # Mark array2>array1 glinted pixls
+                            water[u, 9] = 3  # Mark array2>array1 glinted pixls
                         else:
-                            water(u, 9) = 1  # Mark records of glint-free water
+                            water[u, 9] = 1  # Mark records of glint-free water
                         # end
                     elif(
                         Rrs[j, k, 8] < Rrs[j, k, 7] and
@@ -546,7 +551,7 @@ for z in range(sz_files):  # for each file
                         Rrs[j, k, 4] < Rrs[j, k, 3]
                     ):
                         water[u, 1:8] = double(Rrs[j, k, :])
-                        water(u, 9) = 2  # Mark array2<array1 glinted pixels
+                        water[u, 9] = 2  # Mark array2<array1 glinted pixels
                         u = u+1
                         v = v+1
                     elif (
@@ -556,7 +561,7 @@ for z in range(sz_files):  # for each file
                         Rrs[j, k, 4] > Rrs[j, k, 5] and
                         Rrs[j, k, 4] > Rrs[j, k, 3]
                     ):
-                        water(u, 9) = 3  # Mark array2>array1 glinted pixels
+                        water[u, 9] = 3  # Mark array2>array1 glinted pixels
                         water[u, 1:8] = double(Rrs[j, k, :])
                         u = u + 1
                         v = v + 1
@@ -609,6 +614,7 @@ for z in range(sz_files):  # for each file
             # water2 = [water(idx_gf, 1:8);water(idx_w2, 1:8)];
             # Calculate linear fitting of all MS bands vs NIR1 & NIR2
             # for deglinting in DT (Hedley et al. 2005)
+            E_glint = [0]*6
             for b in range(6):
                 if b == 1 or b == 4 or b == 6:
                     # slope1 = water(:, b)\water(:, 8)
@@ -623,9 +629,9 @@ for z in range(sz_files):  # for each file
                         water[:, 7]
                     )
                 # end
-            E_glint(1, b) = single(slope1)
+            E_glint[b] = single(slope1)
             # end
-            E_glint  # = [0.8075 0.7356 0.8697 0.7236 0.9482 0.7902]
+            # E_glint  # = [0.8075 0.7356 0.8697 0.7236 0.9482 0.7902]
         else:
             Update = 'Glint-free'
             id2 = 'glintfree'
@@ -691,7 +697,7 @@ for z in range(sz_files):  # for each file
         avg_dead_veg = mean(dead_veg)
         avg_mang_sum = mean(sum_veg2)
         idx_water2 = find(sum_water_rrs == 0)
-        sum_water_rrs(idx_water2) = []
+        sum_water_rrs[idx_water2] = []
         avg_water_sum = mean(sum_water_rrs)
 
         if cl_cov > 0:
@@ -716,22 +722,22 @@ for z in range(sz_files):  # for each file
         if v > u*0.25:
             # Deglint equation
             Rrs_deglint[1, 1] = (
-                Rrs[j, k, 1] - (E_glint(1)*(Rrs[j, k, 8] - mnNIR2))
+                Rrs[j, k, 1] - (E_glint[1]*(Rrs[j, k, 8] - mnNIR2))
             )
             Rrs_deglint[2, 1] = (
-                Rrs[j, k, 2] - (E_glint(2)*(Rrs[j, k, 7] - mnNIR1))
+                Rrs[j, k, 2] - (E_glint[2]*(Rrs[j, k, 7] - mnNIR1))
             )
             Rrs_deglint[3, 1] = (
-                Rrs[j, k, 3] - (E_glint(3)*(Rrs[j, k, 7] - mnNIR1))
+                Rrs[j, k, 3] - (E_glint[3]*(Rrs[j, k, 7] - mnNIR1))
             )
             Rrs_deglint[4, 1] = (
-                Rrs[j, k, 4] - (E_glint(4)*(Rrs[j, k, 8] - mnNIR2))
+                Rrs[j, k, 4] - (E_glint[4]*(Rrs[j, k, 8] - mnNIR2))
             )
             Rrs_deglint[5, 1] = (
-                Rrs[j, k, 5] - (E_glint(5)*(Rrs[j, k, 7] - mnNIR1))
+                Rrs[j, k, 5] - (E_glint[5]*(Rrs[j, k, 7] - mnNIR1))
             )
             Rrs_deglint[6, 1] = (
-                Rrs[j, k, 6] - (E_glint(6)*(Rrs[j, k, 8] - mnNIR2))
+                Rrs[j, k, 6] - (E_glint[6]*(Rrs[j, k, 8] - mnNIR2))
             )
 
             # Convert above-surface Rrs to below-surface rrs (Kerr et al. 2018)
@@ -746,7 +752,7 @@ for z in range(sz_files):  # for each file
             # (Stumpf 2003 ratio transform scaled to 1-10)
             dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
             if dp > 0 and dp < 2:
-                Bathy(j, k) = dp
+                Bathy[j, k] = dp
             else:
                 dp = 0
             # end
@@ -768,7 +774,7 @@ for z in range(sz_files):  # for each file
             # Calculate relative depth (Stumpf 2003 ratio transform)
             dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
             if dp > 0 and dp < 2:
-                Bathy(j, k) = dp
+                Bathy[j, k] = dp
             else:
                 dp = 0
             # end
@@ -790,33 +796,33 @@ for z in range(sz_files):  # for each file
                             Rrs[j, k, 7] < Rrs[j, k, 2] and
                             Rrs[j, k, 8] > Rrs[j, k, 5]
                         ):
-                            map(j, k) = 0  # Shadow
+                            map[j, k] = 0  # Shadow
                         elif (  # Buildings & bright sand
                             (Rrs[j, k, 8] - Rrs[j, k, 5]) /
                             (Rrs[j, k, 8] + Rrs[j, k, 5]) < 0.01 and
                             Rrs[j, k, 8] > 0.05
                         ):
                             if BW(j, k) == 1:
-                                map(j, k) = 11  # Developed
+                                map[j, k] = 11  # Developed
                             elif sum(Rrs[j, k, 6:8]) < avg_SD_sum:
-                                map(j, k) = 22  # Mud (intertidal?)
+                                map[j, k] = 22  # Mud (intertidal?)
                             else:
-                                map(j, k) = 21  # Beach/sand/soil
+                                map[j, k] = 21  # Beach/sand/soil
                             # end
                         elif (
                             Rrs[j, k, 5] >
                             (Rrs[j, k, 2]+((Rrs[j, k, 7]-Rrs[j, k, 2])/5)*2)
                         ):
-                            map(j, k) = 21  # Beach/sand/soil
+                            map[j, k] = 21  # Beach/sand/soil
                         elif (
                             Rrs[j, k, 5] < (
                                 ((Rrs[j, k, 7] - Rrs[j, k, 2])/5)*3 +
                                 Rrs[j, k, 2]
                             )*0.60 and Rrs[j, k, 7] > 0.2
                         ):
-                            map(j, k) = 31  # Marsh grass
+                            map[j, k] = 31  # Marsh grass
                         else:
-                            map(j, k) = 22  # Mud
+                            map[j, k] = 22  # Mud
                         # end
                     elif (
                         Rrs[j, k, 2] > Rrs[j, k, 3] and
@@ -830,9 +836,9 @@ for z in range(sz_files):  # for each file
                         (Rrs[j, k, 8] + Rrs[j, k, 5]) < 0.1
                     ):
                         if BW(j, k) == 1:
-                            map(j, k) = 11  # Shadow/Developed
+                            map[j, k] = 11  # Shadow/Developed
                         else:
-                            map(j, k) = 22  # Mud
+                            map[j, k] = 22  # Mud
                         # end
                     # === Vegetation
                     elif (  # Vegetation pixels (NDVI)
@@ -852,7 +858,7 @@ for z in range(sz_files):  # for each file
                             (Rrs[j, k, 7] - Rrs[j, k, 8]) /
                             (Rrs[j, k, 7] + Rrs[j, k, 8]) > 0.01
                         ):
-                            map(j, k) = 0  # Shadow
+                            map[j, k] = 0  # Shadow
                         elif sum(Rrs[j, k, 3:5]) < avg_veg_sum:
                             # Agriculture filter based on elevated Blue
                             # band values
@@ -865,15 +871,15 @@ for z in range(sz_files):  # for each file
                                     sum(Rrs[j, k, 7:8]) /
                                     sum(Rrs[j, k, 3:5]) > 2
                                 ):
-                                    map(j, k) = 33  # Forested Wetland
+                                    map[j, k] = 33  # Forested Wetland
                                 # Dead vegetation or Marsh
                                 else:
-                                    map(j, k) = 31
+                                    map[j, k] = 31
                                 # end
                             else:
                                 # Forested Upland
                                 # (most likely agriculture)
-                                map(j, k) = 32
+                                map[j, k] = 32
                             # end
                         elif sum(Rrs[j, k, 7:8]) < avg_mang_sum:
                             # Agriculture filter based on elevated
@@ -889,20 +895,20 @@ for z in range(sz_files):  # for each file
                                     sum(Rrs[j, k, 7:8]) /
                                     sum(Rrs[j, k, 3:5]) > 2
                                 ):
-                                    map(j, k) = 33  # Forested Wetland
+                                    map[j, k] = 33  # Forested Wetland
                                 else:  # Marsh or Dead Vegetation
-                                    map(j, k) = 31
+                                    map[j, k] = 31
                                 # end
                             else:
                                 # Forested Upland
                                 # (most likely agriculture)
-                                map(j, k) = 32
+                                map[j, k] = 32
                             # end
                         elif (  # NDVI for high upland values
                             (Rrs[j, k, 8] - Rrs[j, k, 5]) /
                             (Rrs[j, k, 8] + Rrs[j, k, 5]) > 0.65
                         ):
-                            map(j, k) = 32  # Upland Forest/Grass
+                            map[j, k] = 32  # Upland Forest/Grass
                         elif (
 
                             Rrs[j, k, 5] > (
@@ -913,11 +919,11 @@ for z in range(sz_files):  # for each file
                             # Difference of B5 from predicted B5 by
                             # slope of B7:B4 to distinguish marsh
                             # (old: live vs dead trees/grass/marsh)
-                            map(j, k) = 31  # Marsh grass
+                            map[j, k] = 31  # Marsh grass
                         elif Rrs[j, k, 7] < 0.12:
-                            map(j, k) = 30  # Dead vegetation
+                            map[j, k] = 30  # Dead vegetation
                         else:
-                            map(j, k) = 32  # Upland Forest/Grass
+                            map[j, k] = 32  # Upland Forest/Grass
                         # end
                     # === Water
                     elif (  # Identify all water (glinted & glint-free)
@@ -935,32 +941,32 @@ for z in range(sz_files):  # for each file
                         Rrs[j, k, 4] > Rrs[j, k, 3] and
                         Rrs[j, k, 8] > 0
                     ):
-                        # map(j, k) = 5
+                        # map[j, k] = 5
                         if v > u*0.25:
                             # Deglint equation
                             Rrs_deglint[1, 1] = (
                                 Rrs[j, k, 1] -
-                                (E_glint(1)*(Rrs[j, k, 8] - mnNIR2))
+                                (E_glint[1]*(Rrs[j, k, 8] - mnNIR2))
                             )
                             Rrs_deglint[2, 1] = (
                                 Rrs[j, k, 2] -
-                                (E_glint(2)*(Rrs[j, k, 7] - mnNIR1))
+                                (E_glint[2]*(Rrs[j, k, 7] - mnNIR1))
                             )
                             Rrs_deglint[3, 1] = (
                                 Rrs[j, k, 3] -
-                                (E_glint(3)*(Rrs[j, k, 7] - mnNIR1))
+                                (E_glint[3]*(Rrs[j, k, 7] - mnNIR1))
                             )
                             Rrs_deglint[4, 1] = (
                                 Rrs[j, k, 4] -
-                                (E_glint(4)*(Rrs[j, k, 8] - mnNIR2))
+                                (E_glint[4]*(Rrs[j, k, 8] - mnNIR2))
                             )
                             Rrs_deglint[5, 1] = (
                                 Rrs[j, k, 5] -
-                                (E_glint(5)*(Rrs[j, k, 7] - mnNIR1))
+                                (E_glint[5]*(Rrs[j, k, 7] - mnNIR1))
                             )
                             Rrs_deglint[6, 1] = (
                                 Rrs[j, k, 6] -
-                                (E_glint(6)*(Rrs[j, k, 8] - mnNIR2))
+                                (E_glint[6]*(Rrs[j, k, 8] - mnNIR2))
                             )
 
                             # Convert above-surface Rrs to
@@ -978,7 +984,7 @@ for z in range(sz_files):  # for each file
                             log(1000*Rrs_0(2))/log(1000*Rrs_0(3))
                         )
                         if dp > 0 and dp < 2:
-                            Bathy(j, k) = dp
+                            Bathy[j, k] = dp
                         else:
                             dp = 0
                         # end
@@ -995,7 +1001,7 @@ for z in range(sz_files):  # for each file
 
                         # === DT
                         if Rrs[j, k, 6] < Rrs[j, k, 7]:
-                            map(j, k) = 0  # Shadow
+                            map[j, k] = 0  # Shadow
                         elif (
                             (Rrs[j, k, 3] - Rrs[j, k, 4]) /
                             (Rrs[j, k, 3] + Rrs[j, k, 4]) < 0.10
@@ -1006,13 +1012,13 @@ for z in range(sz_files):  # for each file
                                 Rrs[j, k, 4] > Rrs[j, k, 3] or
                                 Rrs[j, k, 5] > Rrs[j, k, 3]
                             ):
-                                map(j, k) = 53  # Soft bottom
+                                map[j, k] = 53  # Soft bottom
                             elif (  # NEW from 0.05
                                 sum(Rrs[j, k, 3:5]) > avg_water_sum and
                                 (Rrs[j, k, 5] - Rrs[j, k, 2]) /
                                 (Rrs[j, k, 5] + Rrs[j, k, 2]) > 0.1
                             ):
-                                map(j, k) = 52  # Soft bottom
+                                map[j, k] = 52  # Soft bottom
                             # Separate seagrass from dark water NEW
                             elif (
                                 Rrs[j, k, 4] > Rrs[j, k, 2] and
@@ -1025,15 +1031,15 @@ for z in range(sz_files):  # for each file
                                     (Rrs[j, k, 3] - Rrs[j, k, 5]) /
                                     (Rrs[j, k, 3] + Rrs[j, k, 5]) > 0.1
                                 ):
-                                    map(j, k) = 54  # Seagrass
+                                    map[j, k] = 54  # Seagrass
                                 else:
-                                    map(j, k) = 55  # Turbid water
+                                    map[j, k] = 55  # Turbid water
                                 # end
                             else:
-                                map(j, k) = 51  # Deep water
+                                map[j, k] = 51  # Deep water
                             # end
                         else:
-                            map(j, k) = 51  # Deep water
+                            map[j, k] = 51  # Deep water
                         # end
                     else:  # For glint-free/low-glint images
                         # Convert above-surface Rrs to subsurface rrs
@@ -1048,7 +1054,7 @@ for z in range(sz_files):  # for each file
                             log(1000*Rrs_0(2))/log(1000*Rrs_0(3))
                         )
                         if dp > 0 and dp < 2:
-                            Bathy(j, k) = dp
+                            Bathy[j, k] = dp
                         else:
                             dp = 0
                         # end
@@ -1064,7 +1070,7 @@ for z in range(sz_files):  # for each file
                         # end
                         # === DT
                         if Rrs[j, k, 6] < Rrs[j, k, 7]:
-                            map(j, k) = 0  # Shadow
+                            map[j, k] = 0  # Shadow
                         elif (
                             (Rrs[j, k, 3] - Rrs[j, k, 4]) /
                             (Rrs[j, k, 3] + Rrs[j, k, 4]) < 0.10
@@ -1075,13 +1081,13 @@ for z in range(sz_files):  # for each file
                                 Rrs[j, k, 4] > Rrs[j, k, 3] or
                                 Rrs[j, k, 5] > Rrs[j, k, 3]
                             ):
-                                map(j, k) = 53  # Soft bottom
+                                map[j, k] = 53  # Soft bottom
                             elif (
                                 sum(Rrs[j, k, 3:5]) > avg_water_sum and
                                 (Rrs[j, k, 5] - Rrs[j, k, 2]) /
                                 (Rrs[j, k, 5] + Rrs[j, k, 2]) > 0.1
                             ):
-                                map(j, k) = 52  # Soft bottom
+                                map[j, k] = 52  # Soft bottom
                             elif (  # Separate seagrass from dark water
                                 Rrs[j, k, 4] > Rrs[j, k, 2] and
                                 (Rrs[j, k, 3] - Rrs[j, k, 6]) /
@@ -1093,15 +1099,15 @@ for z in range(sz_files):  # for each file
                                     (Rrs[j, k, 3] + Rrs[j, k, 5]) >
                                     0.10
                                 ):
-                                    map(j, k) = 54  # Seagrass
+                                    map[j, k] = 54  # Seagrass
                                 else:
-                                    map(j, k) = 55  # Turbid water
+                                    map[j, k] = 55  # Turbid water
                                 # end
                             else:
-                                map(j, k) = 51  # Deep water
+                                map[j, k] = 51  # Deep water
                             # end
                         else:
-                            map(j, k) = 51  # Deep water
+                            map[j, k] = 51  # Deep water
                         # end
                     # end  # if v>u
                 # end  # If water/land
