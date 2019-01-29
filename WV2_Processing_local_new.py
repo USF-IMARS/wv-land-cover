@@ -715,30 +715,30 @@ for z in range(sz_files):  # for each file
     if d_t == 1:  # Execute Deglinting rrs and Bathymetry
         if v > u*0.25:
             # Deglint equation
-            Rrs_deglint(1, 1) = (
+            Rrs_deglint[1, 1] = (
                 Rrs[j, k, 1] - (E_glint(1)*(Rrs[j, k, 8] - mnNIR2))
             )
-            Rrs_deglint(2, 1) = (
+            Rrs_deglint[2, 1] = (
                 Rrs[j, k, 2] - (E_glint(2)*(Rrs[j, k, 7] - mnNIR1))
             )
-            Rrs_deglint(3, 1) = (
+            Rrs_deglint[3, 1] = (
                 Rrs[j, k, 3] - (E_glint(3)*(Rrs[j, k, 7] - mnNIR1))
             )
-            Rrs_deglint(4, 1) = (
+            Rrs_deglint[4, 1] = (
                 Rrs[j, k, 4] - (E_glint(4)*(Rrs[j, k, 8] - mnNIR2))
             )
-            Rrs_deglint(5, 1) = (
+            Rrs_deglint[5, 1] = (
                 Rrs[j, k, 5] - (E_glint(5)*(Rrs[j, k, 7] - mnNIR1))
             )
-            Rrs_deglint(6, 1) = (
+            Rrs_deglint[6, 1] = (
                 Rrs[j, k, 6] - (E_glint(6)*(Rrs[j, k, 8] - mnNIR2))
             )
 
             # Convert above-surface Rrs to below-surface rrs (Kerr et al. 2018)
             # Was Rrs_0=
             Rrs[j, k, 1:6] = rdivide(
-                Rrs_deglint(1:6),
-                (zeta + G*Rrs_deglint(1:6))
+                Rrs_deglint[1:6],
+                (zeta + G*Rrs_deglint[1:6])
             )
 
             # Relative depth estimate
@@ -747,7 +747,8 @@ for z in range(sz_files):  # for each file
             dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
             if dp > 0 and dp < 2:
                 Bathy(j, k) = dp
-            else dp = 0
+            else:
+                dp = 0
             end
             # for d = 1:5
             #     # Calculate water-column corrected benthic reflectance
@@ -768,7 +769,8 @@ for z in range(sz_files):  # for each file
             dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
             if dp > 0 and dp < 2:
                 Bathy(j, k) = dp
-            else dp = 0
+            else:
+                dp = 0
             end
         end
 
@@ -936,27 +938,27 @@ for z in range(sz_files):  # for each file
                                 # map(j, k) = 5
                                 if v > u*0.25:
                                     # Deglint equation
-                                    Rrs_deglint(1, 1) = (
+                                    Rrs_deglint[1, 1] = (
                                         Rrs[j, k, 1] -
                                         (E_glint(1)*(Rrs[j, k, 8] - mnNIR2))
                                     )
-                                    Rrs_deglint(2, 1) = (
+                                    Rrs_deglint[2, 1] = (
                                         Rrs[j, k, 2] -
                                         (E_glint(2)*(Rrs[j, k, 7] - mnNIR1))
                                     )
-                                    Rrs_deglint(3, 1) = (
+                                    Rrs_deglint[3, 1] = (
                                         Rrs[j, k, 3] -
                                         (E_glint(3)*(Rrs[j, k, 7] - mnNIR1))
                                     )
-                                    Rrs_deglint(4, 1) = (
+                                    Rrs_deglint[4, 1] = (
                                         Rrs[j, k, 4] -
                                         (E_glint(4)*(Rrs[j, k, 8] - mnNIR2))
                                     )
-                                    Rrs_deglint(5, 1) = (
+                                    Rrs_deglint[5, 1] = (
                                         Rrs[j, k, 5] -
                                         (E_glint(5)*(Rrs[j, k, 7] - mnNIR1))
                                     )
-                                    Rrs_deglint(6, 1) = (
+                                    Rrs_deglint[6, 1] = (
                                         Rrs[j, k, 6] -
                                         (E_glint(6)*(Rrs[j, k, 8] - mnNIR2))
                                     )
@@ -964,9 +966,9 @@ for z in range(sz_files):  # for each file
                                     # Convert above-surface Rrs to
                                     # below-surface rrs (Kerr et al. 2018)
                                     Rrs[j, k, 1:6] = rdivide(
-                                        Rrs_deglint(1:6),
+                                        Rrs_deglint[1:6],
                                         # Was Rrs_0=
-                                        (zeta + G*Rrs_deglint(1:6))
+                                        (zeta + G*Rrs_deglint[1:6])
                                     )
 
                                 # Relative depth estimate
