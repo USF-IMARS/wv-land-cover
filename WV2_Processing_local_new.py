@@ -23,6 +23,7 @@ from math import log
 import numpy
 from numpy import zeros
 from numpy import mean
+from numpy import isnan
 
 
 OUTPUT_NaN = 255
@@ -266,9 +267,21 @@ def geotiffread(X):
 
 
 def geotiffwrite():
+    # TODO
     # https://www.mathworks.com/help/map/ref/geotiffwrite.html
     pass
 
+
+def imtophat(I, SE):
+    # TODO:
+    # https://www.mathworks.com/help/images/ref/imtophat.html?searchHighlight=imtophat&s_tid=doc_srchtitle
+    pass
+
+
+def imbinarize(I):
+    # TODO:
+    # https://www.mathworks.com/help/images/ref/imbinarize.html?searchHighlight=imbinarize&s_tid=doc_srchtitle
+    pass
 
 for z in range(sz_files):  # for each file
     fname = path.basename(matfiles[z])
@@ -282,7 +295,7 @@ for z in range(sz_files):  # for each file
 
     (
         szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel, satel,
-        sensaz, aqday, satview, kf
+        sensaz, aqday, satview, kf, cl_cov
     ) = read_xml(fname)
 
     szB[3] = 8
@@ -513,7 +526,7 @@ for z in range(sz_files):  # for each file
         c_val = []
         for j in range(sz(1)):
             for k in range(sz(2)):
-                if isnan(Rrs[j, k, 1]) == 0:
+                if isnan(Rrs[j, k, 1]) is False:
                     num_pix = num_pix + 1  # Count number of non-NaN pixels
                     # Record coastal band value for cloud mask prediction
                     c_val.append(Rrs[j, k, 1])
