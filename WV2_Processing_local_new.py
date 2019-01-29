@@ -248,7 +248,7 @@ for z in range(sz_files):  # for each file
 
     (
         szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel, satel,
-        sensaz
+        sensaz, aqday, satview
     ) = read_xml(fname)
 
     szB[3] = 8
@@ -265,15 +265,15 @@ for z in range(sz_files):  # for each file
     # end
     # Convert time to UT
     UT = aqhour + (aqminute/60.0) + (aqsecond/3600.0)
-    B1 = int64(year/100)
-    B2 = 2-B1+int64(B1/4)
+    B1 = int(year/100)
+    B2 = 2-B1+int(B1/4)
     # Julian date
     JD = (
-        int64(365.25*(year+4716)) + int64(30.6001*(month+1)) + aqday +
+        int(365.25*(year+4716)) + int(30.6001*(month+1)) + aqday +
         UT/24.0 + B2 - 1524.5
     )
     D = JD - 2451545.0
-    degs = double(357.529 + 0.98560028*D)  # Degrees
+    degs = float(357.529 + 0.98560028*D)  # Degrees
     # Earth-Sun distance at given date (should be between 0.983 and 1.017)
     ESd = 1.00014 - 0.01671*cosd(degs) - 0.00014*cosd(2*degs)
 
@@ -335,7 +335,7 @@ for z in range(sz_files):  # for each file
     # end
 
     # rrs constant calculation (Kerr et al. 2018 and Mobley 1994)
-    G = single(1.56)  # constant (Kerr eq. 3)
+    G = float(1.56)  # constant (Kerr eq. 3)
     na = 1.00029  # Refractive index of air
     nw = 1.34  # Refractive index seawater
     # Incident angle for water-air from Snell's Law
@@ -354,7 +354,7 @@ for z in range(sz_files):  # for each file
         (tand(inc_ang2 - trans_wa)/(tand(inc_ang2 + trans_wa)))**2
     ))
     # rrs constant (~0.52) from Mobley 1994
-    zeta = real(single((1-pf1)*(1-pf2)/(nw**2)))
+    zeta = real(float((1-pf1)*(1-pf2)/(nw**2)))
     # ==================================================================
 
     # Adjust file size: Input file (A) warped may contain more or fewer
@@ -369,7 +369,7 @@ for z in range(sz_files):  # for each file
     # Create empty matrix for Rrs output
     # TODO: use numpy.array([interven[-N:]])
     # numpy.array([szA(1), szA(2), 8])
-    Rrs = single(zeros(szA(1), szA(2), 8))  # 8 bands x input size
+    Rrs = float(zeros(szA(1), szA(2), 8))  # 8 bands x input size
     for j in range(sz(1)):
         # Assign NaN to pixels of no data
         # If a pixel contains data values other than "zero" or
@@ -393,10 +393,10 @@ for z in range(sz_files):  # for each file
                     # Radiometrically calibrate and convert to Rrs
                     # (adapted from Radiometric Use of
                     # WorldView-2 Imagery(
-                    Rrs[j, k, d] = single(
+                    Rrs[j, k, d] = float(
                         (
                             pi*(
-                                (single(A(j, k, d))*kf(d, 1)/ebw(1, d)) -
+                                (float(A(j, k, d))*kf(d, 1)/ebw(1, d)) -
                                 ray_rad[d]
                                 # ray_rad{1, 1}(1, d)
                             )*ESd**2
@@ -456,7 +456,7 @@ for z in range(sz_files):  # for each file
 
         Kd = [0]*8
         for b in range(8):
-            Kd[b] = single((1+c1*sunzen)*v1(b)+c2*(1-c3*exp(-c4*v1(b)))*v2(b))
+            Kd[b] = float((1+c1*sunzen)*v1(b)+c2*(1-c3*exp(-c4*v1(b)))*v2(b))
         # end
 
 #         Kd = [0.036 0.037 0.075 0.32 0.484 1.416]
@@ -532,7 +532,7 @@ for z in range(sz_files):  # for each file
                         Rrs[j, k, 7] > 0 and
                         Rrs[j, k, 8] > 0
                     ):
-                        water[u, 1:8] = double(Rrs[j, k, :])
+                        water[u, 1:8] = float(Rrs[j, k, :])
                         water_rrs[1:6] = rdivide(
                             Rrs[j, k, 1:6],
                             (zeta + G*Rrs[j, k, 1:6])
@@ -577,7 +577,7 @@ for z in range(sz_files):  # for each file
                         Rrs[j, k, 4] < Rrs[j, k, 5] and
                         Rrs[j, k, 4] < Rrs[j, k, 3]
                     ):
-                        water[u, 1:8] = double(Rrs[j, k, :])
+                        water[u, 1:8] = float(Rrs[j, k, :])
                         water[u, 9] = 2  # Mark array2<array1 glinted pixels
                         u = u+1
                         v = v+1
@@ -589,7 +589,7 @@ for z in range(sz_files):  # for each file
                         Rrs[j, k, 4] > Rrs[j, k, 3]
                     ):
                         water[u, 9] = 3  # Mark array2>array1 glinted pixels
-                        water[u, 1:8] = double(Rrs[j, k, :])
+                        water[u, 1:8] = float(Rrs[j, k, :])
                         u = u + 1
                         v = v + 1
                     # elif (
@@ -610,7 +610,7 @@ for z in range(sz_files):  # for each file
                     #     and Rrs(j,k,8) > 0
                     # ):
                     #
-                    #     water(u, 1:8) = double(Rrs(j, k, :))
+                    #     water(u, 1:8) = float(Rrs(j, k, :))
                     #     u = u + 1
                     #     v = v + 1
                     # end
@@ -656,7 +656,7 @@ for z in range(sz_files):  # for each file
                         water[:, 7]
                     )
                 # end
-            E_glint[b] = single(slope1)
+            E_glint[b] = float(slope1)
             # end
             # E_glint  # = [0.8075 0.7356 0.8697 0.7236 0.9482 0.7902]
         else:
@@ -739,9 +739,9 @@ for z in range(sz_files):  # for each file
             cld_mask = max(c_val)+1
         # end
 
-        Bathy = single(zeros(szA(1), szA(2)))  # Preallocate for Bathymetry
-        Rrs_deglint = single(zeros(5, 1))  # Preallocate for deglinted Rrs
-        Rrs_0 = single(zeros(5, 1))  # Preallocate water-column corrected Rrs
+        Bathy = float(zeros(szA(1), szA(2)))  # Preallocate for Bathymetry
+        Rrs_deglint = float(zeros(5, 1))  # Preallocate for deglinted Rrs
+        Rrs_0 = float(zeros(5, 1))  # Preallocate water-column corrected Rrs
         # Create empty matrix for classification output
         map = zeros(szA(1), szA(2), 'uint8')
 
