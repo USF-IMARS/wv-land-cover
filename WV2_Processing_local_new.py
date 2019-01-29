@@ -15,10 +15,14 @@
 
 from os import path
 from glob import glob
-from math import pi
 import math
+from math import pi
+from math import exp
+from math import log
 
 import numpy
+from numpy import zeros
+from numpy import mean
 
 # === Assign input and output locations
 loc = 'RB'  # Typically the estuary acronym
@@ -274,7 +278,7 @@ for z in range(sz_files):  # for each file
 
     (
         szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel, satel,
-        sensaz, aqday, satview
+        sensaz, aqday, satview, kf
     ) = read_xml(fname)
 
     szB[3] = 8
@@ -451,10 +455,10 @@ for z in range(sz_files):  # for each file
         sunzen = 90.0 - sunel
         # c1-4 hard-coded, but v1 and v2 change with modified values of
         # aph(440), adg(440), bbp(440), Sdg, Y
-        # c1 = 0.005
-        # c2 = 4.18
-        # c3 = 0.52
-        # c4 = 10.8
+        c1 = 0.005
+        c2 = 4.18
+        c3 = 0.52
+        c4 = 10.8
         v2 = [  # bb (backscatter)
             0.023277868, 0.020883561, 0.018975346, 0.017605058, 0.016771098,
             0.015875283, 0.072734281, 0.068046578
@@ -1209,4 +1213,4 @@ for z in range(sz_files):  # for each file
             geotiffwrite(Z2, Rrs, R(1, 1), 'CoordRefSysCode', coor_sys)
         # end  # If dt = 1
     # end  # If dt>0
-end
+# end
