@@ -365,22 +365,22 @@ for z in range(sz_files):  # for each file
     na = 1.00029  # Refractive index of air
     nw = 1.34  # Refractive index seawater
     # Incident angle for water-air from Snell's Law
-    inc_ang2 = real(asind(sind(90-satel)*nw/na))
+    inc_ang2 = (asind(sind(90-satel)*nw/na))
     # Transmission angle for air-water incident light from Snell's Law
-    trans_aw = real(asind(sind(inc_ang)*na/nw))
+    trans_aw = (asind(sind(inc_ang)*na/nw))
     # Transmission angle for water-air incident light from Snell's Law
     trans_wa = 90-satel
     # Fresnel reflectance for air-water incident light (Mobley 1994)
-    pf1 = real(0.5*(
+    pf1 = (0.5*(
         (sind(inc_ang - trans_aw)/(sind(inc_ang + trans_aw)))**2 +
         (tand(inc_ang - trans_aw)/(tand(inc_ang + trans_aw)))**2
     ))
-    pf2 = real(0.5*(
+    pf2 = (0.5*(
         (sind(inc_ang2 - trans_wa)/(sind(inc_ang2 + trans_wa)))**2 +
         (tand(inc_ang2 - trans_wa)/(tand(inc_ang2 + trans_wa)))**2
     ))
     # rrs constant (~0.52) from Mobley 1994
-    zeta = real(float((1-pf1)*(1-pf2)/(nw**2)))
+    zeta = (float((1-pf1)*(1-pf2)/(nw**2)))
     # ==================================================================
 
     # Adjust file size: Input file (A) warped may contain more or fewer
@@ -710,7 +710,7 @@ for z in range(sz_files):  # for each file
 #             (zeta + G*water10(:, 1:2))
 #         )
 #         waterdp = rdivide(
-#             real(log(1000*(water10(:, 1))),
+#             (log(1000*(water10(:, 1))),
 #             log(1000*(water10(:, 2))))
 #         )
 #         water_dp = waterdp(waterdp>0 & waterdp<2)
@@ -803,7 +803,7 @@ for z in range(sz_files):  # for each file
             # Relative depth estimate
             # Calculate relative depth
             # (Stumpf 2003 ratio transform scaled to 1-10)
-            dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
+            dp = (log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
             if dp > 0 and dp < 2:
                 Bathy[j, k] = dp
             else:
@@ -812,7 +812,7 @@ for z in range(sz_files):  # for each file
             # for d = 1:5
             #     # Calculate water-column corrected benthic reflectance
             #     # (Traganos 2017 & Maritorena 1994)
-            #     Rrs(j, k, d) = real(
+            #     Rrs(j, k, d) = (
             #         ((Rrs_0(d)-rrs_inf(d))/exp(-2*Kd(1, d)*dp_sc))+rrs_inf(d)
             #     )
             # end
@@ -825,7 +825,7 @@ for z in range(sz_files):  # for each file
                 (zeta + G*Rrs[j, k, 1:6])
             )
             # Calculate relative depth (Stumpf 2003 ratio transform)
-            dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
+            dp = (log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
             if dp > 0 and dp < 2:
                 Bathy[j, k] = dp
             else:
@@ -1033,7 +1033,7 @@ for z in range(sz_files):  # for each file
                         # Relative depth estimate
                         # Calculate relative depth
                         # (Stumpf 2003 ratio transform scaled to 1-10)
-                        dp = real(
+                        dp = (
                             log(1000*Rrs_0(2))/log(1000*Rrs_0(3))
                         )
                         if dp > 0 and dp < 2:
@@ -1047,7 +1047,7 @@ for z in range(sz_files):  # for each file
                         #     # Calculate water-column corrected
                         #     # benthic reflectance (Traganos 2017 &
                         #     # Maritorena 1994)
-                        #     Rrs(j, k, d) = real(
+                        #     Rrs(j, k, d) = (
                         #         ((Rrs_0(d)-rrs_inf(d)) /
                         #         exp(-2*Kd(1, d)*dp_sc))+rrs_inf(d))
                         # end
@@ -1103,7 +1103,7 @@ for z in range(sz_files):  # for each file
                         )
                         # Calculate relative depth
                         # (Stumpf 2003 ratio transform)
-                        dp = real(
+                        dp = (
                             log(1000*Rrs_0(2))/log(1000*Rrs_0(3))
                         )
                         if dp > 0 and dp < 2:
@@ -1116,7 +1116,7 @@ for z in range(sz_files):  # for each file
                         #     # Calculate water-column corrected
                         #     # benthic reflectance (Traganos 2017 &
                         #     # Maritorena 1994)
-                        #     Rrs(j, k, d) = real(
+                        #     Rrs(j, k, d) = (
                         #         ((Rrs_0(d)-rrs_inf(d)) /
                         #         exp(-2*Kd(1, d)*dp_sc))+rrs_inf(d)
                         #     )
