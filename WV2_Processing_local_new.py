@@ -1218,7 +1218,7 @@ for z in range(sz_files):  # for each file
             if filter > 0:
                 dt_filt = DT_Filter(map, filter, sz(1), sz(2))
                 AA = [
-                    loc_out, id, '_', loc, '_Map_filt_', num2str(filter),
+                    loc_out, id, '_', loc, '_Map_filt_', str(filter),
                     '_benthicnew'
                 ]
                 geotiffwrite(
