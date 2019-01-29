@@ -439,6 +439,7 @@ for z in range(sz_files):  # for each file
         sum_SD = []  # sand & developed
         num_pix = 0
         sum_veg = [0]
+        sum_veg2 = []
         dead_veg = [0]
         sz_ar = sz(1)*sz(2)
         water = zeros(sz_ar, 9)
@@ -475,7 +476,7 @@ for z in range(sz_files):  # for each file
                             # Sum bands 3-5 for selected veg to distinguish
                             # wetland from upland
                             sum_veg.append(sum(Rrs[j, k, 3:5]))
-                            sum_veg2(t) = sum(Rrs[j, k, 7:8])
+                            sum_veg2.append(sum(Rrs[j, k, 7:8]))
                             # Compute difference of predicted B5 value from
                             # actual valute
                             dead_veg.append(
@@ -684,7 +685,7 @@ for z in range(sz_files):  # for each file
         stdev_SD_sum = std(sum_SD)
         avg_veg_sum = mean(sum_veg)
         avg_dead_veg = mean(dead_veg)
-        avg_mang_sum = mean(sum_veg2(:))
+        avg_mang_sum = mean(sum_veg2)
         idx_water2 = find(sum_water_rrs==0)
         sum_water_rrs(idx_water2) = []
         avg_water_sum = mean(sum_water_rrs(:))
