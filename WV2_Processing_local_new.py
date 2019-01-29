@@ -664,7 +664,8 @@ for z in range(sz_files):  # for each file
 # Sort all values in water by NIR2 column
 # (assumes deepest water is darkest is NIR2)
 #         dp_max_sort = sortrows(water_gf, 8, 'ascend')
-#         idx_dp = round(size(dp_max_sort, 1)*0.001) # Use "deepest" 0.1# pixels
+#         # Use "deepest" 0.1# pixels
+#         idx_dp = round(size(dp_max_sort, 1)*0.001)
 #         dp_pct = dp_max_sort(1:idx_dp, :)
 #         # Convert to subsurface rrs
 #         dp_rrs = rdivide(
@@ -672,8 +673,10 @@ for z in range(sz_files):  # for each file
 #             (zeta + G*dp_pct(:, 1:8))
 #         )
 #         # Mean and Median values too high
-#         rrs_inf = min(dp_rrs(:, 1:8)) #median(dp_rrs(:, 1:8)) - 2*std(dp_rrs(:, 1:8))
-# #         rrs_inf = [0.00512 0.00686 0.008898 0.002553 0.001506 0.000403] # Derived from Rrs_Kd_Model.xlsx for Default values
+#         #median(dp_rrs(:, 1:8)) - 2*std(dp_rrs(:, 1:8))
+#         rrs_inf = min(dp_rrs(:, 1:8))
+#           # Derived from Rrs_Kd_Model.xlsx for Default values
+# #         rrs_inf = [0.00512 0.00686 0.008898 0.002553 0.001506 0.000403]
 # #         plot(rrs_inf)
         # === Calculate target class metrics
         avg_SD_sum = mean(sum_SD(:))
@@ -685,33 +688,45 @@ for z in range(sz_files):  # for each file
         sum_water_rrs(idx_water2) = []
         avg_water_sum = mean(sum_water_rrs(:))
 
-        if cl_cov > 0
+        if cl_cov > 0:
             # Number of cloud pixels (rounded down to nearest integer) based on
-            #  metadata-reported percent cloud cover
+            # metadata-reported percent cloud cover
             num_cld_pix = round(num_pix*cl_cov*0.01)
             # Sort all pixel blue-values in descending order. Cloud mask
             # threshold will be num_cld_pix'th highest value
             srt_c = sort(c_val, 'descend')
-            cld_mask = srt_c(num_cld_pix) # Set cloud mask threshold
-        else cld_mask = max(c_val)+1
+            cld_mask = srt_c(num_cld_pix)  # Set cloud mask threshold
+        else:
+            cld_mask = max(c_val)+1
         end
 
-
-        Bathy = single(zeros(szA(1), szA(2))) # Preallocate for Bathymetry
-        Rrs_deglint = single(zeros(5, 1)) # Preallocate for deglinted Rrs
-        Rrs_0 = single(zeros(5, 1)) #Preallocation for water-column corrected Rrs
+        Bathy = single(zeros(szA(1), szA(2)))  # Preallocate for Bathymetry
+        Rrs_deglint = single(zeros(5, 1))  # Preallocate for deglinted Rrs
+        Rrs_0 = single(zeros(5, 1))  # Preallocate water-column corrected Rrs
         # Create empty matrix for classification output
         map = zeros(szA(1), szA(2), 'uint8')
 
-    if d_t == 1 # Execute Deglinting rrs and Bathymetry
-        if v > u*0.25
+    if d_t == 1:  # Execute Deglinting rrs and Bathymetry
+        if v > u*0.25:
             # Deglint equation
-            Rrs_deglint(1, 1) = (Rrs(j, k, 1) - (E_glint(1)*(Rrs(j, k, 8) - mnNIR2)))
-            Rrs_deglint(2, 1) = (Rrs(j, k, 2) - (E_glint(2)*(Rrs(j, k, 7) - mnNIR1)))
-            Rrs_deglint(3, 1) = (Rrs(j, k, 3) - (E_glint(3)*(Rrs(j, k, 7) - mnNIR1)))
-            Rrs_deglint(4, 1) = (Rrs(j, k, 4) - (E_glint(4)*(Rrs(j, k, 8) - mnNIR2)))
-            Rrs_deglint(5, 1) = (Rrs(j, k, 5) - (E_glint(5)*(Rrs(j, k, 7) - mnNIR1)))
-            Rrs_deglint(6, 1) = (Rrs(j, k, 6) - (E_glint(6)*(Rrs(j, k, 8) - mnNIR2)))
+            Rrs_deglint(1, 1) = (
+                Rrs(j, k, 1) - (E_glint(1)*(Rrs(j, k, 8) - mnNIR2))
+            )
+            Rrs_deglint(2, 1) = (
+                Rrs(j, k, 2) - (E_glint(2)*(Rrs(j, k, 7) - mnNIR1))
+            )
+            Rrs_deglint(3, 1) = (
+                Rrs(j, k, 3) - (E_glint(3)*(Rrs(j, k, 7) - mnNIR1))
+            )
+            Rrs_deglint(4, 1) = (
+                Rrs(j, k, 4) - (E_glint(4)*(Rrs(j, k, 8) - mnNIR2))
+            )
+            Rrs_deglint(5, 1) = (
+                Rrs(j, k, 5) - (E_glint(5)*(Rrs(j, k, 7) - mnNIR1))
+            )
+            Rrs_deglint(6, 1) = (
+                Rrs(j, k, 6) - (E_glint(6)*(Rrs(j, k, 8) - mnNIR2))
+            )
 
             # Convert above-surface Rrs to below-surface rrs (Kerr et al. 2018)
             # Was Rrs_0=
@@ -728,11 +743,15 @@ for z in range(sz_files):  # for each file
                 Bathy(j, k) = dp
             else dp = 0
             end
-#                                 for d = 1:5
-#                                     Rrs(j, k, d) = real(((Rrs_0(d)-rrs_inf(d))/exp(-2*Kd(1, d)*dp_sc))+rrs_inf(d)) # Calculate water-column corrected benthic reflectance (Traganos 2017 & Maritorena 1994)
-#                                 end
+            # for d = 1:5
+            #     # Calculate water-column corrected benthic reflectance
+            #     # (Traganos 2017 & Maritorena 1994)
+            #     Rrs(j, k, d) = real(
+            #         ((Rrs_0(d)-rrs_inf(d))/exp(-2*Kd(1, d)*dp_sc))+rrs_inf(d)
+            #     )
+            # end
 
-        else # For glint-free/low-glint images
+        else:  # For glint-free/low-glint images
             # Convert above-surface Rrs to subsurface rrs
             # (Kerr et al. 2018, Lee et al. 1998)
             Rrs(j, k, 1:6) = rdivide(
@@ -747,195 +766,378 @@ for z in range(sz_files):  # for each file
             end
         end
 
-
-    elif d_t == 2 # Execute Deglinting rrs, Bathymetery, and Decision Tree
+    elif d_t == 2:  # Execute Deglinting rrs, Bathymetery, and Decision Tree
         update = 'Running DT'
-              for j = 1:szA(1)
-               for k = 1:szA(2)
-                   if isnan(Rrs(j, k, 1)) == 0
-                       # === Mud, Developed and Sand
-                       if (Rrs(j, k, 7) - Rrs(j, k, 2))/(Rrs(j, k, 7) + Rrs(j, k, 2)) < 0.60 and Rrs(j, k, 5) > Rrs(j, k, 4) and Rrs(j, k, 4) > Rrs(j, k, 3)
-                            if Rrs(j, k, 7) < Rrs(j, k, 2) and Rrs(j, k, 8) > Rrs(j, k, 5)
-                                map(j, k) = 0 # Shadow
-                            elif (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.01 and Rrs(j, k, 8) > 0.05 # Buildings & bright sand
-                                if BW(j, k) == 1
-                                    map(j, k) = 11 # Developed
-                                elif sum(Rrs(j, k, 6:8)) < avg_SD_sum
-                                    map(j, k) = 22 # Mud (intertidal?)
-                                else map(j, k) = 21 # Beach/sand/soil
-                                end
-                            elif Rrs(j, k, 5) > (Rrs(j, k, 2)+((Rrs(j, k, 7)-Rrs(j, k, 2))/5)*2)
-                                map(j, k) = 21 # Beach/sand/soil
-                            elif Rrs(j, k, 5) < (((Rrs(j, k, 7) - Rrs(j, k, 2))/5)*3+Rrs(j, k, 2))*0.60 and Rrs(j, k, 7) > 0.2
-                                map(j, k) = 31 # Marsh grass
-                            else map(j, k) = 22 # Mud
+        for j = 1:szA(1):
+            for k = 1:szA(2):
+                if isnan(Rrs(j, k, 1)) == 0:
+                    # === Mud, Developed and Sand
+                    if (
+                        (Rrs(j, k, 7) - Rrs(j, k, 2)) /
+                        (Rrs(j, k, 7) + Rrs(j, k, 2)) < 0.60 and
+                        Rrs(j, k, 5) > Rrs(j, k, 4) and
+                        Rrs(j, k, 4) > Rrs(j, k, 3)
+                    ):
+                        if (
+                            Rrs(j, k, 7) < Rrs(j, k, 2) and
+                            Rrs(j, k, 8) > Rrs(j, k, 5)
+                        ):
+                            map(j, k) = 0  # Shadow
+                        elif (  # Buildings & bright sand
+                            (Rrs(j, k, 8) - Rrs(j, k, 5)) /
+                            (Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.01 and
+                            Rrs(j, k, 8) > 0.05
+                        ):
+                            if BW(j, k) == 1:
+                                map(j, k) = 11  # Developed
+                            elif sum(Rrs(j, k, 6:8)) < avg_SD_sum:
+                                map(j, k) = 22  # Mud (intertidal?)
+                            else:
+                                map(j, k) = 21  # Beach/sand/soil
                             end
-                       elif Rrs(j, k, 2) > Rrs(j, k, 3) and Rrs(j, k, 7) > Rrs(j, k, 3) and Rrs(j, k, 2) < 0.1 and (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.20or Rrs(j, k, 8) > 0.05 and Rrs(j, k, 7) > Rrs(j, k, 2) and (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.1
-                           if BW(j, k) == 1
-                               map(j, k) = 11 # Shadow/Developed
-                           else map(j, k) = 22 # Mud
-                           end
-                       # === Vegetation
-                       elif (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) > 0.20 and Rrs(j, k, 7) > Rrs(j, k, 3) # Vegetation pixels (NDVI)
-                           if Rrs(j, k, 7) > Rrs(j, k, 2) and ((Rrs(j, k, 7) - Rrs(j, k, 2))/(Rrs(j, k, 7) + Rrs(j, k, 2))) < 0.20 and (Rrs(j, k, 7) - Rrs(j, k, 8))/(Rrs(j, k, 7) + Rrs(j, k, 8)) > 0.01 # Shadowed-vegetation filter (B7/B8 ratio excludes marsh, which tends to have very similar values here)
-                               map(j, k) = 0 # Shadow
-                           elif sum(Rrs(j, k, 3:5)) < avg_veg_sum
-                                # Agriculture filter based on elevated Blue
-                                # band values
-                                if ((Rrs(j, k, 2) - Rrs(j, k, 5))/(Rrs(j, k, 2) + Rrs(j, k, 5))) < 0.4
-                                    if Rrs(j, k, 7) > 0.12 and sum(Rrs(j, k, 7:8))/sum(Rrs(j, k, 3:5)) > 2
-                                        map(j, k) = 33 # Forested Wetland
-                                    # Dead vegetation or Marsh
-                                    else map(j, k) = 31
+                        elif (
+                            Rrs(j, k, 5) >
+                            (Rrs(j, k, 2)+((Rrs(j, k, 7)-Rrs(j, k, 2))/5)*2)
+                        ):
+                            map(j, k) = 21  # Beach/sand/soil
+                        elif (
+                            Rrs(j, k, 5) < (
+                                ((Rrs(j, k, 7) - Rrs(j, k, 2))/5)*3 +
+                                Rrs(j, k, 2)
+                            )*0.60 and Rrs(j, k, 7) > 0.2
+                        ):
+                            map(j, k) = 31  # Marsh grass
+                        else:
+                            map(j, k) = 22  # Mud
+                        end
+                        elif (
+                            Rrs(j, k, 2) > Rrs(j, k, 3) and
+                            Rrs(j, k, 7) > Rrs(j, k, 3) and
+                            Rrs(j, k, 2) < 0.1 and
+                            (Rrs(j, k, 8) - Rrs(j, k, 5)) /
+                            (Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.20 or
+                            Rrs(j, k, 8) > 0.05 and
+                            Rrs(j, k, 7) > Rrs(j, k, 2) and
+                            (Rrs(j, k, 8) - Rrs(j, k, 5)) /
+                            (Rrs(j, k, 8) + Rrs(j, k, 5)) < 0.1
+                        ):
+                            if BW(j, k) == 1:
+                                map(j, k) = 11  # Shadow/Developed
+                            else:
+                                map(j, k) = 22  # Mud
+                            end
+                            # === Vegetation
+                            elif (  # Vegetation pixels (NDVI)
+                                (Rrs(j, k, 8) - Rrs(j, k, 5)) /
+                                (Rrs(j, k, 8) + Rrs(j, k, 5)) > 0.20 and
+                                Rrs(j, k, 7) > Rrs(j, k, 3)
+                            ):
+                                # Shadowed-vegetation filter
+                                # (B7/B8 ratio excludes marsh, which tends
+                                # to have very similar values here)
+                                if (
+                                    Rrs(j, k, 7) > Rrs(j, k, 2) and
+                                    (
+                                        (Rrs(j, k, 7) - Rrs(j, k, 2)) /
+                                        (Rrs(j, k, 7) + Rrs(j, k, 2))
+                                    ) < 0.20 and
+                                    (Rrs(j, k, 7) - Rrs(j, k, 8)) /
+                                    (Rrs(j, k, 7) + Rrs(j, k, 8)) > 0.01
+                                ):
+                                    map(j, k) = 0  # Shadow
+                                elif sum(Rrs(j, k, 3:5)) < avg_veg_sum:
+                                    # Agriculture filter based on elevated Blue
+                                    # band values
+                                    if (
+                                        (Rrs(j, k, 2) - Rrs(j, k, 5)) /
+                                        (Rrs(j, k, 2) + Rrs(j, k, 5)) < 0.4
+                                    ):
+                                        if (
+                                            Rrs(j, k, 7) > 0.12 and
+                                            sum(Rrs(j, k, 7:8)) /
+                                            sum(Rrs(j, k, 3:5)) > 2
+                                        ):
+                                            map(j, k) = 33  # Forested Wetland
+                                        # Dead vegetation or Marsh
+                                        else:
+                                            map(j, k) = 31
+                                        end
+                                    else:
+                                        # Forested Upland
+                                        # (most likely agriculture)
+                                        map(j, k) = 32
                                     end
-                                else map(j, k) = 32 # Forested Upland (most likely agriculture)
+                                elif sum(Rrs(j, k, 7:8)) < avg_mang_sum:
+                                    # Agriculture filter based on elevated
+                                    # blue band values
+                                    if (
+                                        (
+                                            (Rrs(j, k, 2) - Rrs(j, k, 5)) /
+                                            (Rrs(j, k, 2) + Rrs(j, k, 5))
+                                        ) < 0.4
+                                    ):
+                                        if (
+                                            Rrs(j, k, 7) > 0.12 and
+                                            sum(Rrs(j, k, 7:8)) /
+                                            sum(Rrs(j, k, 3:5)) > 2
+                                        ):
+                                            map(j, k) = 33  # Forested Wetland
+                                        else:  # Marsh or Dead Vegetation
+                                            map(j, k) = 31
+                                        end
+                                    else:
+                                        # Forested Upland
+                                        # (most likely agriculture)
+                                        map(j, k) = 32
+                                    end
+                                elif (  # NDVI for high upland values
+                                    (Rrs(j, k, 8) - Rrs(j, k, 5)) /
+                                    (Rrs(j, k, 8) + Rrs(j, k, 5)) > 0.65
+                                ):
+                                    map(j, k) = 32  # Upland Forest/Grass
+                                elif (
+                                    Rrs(j, k, 5) > (
+                                        ((Rrs(j, k, 7) - Rrs(j, k, 2))/5)*3 +
+                                        Rrs(j, k, 2)
+                                    )*0.60 and Rrs(j, k, 7) < 0.2
+                                ):
+                                    # Difference of B5 from predicted B5 by
+                                    # slope of B7:B4 to distinguish marsh
+                                    # (old: live vs dead trees/grass/marsh)
+                                    map(j, k) = 31  # Marsh grass
+                                elif Rrs(j, k, 7) < 0.12:
+                                    map(j, k) = 30  # Dead vegetation
+                                else:
+                                    map(j, k) = 32  # Upland Forest/Grass
                                 end
-                           elif sum(Rrs(j, k, 7:8)) < avg_mang_sum
-                               # Agriculture filter based on elevated Blue band values
-                               if ((Rrs(j, k, 2) - Rrs(j, k, 5))/(Rrs(j, k, 2) + Rrs(j, k, 5))) < 0.4
-                                   if Rrs(j, k, 7) > 0.12 and sum(Rrs(j, k, 7:8))/sum(Rrs(j, k, 3:5)) > 2
-                                       map(j, k) = 33 # Forested Wetland
-                                   else map(j, k) = 31 # Marsh or Dead Vegetation
-                                   end
-                                else map(j, k) = 32 # Forested Upland (most likely agriculture)
-                                end
-                           elif (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) > 0.65 # NDVI for high upland values
-                                map(j, k) = 32 # Upland Forest/Grass
-                           elif Rrs(j, k, 5) > (((Rrs(j, k, 7) - Rrs(j, k, 2))/5)*3+Rrs(j, k, 2))*0.60 and Rrs(j, k, 7) < 0.2 # Difference of B5 from predicted B5 by slope of B7:B4 to distinguish marsh (old: live vs dead trees/grass/marsh)
-                               map(j, k) = 31 # Marsh grass
-                           elif Rrs(j, k, 7) < 0.12
-                               map(j, k) = 30 # Dead vegetation
-                           else
-                               map(j, k) = 32 # Upland Forest/Grass
-                           end
-                       # === Water
-                       elif Rrs(j, k, 8)<0.2 and Rrs(j, k, 8)>0or Rrs(j, k, 8)<Rrs(j, k, 7) and Rrs(j, k, 6)<Rrs(j, k, 7) and Rrs(j, k, 6)<Rrs(j, k, 5) and Rrs(j, k, 4)<Rrs(j, k, 5) and Rrs(j, k, 4)<Rrs(j, k, 3) and Rrs(j, k, 8)>0 or Rrs(j, k, 8)>Rrs(j, k, 7) and Rrs(j, k, 6)>Rrs(j, k, 7) and Rrs(j, k, 6)>Rrs(j, k, 5) and Rrs(j, k, 4)>Rrs(j, k, 5) and Rrs(j, k, 4)>Rrs(j, k, 3) and Rrs(j, k, 8)>0# Identify all water (glinted and glint-free)
-#                            map(j, k) = 5
+                            # === Water
+                            elif (  # Identify all water (glinted & glint-free)
+                                Rrs(j, k, 8) < 0.2 and Rrs(j, k, 8) > 0 or
+                                Rrs(j, k, 8) < Rrs(j, k, 7) and
+                                Rrs(j, k, 6) < Rrs(j, k, 7) and
+                                Rrs(j, k, 6) < Rrs(j, k, 5) and
+                                Rrs(j, k, 4) < Rrs(j, k, 5) and
+                                Rrs(j, k, 4) < Rrs(j, k, 3) and
+                                Rrs(j, k, 8) > 0 or
+                                Rrs(j, k, 8) > Rrs(j, k, 7) and
+                                Rrs(j, k, 6) > Rrs(j, k, 7) and
+                                Rrs(j, k, 6) > Rrs(j, k, 5) and
+                                Rrs(j, k, 4) > Rrs(j, k, 5) and
+                                Rrs(j, k, 4) > Rrs(j, k, 3) and
+                                Rrs(j, k, 8) > 0
+                            ):
+                                # map(j, k) = 5
+                                if v > u*0.25:
+                                    # Deglint equation
+                                    Rrs_deglint(1, 1) = (
+                                        Rrs(j, k, 1) -
+                                        (E_glint(1)*(Rrs(j, k, 8) - mnNIR2))
+                                    )
+                                    Rrs_deglint(2, 1) = (
+                                        Rrs(j, k, 2) -
+                                        (E_glint(2)*(Rrs(j, k, 7) - mnNIR1))
+                                    )
+                                    Rrs_deglint(3, 1) = (
+                                        Rrs(j, k, 3) -
+                                        (E_glint(3)*(Rrs(j, k, 7) - mnNIR1))
+                                    )
+                                    Rrs_deglint(4, 1) = (
+                                        Rrs(j, k, 4) -
+                                        (E_glint(4)*(Rrs(j, k, 8) - mnNIR2))
+                                    )
+                                    Rrs_deglint(5, 1) = (
+                                        Rrs(j, k, 5) -
+                                        (E_glint(5)*(Rrs(j, k, 7) - mnNIR1))
+                                    )
+                                    Rrs_deglint(6, 1) = (
+                                        Rrs(j, k, 6) -
+                                        (E_glint(6)*(Rrs(j, k, 8) - mnNIR2))
+                                    )
 
-                           if v > u*0.25
-                                # Deglint equation
-                                Rrs_deglint(1, 1) = (Rrs(j, k, 1) - (E_glint(1)*(Rrs(j, k, 8) - mnNIR2)))
-                                Rrs_deglint(2, 1) = (Rrs(j, k, 2) - (E_glint(2)*(Rrs(j, k, 7) - mnNIR1)))
-                                Rrs_deglint(3, 1) = (Rrs(j, k, 3) - (E_glint(3)*(Rrs(j, k, 7) - mnNIR1)))
-                                Rrs_deglint(4, 1) = (Rrs(j, k, 4) - (E_glint(4)*(Rrs(j, k, 8) - mnNIR2)))
-                                Rrs_deglint(5, 1) = (Rrs(j, k, 5) - (E_glint(5)*(Rrs(j, k, 7) - mnNIR1)))
-                                Rrs_deglint(6, 1) = (Rrs(j, k, 6) - (E_glint(6)*(Rrs(j, k, 8) - mnNIR2)))
-
-                                # Convert above-surface Rrs to below-surface rrs (Kerr et al. 2018)
-                                Rrs(j, k, 1:6) = rdivide(
-                                    Rrs_deglint(1:6),
-                                    (zeta + G*Rrs_deglint(1:6)) # Was Rrs_0=
-                                )
+                                    # Convert above-surface Rrs to
+                                    # below-surface rrs (Kerr et al. 2018)
+                                    Rrs(j, k, 1:6) = rdivide(
+                                        Rrs_deglint(1:6),
+                                        # Was Rrs_0=
+                                        (zeta + G*Rrs_deglint(1:6))
+                                    )
 
                                 # Relative depth estimate
                                 # Calculate relative depth
                                 # (Stumpf 2003 ratio transform scaled to 1-10)
-                                dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
+                                dp = real(
+                                    log(1000*Rrs_0(2))/log(1000*Rrs_0(3))
+                                )
                                 if dp > 0 and dp < 2
                                     Bathy(j, k) = dp
                                 else dp = 0
                                 end
-#                                 dp_sc = (dp-low)*scale_dp
+                                # dp_sc = (dp-low)*scale_dp
 
-#                                 for d = 1:5
-#                                     Rrs(j, k, d) = real(((Rrs_0(d)-rrs_inf(d))/exp(-2*Kd(1, d)*dp_sc))+rrs_inf(d)) # Calculate water-column corrected benthic reflectance (Traganos 2017 & Maritorena 1994)
-#                                 end
+                                # for d = 1:5:
+                                #     # Calculate water-column corrected
+                                #     # benthic reflectance (Traganos 2017 &
+                                #     # Maritorena 1994)
+                                #     Rrs(j, k, d) = real(
+                                #         ((Rrs_0(d)-rrs_inf(d)) /
+                                #         exp(-2*Kd(1, d)*dp_sc))+rrs_inf(d))
+                                # end
 
                                 # === DT
-                               if  Rrs(j, k, 6) < Rrs(j, k, 7)
-                                   map(j, k) = 0 # Shadow
-                               elif (Rrs(j, k, 3) - Rrs(j, k, 4))/(Rrs(j, k, 3) + Rrs(j, k, 4)) < 0.10 #(Rrs(j, k, 2) - Rrs(j, k, 4))/(Rrs(j, k, 2)+Rrs(j, k, 4)) < 0
-                                    if Rrs(j, k, 4) > Rrs(j, k, 3) or Rrs(j, k, 5) > Rrs(j, k, 3)
-                                        map(j, k) = 53 # Soft bottom
-                                    elif sum(Rrs(j, k, 3:5)) > avg_water_sum and (Rrs(j, k, 5) - Rrs(j, k, 2))/(Rrs(j, k, 5) + Rrs(j, k, 2)) > 0.1 # NEW from 0.05
-                                        map(j, k) = 52 # Soft bottom
-                                    elif Rrs(j, k, 4) > Rrs(j, k, 2) and (Rrs(j, k, 3) - Rrs(j, k, 6))/(Rrs(j, k, 3) + Rrs(j, k, 6)) < 0.60 # Separate seagrass from dark water NEW
-                                        if (Rrs(j, k, 3) - Rrs(j, k, 5))/(Rrs(j, k, 3) + Rrs(j, k, 5)) > 0.10 # Separate seagrass from turbid water NEW
-                                            map(j, k) = 54 # Seagrass
-                                        else map(j, k) = 55 # Turbid water
+                                if Rrs(j, k, 6) < Rrs(j, k, 7):
+                                    map(j, k) = 0  # Shadow
+                                elif (
+                                    (Rrs(j, k, 3) - Rrs(j, k, 4)) /
+                                    (Rrs(j, k, 3) + Rrs(j, k, 4)) < 0.10
+                                    # (Rrs(j, k, 2) - Rrs(j, k, 4)) /
+                                    # (Rrs(j, k, 2)+Rrs(j, k, 4)) < 0
+                                ):
+                                    if (
+                                        Rrs(j, k, 4) > Rrs(j, k, 3) or
+                                        Rrs(j, k, 5) > Rrs(j, k, 3)
+                                    ):
+                                        map(j, k) = 53  # Soft bottom
+                                    elif (  # NEW from 0.05
+                                        sum(Rrs(j, k, 3:5)) > avg_water_sum and
+                                        (Rrs(j, k, 5) - Rrs(j, k, 2)) /
+                                        (Rrs(j, k, 5) + Rrs(j, k, 2)) > 0.1
+                                    ):
+                                        map(j, k) = 52  # Soft bottom
+                                    # Separate seagrass from dark water NEW
+                                    elif (
+                                        Rrs(j, k, 4) > Rrs(j, k, 2) and
+                                        (Rrs(j, k, 3) - Rrs(j, k, 6)) /
+                                        (Rrs(j, k, 3) + Rrs(j, k, 6)) < 0.60
+                                    ):
+                                        # Separate seagrass from turbid water
+                                        # NEW
+                                        if (
+                                            (Rrs(j, k, 3) - Rrs(j, k, 5)) /
+                                            (Rrs(j, k, 3) + Rrs(j, k, 5)) > 0.1
+                                        ):
+                                            map(j, k) = 54  # Seagrass
+                                        else:
+                                            map(j, k) = 55  # Turbid water
                                         end
-                                    else map(j, k) = 51 # Deep water
+                                    else:
+                                        map(j, k) = 51  # Deep water
                                     end
-                                else map(j, k) = 51 # Deep water
+                                else:
+                                    map(j, k) = 51  # Deep water
                                 end
-
-
-                            else # For glint-free/low-glint images
-                                # Convert above-surface Rrs to subsurface rrs (Kerr et al. 2018,  Lee et al. 1998)
+                            else:  # For glint-free/low-glint images
+                                # Convert above-surface Rrs to subsurface rrs
+                                # (Kerr et al. 2018,  Lee et al. 1998)
                                 Rrs(j, k, 1:6) = rdivide(
                                     Rrs(j, k, 1:6),
                                     (zeta + G*Rrs(j, k, 1:6))
                                 )
-                                dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3))) # Calculate relative depth (Stumpf 2003 ratio transform)
-                                if dp > 0 and dp < 2
+                                # Calculate relative depth
+                                # (Stumpf 2003 ratio transform)
+                                dp = real(
+                                    log(1000*Rrs_0(2))/log(1000*Rrs_0(3))
+                                )
+                                if dp > 0 and dp < 2:
                                     Bathy(j, k) = dp
-                                else dp = 0
+                                else:
+                                    dp = 0
                                 end
-#                                 dp_sc = (dp-low)*scale_dp
-
-#                                 for d = 1:5
-#                                     Rrs(j, k, d) = real(((Rrs_0(d)-rrs_inf(d))/exp(-2*Kd(1, d)*dp_sc))+rrs_inf(d)) # Calculate water-column corrected benthic reflectance (Traganos 2017 & Maritorena 1994)
-#                                 end
+                                # dp_sc = (dp-low)*scale_dp
+                                # for d = 1:5
+                                #     # Calculate water-column corrected
+                                #     # benthic reflectance (Traganos 2017 &
+                                #     # Maritorena 1994)
+                                #     Rrs(j, k, d) = real(
+                                #         ((Rrs_0(d)-rrs_inf(d)) /
+                                #         exp(-2*Kd(1, d)*dp_sc))+rrs_inf(d)
+                                #     )
+                                # end
                                 # === DT
-                               if  Rrs(j, k, 6) < Rrs(j, k, 7)
-                                   map(j, k) = 0 # Shadow
-                               elif (Rrs(j, k, 3) - Rrs(j, k, 4))/(Rrs(j, k, 3) + Rrs(j, k, 4)) < 0.10 #(Rrs(j, k, 2) - Rrs(j, k, 4))/(Rrs(j, k, 2)+Rrs(j, k, 4)) < 0
-                                    if Rrs(j, k, 4) > Rrs(j, k, 3) or Rrs(j, k, 5) > Rrs(j, k, 3)
-                                        map(j, k) = 53 # Soft bottom
-                                    elif sum(Rrs(j, k, 3:5)) > avg_water_sum and (Rrs(j, k, 5) - Rrs(j, k, 2))/(Rrs(j, k, 5) + Rrs(j, k, 2)) > 0.1
-                                        map(j, k) = 52 # Soft bottom
-                                    elif Rrs(j, k, 4) > Rrs(j, k, 2) and (Rrs(j, k, 3) - Rrs(j, k, 6))/(Rrs(j, k, 3) + Rrs(j, k, 6)) < 0.60 # Separate seagrass from dark water
-                                        if (Rrs(j, k, 3) - Rrs(j, k, 5))/(Rrs(j, k, 3) + Rrs(j, k, 5)) > 0.10 # Separate seagrass from turbid water
-                                            map(j, k) = 54 # Seagrass
-                                        else map(j, k) = 55 # Turbid water
+                                if Rrs(j, k, 6) < Rrs(j, k, 7):
+                                   map(j, k) = 0  # Shadow
+                                elif (
+                                    (Rrs(j, k, 3) - Rrs(j, k, 4)) /
+                                    (Rrs(j, k, 3) + Rrs(j, k, 4)) < 0.10
+                                    # (Rrs(j, k, 2) - Rrs(j, k, 4)) /
+                                    # (Rrs(j, k, 2)+Rrs(j, k, 4)) < 0
+                                ):
+                                    if (
+                                        Rrs(j, k, 4) > Rrs(j, k, 3) or
+                                        Rrs(j, k, 5) > Rrs(j, k, 3)
+                                    ):
+                                        map(j, k) = 53  # Soft bottom
+                                    elif (
+                                        sum(Rrs(j, k, 3:5)) > avg_water_sum and
+                                        (Rrs(j, k, 5) - Rrs(j, k, 2)) /
+                                        (Rrs(j, k, 5) + Rrs(j, k, 2)) > 0.1
+                                    ):
+                                        map(j, k) = 52  # Soft bottom
+                                    elif (  # Separate seagrass from dark water
+                                        Rrs(j, k, 4) > Rrs(j, k, 2) and
+                                        (Rrs(j, k, 3) - Rrs(j, k, 6)) /
+                                        (Rrs(j, k, 3) + Rrs(j, k, 6)) < 0.60
+                                    ):
+                                        # Separate seagrass from turbid water
+                                        if (
+                                            (Rrs(j, k, 3) - Rrs(j, k, 5)) /
+                                            (Rrs(j, k, 3) + Rrs(j, k, 5)) >
+                                            0.10
+                                        ):
+                                            map(j, k) = 54  # Seagrass
+                                        else:
+                                            map(j, k) = 55  # Turbid water
                                         end
-                                    else map(j, k) = 51 # Deep water
+                                    else:
+                                        map(j, k) = 51  # Deep water
                                     end
-                                else map(j, k) = 51 # Deep water
+                                else:
+                                    map(j, k) = 51  # Deep water
                                 end
+                            end  # if v>u
+                        end  # If water/land
+                    end  # If isnan
+                end  # k
+                # if j == szA(1)/4
+                #     update = 'DT 25# Complete'
+                # end
+                # if j == szA(1)/2
+                #     update = 'DT 50# Complete'
+                # end
+                # if j == szA(1)/4*3
+                #     update = 'DT 75# Complete'
+                # end
+            end  # j
 
-                             end # if v>u
-                       end # If water/land
-                   end # If isnan
-               end # k
-#                 if j == szA(1)/4
-#                     update = 'DT 25# Complete'
-#                 end
-#                 if j == szA(1)/2
-#                     update = 'DT 50# Complete'
-#                 end
-#                 if j == szA(1)/4*3
-#                     update = 'DT 75# Complete'
-#                 end
-            end # j
+            # === Classes:
+            # 1 = Developed
+            # 2 = Vegetation
+            # 3 = Soil/sand/beach
+            # 41 = Deep water
+            # 42 = Benthic Sand
+            # 43 = Benthic Seagrass
+            # 44 = Benthic Coral
+            # 45 = Benthic patch coral
 
-#Classes:
-# 1 = Developed
-# 2 = Vegetation
-# 3 = Soil/sand/beach
-# 41 = Deep water
-# 42 = Benthic Sand
-# 43 = Benthic Seagrass
-# 44 = Benthic Coral
-# 45 = Benthic patch coral
+            # === DT Filter
+            if filter > 0:
+                    dt_filt = DT_Filter(map, filter, sz(1), sz(2))
+                    AA = [
+                        loc_out, id, '_', loc, '_Map_filt_', num2str(filter),
+                        '_benthicnew'
+                    ]
+                    geotiffwrite(
+                        AA, dt_filt, R(1, 1), 'CoordRefSysCode', coor_sys
+                    )
+            else:
+                Z1 = [loc_out, id, '_', loc, '_Map_benthicnew']
+                geotiffwrite(Z1, map, R(1, 1), 'CoordRefSysCode', coor_sys)
+            end
 
-        # === DT Filter
-        if filter > 0
-                dt_filt = DT_Filter(map, filter, sz(1), sz(2))
-                AA = [loc_out, id, '_', loc, '_Map_filt_', num2str(filter), '_benthicnew']
-                geotiffwrite(AA, dt_filt, R(1, 1), 'CoordRefSysCode', coor_sys)
-        else
-            Z1 = [loc_out, id, '_', loc, '_Map_benthicnew']
-            geotiffwrite(Z1, map, R(1, 1), 'CoordRefSysCode', coor_sys)
-        end
-
-
-        # === Output images
-#          Z = [loc_out, id, '_', loc, '_Bathy1']
-#          geotiffwrite(Z, Bathy, R(1, 1), 'CoordRefSysCode', coor_sys)
-         Z2 = [loc_out, id, '_', loc, '_rrssub'] # last=52
-         geotiffwrite(Z2, Rrs, R(1, 1), 'CoordRefSysCode', coor_sys)
-#
-    end # If dt = 1
-   end # If dt>0
+            # === Output images
+            # Z = [loc_out, id, '_', loc, '_Bathy1']
+            # geotiffwrite(Z, Bathy, R(1, 1), 'CoordRefSysCode', coor_sys)
+            Z2 = [loc_out, id, '_', loc, '_rrssub']  # last=52
+            geotiffwrite(Z2, Rrs, R(1, 1), 'CoordRefSysCode', coor_sys)
+        end  # If dt = 1
+    end  # If dt>0
 end
