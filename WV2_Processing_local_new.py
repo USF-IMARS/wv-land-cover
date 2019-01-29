@@ -93,8 +93,9 @@ def read_xml(filename):
     # === read values from xml file
     # ==================================================================
     # TODO: replace w/ python xml.etree.ElementTree
-    s = xml2struct(Z)
-    szB = [0]*3
+    pass
+    # s = xml2struct(Z)
+    # szB = [0]*3
     # save XMLtest.mat s
     # Extract calibration factors & acquisition time from
     # metadata for each band
@@ -223,6 +224,18 @@ def read_xml(filename):
     # ==================================================================
 
 
+def geotiffread(X):
+    # https://www.mathworks.com/help/map/ref/geotiffread.html
+    # TODO: read geotiff w/ gdal (or other)
+    pass
+    # return data_grid, spatial_ref
+
+
+def geotiffwrite():
+    # https://www.mathworks.com/help/map/ref/geotiffwrite.html
+    pass
+
+
 for z in range(sz_files):  # for each file
     fname = path.basename(matfiles[z])
     id = fname[1:19]
@@ -231,9 +244,12 @@ for z in range(sz_files):  # for each file
     Z = [met_in, fname]  # Change location of XML files here
 
     [A, R] = geotiffread(X)
-    szA = size(A)
+    szA = A.shape()
 
-    TODO_WHAT_GOES_HERE = read_xml(fname)
+    (
+        szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel, satel,
+        sensaz
+    ) = read_xml(fname)
 
     szB[3] = 8
 
@@ -306,6 +322,7 @@ for z in range(sz_files):  # for each file
     # end
 
     # Rayleigh calculation (Dash et al., 2012)
+    ray_rad = [0]*8
     for d in range(8):
         # Assume standard pressure (1013.25 mb)
         # TODO: cell array -> list?
@@ -405,7 +422,7 @@ for z in range(sz_files):  # for each file
 
         # Calculate Kd (water column attenuation coefficient) from
         # Chuanmin Hu's Rrs_Kd_Model.xlsx sheet
-        # sunzen = 90.0-sunel
+        sunzen = 90.0 - sunel
         # c1-4 hard-coded, but v1 and v2 change with modified values of
         # aph(440), adg(440), bbp(440), Sdg, Y
         # c1 = 0.005
