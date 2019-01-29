@@ -15,6 +15,8 @@
 
 from os import path
 from glob import glob
+from math import pi
+import math
 
 import numpy
 
@@ -65,6 +67,30 @@ cw = [0.4273, 0.4779, 0.5462, 0.6078, 0.6588, 0.7237, 0.8313, 0.9080]
 gamma = [
     g * 0.01 for g in [1.499, 1.471, 1.442, 1.413, 1.413, 1.413, 1.384, 1.384]
 ]
+
+
+def d2r(deg):
+    return deg * math.pi / 180.0
+
+
+def tand(x):
+    return math.tan(d2r(x))
+
+
+def sind(x):
+    return math.sin(d2r(x))
+
+
+def asind(x):
+    return math.asin(d2r(x))
+
+
+def cosd(x):
+    return math.cos(d2r(x))
+
+
+def acosd(x):
+    return math.acos(d2r(x))
 
 
 def mldivide(X, y):
