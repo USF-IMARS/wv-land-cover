@@ -24,6 +24,7 @@ import numpy
 from numpy import zeros
 from numpy import mean
 from numpy import isnan
+from numpy import std
 
 
 OUTPUT_NaN = 255
@@ -281,6 +282,12 @@ def imtophat(I, SE):
 def imbinarize(I):
     # TODO:
     # https://www.mathworks.com/help/images/ref/imbinarize.html?searchHighlight=imbinarize&s_tid=doc_srchtitle
+    pass
+
+
+def strel(shape, r):
+    # https://www.mathworks.com/help/images/ref/strel.html?s_tid=doc_ta
+    # TODO
     pass
 
 
