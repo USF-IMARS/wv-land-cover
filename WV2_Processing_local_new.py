@@ -283,6 +283,12 @@ def imbinarize(I):
     # https://www.mathworks.com/help/images/ref/imbinarize.html?searchHighlight=imbinarize&s_tid=doc_srchtitle
     pass
 
+
+def DT_Filter():
+    # TODO: what is this?
+    pass
+
+
 for z in range(sz_files):  # for each file
     fname = path.basename(matfiles[z])
     id = fname[1:19]
@@ -1210,14 +1216,14 @@ for z in range(sz_files):  # for each file
 
             # === DT Filter
             if filter > 0:
-                    dt_filt = DT_Filter(map, filter, sz(1), sz(2))
-                    AA = [
-                        loc_out, id, '_', loc, '_Map_filt_', num2str(filter),
-                        '_benthicnew'
-                    ]
-                    geotiffwrite(
-                        AA, dt_filt, R(1, 1), 'CoordRefSysCode', coor_sys
-                    )
+                dt_filt = DT_Filter(map, filter, sz(1), sz(2))
+                AA = [
+                    loc_out, id, '_', loc, '_Map_filt_', num2str(filter),
+                    '_benthicnew'
+                ]
+                geotiffwrite(
+                    AA, dt_filt, R(1, 1), 'CoordRefSysCode', coor_sys
+                )
             else:
                 Z1 = [loc_out, id, '_', loc, '_Map_benthicnew']
                 geotiffwrite(Z1, map, R(1, 1), 'CoordRefSysCode', coor_sys)
