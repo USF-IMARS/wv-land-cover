@@ -776,8 +776,8 @@ for z in range(sz_files):  # for each file
 
     elif d_t == 2:  # Execute Deglinting rrs, Bathymetery, and Decision Tree
         update = 'Running DT'
-        for j = 1:szA(1):
-            for k = 1:szA(2):
+        for j in range(1, szA(1)):
+            for k in range(1, szA(2)):
                 if isnan(Rrs[j, k, 1]) == 0:
                     # === Mud, Developed and Sand
                     if (
