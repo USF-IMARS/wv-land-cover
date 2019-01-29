@@ -24,6 +24,10 @@ import numpy
 from numpy import zeros
 from numpy import mean
 
+
+OUTPUT_NaN = 255
+# dst_ds.GetRasterBand(1).SetNoDataValue(OUTPUT_NaN)
+
 # === Assign input and output locations
 loc = 'RB'  # Typically the estuary acronym
 coor_sys = 4326  # Change coordinate system code here
@@ -434,7 +438,7 @@ for z in range(sz_files):  # for each file
                     )
                 # end
             else:
-                Rrs[j, k, :] = NaN
+                Rrs[j, k, :] = OUTPUT_NaN
             # end
         # end
     # end
