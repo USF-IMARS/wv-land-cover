@@ -686,7 +686,7 @@ for z in range(sz_files):  # for each file
         avg_veg_sum = mean(sum_veg)
         avg_dead_veg = mean(dead_veg)
         avg_mang_sum = mean(sum_veg2)
-        idx_water2 = find(sum_water_rrs==0)
+        idx_water2 = find(sum_water_rrs == 0)
         sum_water_rrs(idx_water2) = []
         avg_water_sum = mean(sum_water_rrs(:))
 
@@ -741,7 +741,7 @@ for z in range(sz_files):  # for each file
             # Calculate relative depth
             # (Stumpf 2003 ratio transform scaled to 1-10)
             dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
-            if dp > 0 and dp < 2
+            if dp > 0 and dp < 2:
                 Bathy(j, k) = dp
             else dp = 0
             end
@@ -762,7 +762,7 @@ for z in range(sz_files):  # for each file
             )
             # Calculate relative depth (Stumpf 2003 ratio transform)
             dp = real(log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
-            if dp > 0 and dp < 2
+            if dp > 0 and dp < 2:
                 Bathy(j, k) = dp
             else dp = 0
             end
@@ -970,7 +970,7 @@ for z in range(sz_files):  # for each file
                                 dp = real(
                                     log(1000*Rrs_0(2))/log(1000*Rrs_0(3))
                                 )
-                                if dp > 0 and dp < 2
+                                if dp > 0 and dp < 2:
                                     Bathy(j, k) = dp
                                 else dp = 0
                                 end
@@ -1056,7 +1056,7 @@ for z in range(sz_files):  # for each file
                                 # end
                                 # === DT
                                 if Rrs(j, k, 6) < Rrs(j, k, 7):
-                                   map(j, k) = 0  # Shadow
+                                    map(j, k) = 0  # Shadow
                                 elif (
                                     (Rrs(j, k, 3) - Rrs(j, k, 4)) /
                                     (Rrs(j, k, 3) + Rrs(j, k, 4)) < 0.10
