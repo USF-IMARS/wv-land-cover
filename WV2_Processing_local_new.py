@@ -16,7 +16,7 @@
 from os import path
 from glob import glob
 
-## Assign input and output locations
+# === Assign input and output locations
 loc = 'RB'  # Typically the estuary acronym
 coor_sys = 4326  # Change coordinate system code here
 Rrs_write = 0  # 1=write Rrs geotiff; 0=do not write
@@ -334,7 +334,7 @@ for z in range(sz_files):  # for each file
     sz(2) = min(szA(2), szB(2))
     sz(3) = 8
 
-    ## Assign NaN to no-data pixels and radiometrically calibrate and
+    # === Assign NaN to no-data pixels and radiometrically calibrate and
     # convert to Rrs
     # Create empty matrix for Rrs output
     # TODO: use numpy.array([interven[-N:]])
@@ -381,7 +381,7 @@ for z in range(sz_files):  # for each file
 
     # clear A
 
-    ## Output reflectance image
+    # === Output reflectance image
     if Rrs_write == 1:
         Z = [loc_out, id, '_', loc, '_Rrs']
         geotiffwrite(Z, Rrs, R(1, 1), 'CoordRefSysCode', coor_sys)
@@ -430,7 +430,7 @@ for z in range(sz_files):  # for each file
 
 #         Kd = [0.036 0.037 0.075 0.32 0.484 1.416]
 
-        ## Setup for Deglint, Bathymetry, and Decision Tree
+        # === Setup for Deglint, Bathymetry, and Decision Tree
         b = 1
         t = 1
         u = 1
@@ -625,7 +625,7 @@ for z in range(sz_files):  # for each file
             id2 = 'glintfree'
         end
 
-        ## Edge Detection
+        # === Edge Detection
         img_sub = Rrs[:, :, 5]
         BWbin = imbinarize(img_sub)
         BW = imtophat(BWbin, strel('square', 10))
@@ -638,7 +638,7 @@ for z in range(sz_files):  # for each file
 #        BWer = imerode(BW, seDer)
 
 
-#         ## Depth scaling
+#         # === Depth scaling
 #         water10(:, 1:2) = water(idx_gf, 2:3)
 #         water10(:, 1:2) = rdivide(
 #             water10(:, 1:2),
@@ -659,7 +659,7 @@ for z in range(sz_files):  # for each file
 #         low = avg_dp - 2*std_dp # Assumed represents 0 depth or min depth
 #         high = avg_dp + std_dp
 
-        ## Determine Rrs-infinite from glint-free water pixels
+        # === Determine Rrs-infinite from glint-free water pixels
 #         water_gf = water(idx_gf, 1:8)
 # Sort all values in water by NIR2 column
 # (assumes deepest water is darkest is NIR2)
@@ -675,7 +675,7 @@ for z in range(sz_files):  # for each file
 #         rrs_inf = min(dp_rrs(:, 1:8)) #median(dp_rrs(:, 1:8)) - 2*std(dp_rrs(:, 1:8))
 # #         rrs_inf = [0.00512 0.00686 0.008898 0.002553 0.001506 0.000403] # Derived from Rrs_Kd_Model.xlsx for Default values
 # #         plot(rrs_inf)
-        ## Calculate target class metrics
+        # === Calculate target class metrics
         avg_SD_sum = mean(sum_SD(:))
         stdev_SD_sum = std(sum_SD(:))
         avg_veg_sum = mean(sum_veg(:))
@@ -753,7 +753,7 @@ for z in range(sz_files):  # for each file
               for j = 1:szA(1)
                for k = 1:szA(2)
                    if isnan(Rrs(j, k, 1)) == 0
-                       ## Mud, Developed and Sand
+                       # === Mud, Developed and Sand
                        if (Rrs(j, k, 7) - Rrs(j, k, 2))/(Rrs(j, k, 7) + Rrs(j, k, 2)) < 0.60 and Rrs(j, k, 5) > Rrs(j, k, 4) and Rrs(j, k, 4) > Rrs(j, k, 3)
                             if Rrs(j, k, 7) < Rrs(j, k, 2) and Rrs(j, k, 8) > Rrs(j, k, 5)
                                 map(j, k) = 0 # Shadow
@@ -775,7 +775,7 @@ for z in range(sz_files):  # for each file
                                map(j, k) = 11 # Shadow/Developed
                            else map(j, k) = 22 # Mud
                            end
-                       ## Vegetation
+                       # === Vegetation
                        elif (Rrs(j, k, 8) - Rrs(j, k, 5))/(Rrs(j, k, 8) + Rrs(j, k, 5)) > 0.20 and Rrs(j, k, 7) > Rrs(j, k, 3) # Vegetation pixels (NDVI)
                            if Rrs(j, k, 7) > Rrs(j, k, 2) and ((Rrs(j, k, 7) - Rrs(j, k, 2))/(Rrs(j, k, 7) + Rrs(j, k, 2))) < 0.20 and (Rrs(j, k, 7) - Rrs(j, k, 8))/(Rrs(j, k, 7) + Rrs(j, k, 8)) > 0.01 # Shadowed-vegetation filter (B7/B8 ratio excludes marsh, which tends to have very similar values here)
                                map(j, k) = 0 # Shadow
@@ -808,7 +808,7 @@ for z in range(sz_files):  # for each file
                            else
                                map(j, k) = 32 # Upland Forest/Grass
                            end
-                       ## Water
+                       # === Water
                        elif Rrs(j, k, 8)<0.2 and Rrs(j, k, 8)>0or Rrs(j, k, 8)<Rrs(j, k, 7) and Rrs(j, k, 6)<Rrs(j, k, 7) and Rrs(j, k, 6)<Rrs(j, k, 5) and Rrs(j, k, 4)<Rrs(j, k, 5) and Rrs(j, k, 4)<Rrs(j, k, 3) and Rrs(j, k, 8)>0 or Rrs(j, k, 8)>Rrs(j, k, 7) and Rrs(j, k, 6)>Rrs(j, k, 7) and Rrs(j, k, 6)>Rrs(j, k, 5) and Rrs(j, k, 4)>Rrs(j, k, 5) and Rrs(j, k, 4)>Rrs(j, k, 3) and Rrs(j, k, 8)>0# Identify all water (glinted and glint-free)
 #                            map(j, k) = 5
 
@@ -841,7 +841,7 @@ for z in range(sz_files):  # for each file
 #                                     Rrs(j, k, d) = real(((Rrs_0(d)-rrs_inf(d))/exp(-2*Kd(1, d)*dp_sc))+rrs_inf(d)) # Calculate water-column corrected benthic reflectance (Traganos 2017 & Maritorena 1994)
 #                                 end
 
-                                ## DT
+                                # === DT
                                if  Rrs(j, k, 6) < Rrs(j, k, 7)
                                    map(j, k) = 0 # Shadow
                                elif (Rrs(j, k, 3) - Rrs(j, k, 4))/(Rrs(j, k, 3) + Rrs(j, k, 4)) < 0.10 #(Rrs(j, k, 2) - Rrs(j, k, 4))/(Rrs(j, k, 2)+Rrs(j, k, 4)) < 0
@@ -876,7 +876,7 @@ for z in range(sz_files):  # for each file
 #                                 for d = 1:5
 #                                     Rrs(j, k, d) = real(((Rrs_0(d)-rrs_inf(d))/exp(-2*Kd(1, d)*dp_sc))+rrs_inf(d)) # Calculate water-column corrected benthic reflectance (Traganos 2017 & Maritorena 1994)
 #                                 end
-                                ## DT
+                                # === DT
                                if  Rrs(j, k, 6) < Rrs(j, k, 7)
                                    map(j, k) = 0 # Shadow
                                elif (Rrs(j, k, 3) - Rrs(j, k, 4))/(Rrs(j, k, 3) + Rrs(j, k, 4)) < 0.10 #(Rrs(j, k, 2) - Rrs(j, k, 4))/(Rrs(j, k, 2)+Rrs(j, k, 4)) < 0
@@ -919,7 +919,7 @@ for z in range(sz_files):  # for each file
 # 44 = Benthic Coral
 # 45 = Benthic patch coral
 
-##      DT Filter
+        # === DT Filter
         if filter > 0
                 dt_filt = DT_Filter(map, filter, sz(1), sz(2))
                 AA = [loc_out, id, '_', loc, '_Map_filt_', num2str(filter), '_benthicnew']
@@ -930,7 +930,7 @@ for z in range(sz_files):  # for each file
         end
 
 
-        ## Output images
+        # === Output images
 #          Z = [loc_out, id, '_', loc, '_Bathy1']
 #          geotiffwrite(Z, Bathy, R(1, 1), 'CoordRefSysCode', coor_sys)
          Z2 = [loc_out, id, '_', loc, '_rrssub'] # last=52
