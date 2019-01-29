@@ -16,6 +16,8 @@
 from os import path
 from glob import glob
 
+import numpy
+
 # === Assign input and output locations
 loc = 'RB'  # Typically the estuary acronym
 coor_sys = 4326  # Change coordinate system code here
@@ -65,11 +67,19 @@ gamma = [
 ]
 
 
-def do_regression(X, y):
-    # linear regression X\y AKA
-    # inv(X'*X)*X'*y;  % matlab
-    # beta = np.dot(np.dot(inv(np.dot(X.T, X)), X.T), y)  # for py <3.4
-    return inv(X.T @ X) @ X.T @ y  # python
+def mldivide(X, y):
+    """Linear regression X\y AKA mldivide(X,y) AKA `inv(X'*X)*X'*y;`
+    as defined by MATLAB docs at:
+        https://www.mathworks.com/help/matlab/ref/mldivide.html
+
+    inv(X.T @ X) @ X.T @ y
+
+    NOTE: this is not _strictly_ identical to matlab's mldivide for under-
+        determined systems. See the following S.O q/a for more info:
+        https://stackoverflow.com/a/38228156/1483986
+
+    """
+    return numpy.linalg.lstsq(X, y)
 
 
 def rdivide(A, B):
@@ -618,13 +628,13 @@ for z in range(sz_files):  # for each file
             for b in range(6):
                 if b == 1 or b == 4 or b == 6:
                     # slope1 = water(:, b)\water(:, 8)
-                    slope1 = do_regression(
+                    slope1 = mldivide(
                         water[:, b],
                         water[:, 8]
                     )
                 else:
                     # slope1 = water(:, b)\water(:, 7)
-                    slope1 = do_regression(
+                    slope1 = mldivide(
                         water[:, b],
                         water[:, 7]
                     )
