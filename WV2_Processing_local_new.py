@@ -27,7 +27,7 @@ from numpy import isnan
 from numpy import std
 
 
-OUTPUT_NaN = 255
+OUTPUT_NaN = numpy.nan
 # dst_ds.GetRasterBand(1).SetNoDataValue(OUTPUT_NaN)
 
 # === Assign input and output locations
@@ -681,8 +681,7 @@ for z in range(sz_files):  # for each file
         n_water = u
         n_glinted = v  # Number of glinted water pixels
 
-        idx = find(water[:, 1] == 0)
-        water[idx, :] = []
+        water[water[:, 1] == 0] = numpy.nan
         water7 = water[:, 7]
         water8 = water[:, 8]
         # Positive minimum Band 7 value used for deglinting
@@ -690,7 +689,7 @@ for z in range(sz_files):  # for each file
         # Positive minimum Band 8 value used for deglinting
         mnNIR2 = min(water8(water8 > 0))
 
-        idx_gf = find(water[:, 9] == 1)  # Glint-free water
+        # idx_gf = find(water[:, 9] == 1)  # Glint-free water
 
         if v > 0.25 * u:
             Update = 'Deglinting'
@@ -783,8 +782,9 @@ for z in range(sz_files):  # for each file
         avg_veg_sum = mean(sum_veg)
         avg_dead_veg = mean(dead_veg)
         avg_mang_sum = mean(sum_veg2)
-        idx_water2 = find(sum_water_rrs == 0)
-        sum_water_rrs[idx_water2] = []
+
+        # exclude sum_water_rrs == 0 in avg calculations
+        sum_water_rrs[sum_water_rrs == 0] = numpy.nan
         avg_water_sum = mean(sum_water_rrs)
 
         if cl_cov > 0:
