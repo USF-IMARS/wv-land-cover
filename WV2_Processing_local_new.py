@@ -439,7 +439,7 @@ for z in range(sz_files):  # for each file
         sum_SD = []  # sand & developed
         num_pix = 0
         sum_veg = [0]
-        dead_veg(t) = 0
+        dead_veg = [0]
         sz_ar = sz(1)*sz(2)
         water = zeros(sz_ar, 9)
         for j in range(sz(1)):
@@ -478,7 +478,7 @@ for z in range(sz_files):  # for each file
                             sum_veg2(t) = sum(Rrs[j, k, 7:8])
                             # Compute difference of predicted B5 value from
                             # actual valute
-                            dead_veg(t) = (
+                            dead_veg.append(
                                 (
                                     ((Rrs(j, k, 7) - Rrs(j, k, 4))/3) +
                                     Rrs(j, k, 4)
@@ -683,7 +683,7 @@ for z in range(sz_files):  # for each file
         avg_SD_sum = mean(sum_SD)
         stdev_SD_sum = std(sum_SD)
         avg_veg_sum = mean(sum_veg)
-        avg_dead_veg = mean(dead_veg(:))
+        avg_dead_veg = mean(dead_veg)
         avg_mang_sum = mean(sum_veg2(:))
         idx_water2 = find(sum_water_rrs==0)
         sum_water_rrs(idx_water2) = []
