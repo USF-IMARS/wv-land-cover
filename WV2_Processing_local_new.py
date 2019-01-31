@@ -26,6 +26,7 @@ from numpy import mean
 from numpy import isnan
 from numpy import std
 
+# TODO: + printout timing of run
 
 OUTPUT_NaN = numpy.nan
 # dst_ds.GetRasterBand(1).SetNoDataValue(OUTPUT_NaN)
