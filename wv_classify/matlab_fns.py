@@ -60,9 +60,3 @@ def geotiffwrite():
     # TODO
     # https://www.mathworks.com/help/map/ref/geotiffwrite.html
     pass
-
-
-def imbinarize(I):
-    # TODO:
-    # https://www.mathworks.com/help/images/ref/imbinarize.html?searchHighlight=imbinarize&s_tid=doc_srchtitle
-    pass

@@ -34,6 +34,7 @@ from datetime import datetime
 # dep packages:
 from skimage.morphology import square as square_strel
 from skimage.morphology import white_tophat as imtophat
+from skimage.filters import threshold_otsu as imbinarize
 
 # local imports:
 from DT_Filter import DT_Filter
@@ -46,7 +47,6 @@ from matlab_fns import acosd
 from matlab_fns import asind
 from matlab_fns import mldivide
 from matlab_fns import rdivide
-from matlab_fns import imbinarize
 
 
 # TODO: + printout timing of run
@@ -586,7 +586,10 @@ for z in range(sz_files):  # for each file
         img_sub = Rrs[:, :, 5]
         # TODO: align imtophat usage w/ docs here:
         # http://scikit-image.org/docs/dev/auto_examples/xx_applications/plot_morphology.html#white-tophat
+        # and here:
+        # http://scikit-image.org/docs/dev/auto_examples/xx_applications/plot_thresholding.html
         # IE:
+        # img_sub = data.camera()
         # BWbin = img_as_ubyte(io.imread(png_path),as_gray=True))
         BWbin = imbinarize(img_sub)
         BW = imtophat(BWbin, square_strel(10))
