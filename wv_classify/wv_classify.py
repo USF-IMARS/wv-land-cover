@@ -31,6 +31,10 @@ from numpy import std
 from xml.etree import ElementTree
 from datetime import datetime
 
+# dep packages:
+from skimage.morphology import square as square_strel
+from skimage.morphology import white_tophat as imtophat
+
 # local imports:
 from DT_Filter import DT_Filter
 from matlab_fns import geotiffread
@@ -43,8 +47,6 @@ from matlab_fns import asind
 from matlab_fns import mldivide
 from matlab_fns import rdivide
 from matlab_fns import imbinarize
-from matlab_fns import imtophat
-from matlab_fns import strel
 
 
 # TODO: + printout timing of run
@@ -582,8 +584,12 @@ for z in range(sz_files):  # for each file
 
         # === Edge Detection
         img_sub = Rrs[:, :, 5]
+        # TODO: align imtophat usage w/ docs here:
+        # http://scikit-image.org/docs/dev/auto_examples/xx_applications/plot_morphology.html#white-tophat
+        # IE:
+        # BWbin = img_as_ubyte(io.imread(png_path),as_gray=True))
         BWbin = imbinarize(img_sub)
-        BW = imtophat(BWbin, strel('square', 10))
+        BW = imtophat(BWbin, square_strel(10))
 #        BW1 = edge(BWtop, 'canny')
 #        seDil = strel('square', 1)
 #        BWdil = imdilate(BW1, seDil)
