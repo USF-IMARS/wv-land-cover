@@ -1,4 +1,8 @@
 # WV2 Processing
+#
+# Author: Matt McCarthy
+# ported from MATLAB by Tylar Murray
+#
 # Loads TIFF WorldView-2 image files preprocessed through Polar Geospatial
 # Laboratory python code, which orthorectifies and projects .NTF files and
 # outputs as
