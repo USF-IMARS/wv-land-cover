@@ -17,6 +17,7 @@
 # Optionally smooths results through moving-window filter
 # Outputs images as GEOTIFF files with geospatial information.
 
+# built-in imports:
 from os import path
 from glob import glob
 from math import pi
@@ -27,7 +28,10 @@ from numpy import zeros
 from numpy import mean
 from numpy import isnan
 from numpy import std
+from xml.etree import ElementTree
+from datetime import datetime
 
+# local imports:
 from DT_Filter import DT_Filter
 from matlab_fns import geotiffread
 from matlab_fns import geotiffwrite
@@ -101,136 +105,52 @@ def read_xml(filename):
     # ==================================================================
     # === read values from xml file
     # ==================================================================
-    # TODO: replace w/ python xml.etree.ElementTree
-    pass
-    # s = xml2struct(Z)
-    # szB = [0]*3
-    # save XMLtest.mat s
     # Extract calibration factors & acquisition time from
     # metadata for each band
+    tree = ElementTree.parse(filename)
+    root = tree.getroot()  # assumes tag == 'isd'
+    imd = root.find('IMD')  # assumes only one element w/ 'IMD' tag
+    szB = [
+        int(imd.find('NUMROWS').text),
+        int(imd.find('NUMCOLUMNS').text),
+        0
+    ]
+    kf = [
+        int(imd.find(band).find('ABSCALFACTOR').text) for band in [
+            'BAND_C', 'BAND_B', 'BAND_G', 'BAND_Y', 'BAND_R', 'BAND_RE',
+            'BAND_N', 'BAND_N2'
+        ]
+    ]
+    # Extract Acquisition Time from metadata
+    aq_dt = datetime.strptime(
+        imd.find('IMAGE').find('FIRSTLINETIME').text,
+        # "2017-12-22T16:48:10.923850Z"
+        "%Y-%m-%dT%H:%M:%S.%f%Z"
+    )
+    aqyear = aq_dt.year
+    aqmonth = aq_dt.month
+    aqday = aq_dt.day
+    aqhour = aq_dt.hour
+    aqminute = aq_dt.minute
+    aqsecond = aq_dt.second
+    # Extract Mean Sun Elevation angle from metadata.Text(18:26))
+    sunel = int(imd.find('IMAGE').find('MEANSUNEL').text)
+    # Extract Mean Off Nadir View angle from metadata
+    satview = int(imd.find('IMAGE').find('MEANOFFNADIRVIEWANGLE').text)
+    sunaz = int(imd.find('IMAGE').find('MEANSUNAZ').text)
+    sensaz = int(imd.find('IMAGE').find('MEANSATAZ').text)
+    satel = int(imd.find('IMAGE').find('MEANSATEL').text)
+    cl_cov = int(imd.find('IMAGE').find('CLOUDCOVER').text)
+    # TODO: why this if/else?
     # if isfield(s, 'IMD') == 1:
     #     c = struct2cell(s.Children(2).Children(:))
-    #     idx{1} = strfind(c(1, :), 'NUMROWS')
-    #     idx{2} = strfind(c(1, :), 'NUMCOLUMNS')
-    #     idx{3} = strfind(c(1, :), 'BAND_C')
-    #     idx{4} = strfind(c(1, :), 'BAND_B')
-    #     idx{5} = strfind(c(1, :), 'BAND_G')
-    #     idx{6} = strfind(c(1, :), 'BAND_Y')
-    #     idx{7} = strfind(c(1, :), 'BAND_R')
-    #     idx{8} = strfind(c(1, :), 'BAND_RE')
-    #     idx{9} = strfind(c(1, :), 'BAND_N')
-    #     idx{10} = strfind(c(1, :), 'BAND_N2')
-    #     idx{11} = strfind(c(1, :), 'IMAGE')
-    #     for i = 1:11
-    #         idxb(i, 1:2) = find(not(cellfun('isempty', idx{i})))
-    #     # end
-    #     szB(1) = str2num(s.Children(2).Children(idxb(1)).Children.Data)
-    #     szB(2) = str2num(s.Children(2).Children(idxb(2)).Children.Data)
-    #     kf(1, 1) = str2num(
-    #         s.Children(2).Children(idxb(3)).Children(26).Children.Data
-    #     )
-    #     kf(2, 1) = str2num(
-    #         s.Children(2).Children(idxb(4)).Children(26).Children.Data
-    #     )
-    #     kf(3, 1) = str2num(
-    #         s.Children(2).Children(idxb(5)).Children(26).Children.Data
-    #     )
-    #     kf(4, 1) = str2num(
-    #         s.Children(2).Children(idxb(6)).Children(26).Children.Data
-    #     )
-    #     kf(5, 1) = str2num(
-    #         s.Children(2).Children(idxb(7, 1)).Children(26).Children.Data
-    #     )
-    #     kf(6, 1) = str2num(
-    #         s.Children(2).Children(idxb(8)).Children(26).Children.Data
-    #     )
-    #     kf(7, 1) = str2num(
-    #         s.Children(2).Children(idxb(9, 1)).Children(26).Children.Data
-    #     )
-    #     kf(8, 1) = str2num(
-    #         s.Children(2).Children(idxb(10)).Children(26).Children.Data
-    #     )
-    #     aqyear = str2num(
-    #         s.Children(2).Children(
-    #             idxb(11, 2)
-    #         ).Children(16).Children.Data(1:4)
-    #     )
-    #     aqmonth = str2num(
-    #         s.Children(2).Children(
-    #             idxb(11, 2)
-    #         ).Children(16).Children.Data(6:7)
-    #     )
-    #     aqday = str2num(
-    #         s.Children(2).Children(
-    #             idxb(11, 2)
-    #         ).Children(16).Children.Data(9:10)
-    #     )
-    #     aqhour = str2num(
-    #         s.Children(2).Children(
-    #             idxb(11, 2)
-    #         ).Children(16).Children.Data(12:13)
-    #     )
-    #     aqminute = str2num(
-    #         s.Children(2).Children(
-    #             idxb(11, 2)
-    #         ).Children(16).Children.Data(15:16)
-    #     )
-    #     aqsecond = str2num(
-    #         s.Children(2).Children(
-    #             idxb(11, 2)
-    #         ).Children(16).Children.Data(18:26)
-    #     )
-    #     sunel = str2num(
-    #         s.Children(2).Children(idxb(11, 2)).Children(56).Children.Data
-    #     )
-    #     sunaz = str2num(
-    #         s.Children(2).Children(idxb(11, 2)).Children(50).Children.Data
-    #     )
-    #     satview = str2num(
-    #         s.Children(2).Children(idxb(11, 2)).Children(86).Children.Data
-    #     )
-    #     sensaz = str2num(
-    #         s.Children(2).Children(idxb(11, 2)).Children(62).Children.Data
-    #     )
-    #     satel = str2num(
-    #         s.Children(2).Children(idxb(11, 2)).Children(68).Children.Data
-    #     )
-    #     cl_cov = str2num(
-    #         s.Children(2).Children(idxb(11, 2)).Children(90).Children.Data
-    #     )
     # else
-    #     szB(1) = str2num(s.isd.IMD.NUMROWS.Text)
-    #     szB(2) = str2num(s.isd.IMD.NUMCOLUMNS.Text)
-    #     kf(1, 1) = str2num(s.isd.IMD.BAND_C.ABSCALFACTOR.Text)
-    #     kf(2, 1) = str2num(s.isd.IMD.BAND_B.ABSCALFACTOR.Text)
-    #     kf(3, 1) = str2num(s.isd.IMD.BAND_G.ABSCALFACTOR.Text)
-    #     kf(4, 1) = str2num(s.isd.IMD.BAND_Y.ABSCALFACTOR.Text)
-    #     kf(5, 1) = str2num(s.isd.IMD.BAND_R.ABSCALFACTOR.Text)
-    #     kf(6, 1) = str2num(s.isd.IMD.BAND_RE.ABSCALFACTOR.Text)
-    #     kf(7, 1) = str2num(s.isd.IMD.BAND_N.ABSCALFACTOR.Text)
-    #     kf(8, 1) = str2num(s.isd.IMD.BAND_N2.ABSCALFACTOR.Text)
-    #     # Extract Acquisition Time from metadata
-    #     aqyear = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(1:4))
-    #     # Extract Acquisition Time from metadata
-    #     aqmonth = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(6:7))
-    #     # Extract Acquisition Time from metadata
-    #     aqday = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(9:10))
-    #     # Extract Acquisition Time from metadata
-    #     aqhour = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(12:13))
-    #     # Extract Acquisition Time from metadata
-    #     aqminute = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME.Text(15:16))
-    #     # Extract Acquisition Time from metadata
-    #     aqsecond = str2num(s.isd.IMD.IMAGE.FIRSTLINETIME
-    #     # Extract Mean Sun Elevation angle from metadata.Text(18:26))
-    #     sunel = str2num(s.isd.IMD.IMAGE.MEANSUNEL.Text)
-    #     # Extract Mean Off Nadir View angle from metadata
-    #     satview = str2num(s.isd.IMD.IMAGE.MEANOFFNADIRVIEWANGLE.Text)
-    #     sunaz = str2num(s.isd.IMD.IMAGE.MEANSUNAZ.Text)
-    #     sensaz = str2num(s.isd.IMD.IMAGE.MEANSATAZ.Text)
-    #     satel = str2num(s.isd.IMD.IMAGE.MEANSATEL.Text)
-    #     cl_cov = str2num(s.isd.IMD.IMAGE.CLOUDCOVER.Text)
     # # end
     # ==================================================================
+    return (
+        szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel,
+        satel, sensaz, aqday, satview, kf, cl_cov
+    )
 
 
 for z in range(sz_files):  # for each file
