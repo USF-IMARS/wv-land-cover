@@ -19,16 +19,29 @@
 
 from os import path
 from glob import glob
-import math
 from math import pi
 from math import exp
 from math import log
-
 import numpy
 from numpy import zeros
 from numpy import mean
 from numpy import isnan
 from numpy import std
+
+from DT_Filter import DT_Filter
+from matlab_fns import geotiffread
+from matlab_fns import geotiffwrite
+from matlab_fns import cosd
+from matlab_fns import sind
+from matlab_fns import tand
+from matlab_fns import acosd
+from matlab_fns import asind
+from matlab_fns import mldivide
+from matlab_fns import rdivide
+from matlab_fns import imbinarize
+from matlab_fns import imtophat
+from matlab_fns import strel
+
 
 # TODO: + printout timing of run
 
@@ -82,51 +95,6 @@ cw = [0.4273, 0.4779, 0.5462, 0.6078, 0.6588, 0.7237, 0.8313, 0.9080]
 gamma = [
     g * 0.01 for g in [1.499, 1.471, 1.442, 1.413, 1.413, 1.413, 1.384, 1.384]
 ]
-
-
-def d2r(deg):
-    return deg * math.pi / 180.0
-
-
-def tand(x):
-    return math.tan(d2r(x))
-
-
-def sind(x):
-    return math.sin(d2r(x))
-
-
-def asind(x):
-    return math.asin(d2r(x))
-
-
-def cosd(x):
-    return math.cos(d2r(x))
-
-
-def acosd(x):
-    return math.acos(d2r(x))
-
-
-def mldivide(X, y):
-    """Linear regression X\y AKA mldivide(X,y) AKA `inv(X'*X)*X'*y;`
-    as defined by MATLAB docs at:
-        https://www.mathworks.com/help/matlab/ref/mldivide.html
-
-    inv(X.T @ X) @ X.T @ y
-
-    NOTE: this is not _strictly_ identical to matlab's mldivide for under-
-        determined systems. See the following S.O q/a for more info:
-        https://stackoverflow.com/a/38228156/1483986
-
-    """
-    return numpy.linalg.lstsq(X, y)
-
-
-def rdivide(A, B):
-    # TODO: how do this in python?
-    # https://www.mathworks.com/help/matlab/ref/rdivide.html
-    return None
 
 
 def read_xml(filename):
@@ -263,42 +231,6 @@ def read_xml(filename):
     #     cl_cov = str2num(s.isd.IMD.IMAGE.CLOUDCOVER.Text)
     # # end
     # ==================================================================
-
-
-def geotiffread(X):
-    # https://www.mathworks.com/help/map/ref/geotiffread.html
-    # TODO: read geotiff w/ gdal (or other)
-    pass
-    # return data_grid, spatial_ref
-
-
-def geotiffwrite():
-    # TODO
-    # https://www.mathworks.com/help/map/ref/geotiffwrite.html
-    pass
-
-
-def imtophat(I, SE):
-    # TODO:
-    # https://www.mathworks.com/help/images/ref/imtophat.html?searchHighlight=imtophat&s_tid=doc_srchtitle
-    pass
-
-
-def imbinarize(I):
-    # TODO:
-    # https://www.mathworks.com/help/images/ref/imbinarize.html?searchHighlight=imbinarize&s_tid=doc_srchtitle
-    pass
-
-
-def strel(shape, r):
-    # https://www.mathworks.com/help/images/ref/strel.html?s_tid=doc_ta
-    # TODO
-    pass
-
-
-def DT_Filter():
-    # TODO: what is this?
-    pass
 
 
 for z in range(sz_files):  # for each file
