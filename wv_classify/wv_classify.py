@@ -162,8 +162,8 @@ for z in range(sz_files):  # for each file
     X = [loc_in, fname]  # Change location of MS Tiff images here
     Z = [met_in, fname]  # Change location of XML files here
 
-    [A, R] = geotiffread(X)
-    szA = A.shape()
+    A, R = geotiffread(X)
+    szA = A.shape
 
     (
         szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel, satel,
@@ -333,7 +333,7 @@ for z in range(sz_files):  # for each file
     # === Output reflectance image
     if Rrs_write == 1:
         Z = [loc_out, id, '_', loc, '_Rrs']
-        geotiffwrite(Z, Rrs, R(1, 1), 'CoordRefSysCode', coor_sys)
+        geotiffwrite(Z, Rrs, R, CoordRefSysCode=coor_sys)
     # end
 
     if d_t > 0:
@@ -1095,18 +1095,18 @@ for z in range(sz_files):  # for each file
                     '_benthicnew'
                 ]
                 geotiffwrite(
-                    AA, dt_filt, R(1, 1), 'CoordRefSysCode', coor_sys
+                    AA, dt_filt, R, CoordRefSysCode=coor_sys
                 )
             else:
                 Z1 = [loc_out, id, '_', loc, '_Map_benthicnew']
-                geotiffwrite(Z1, map, R(1, 1), 'CoordRefSysCode', coor_sys)
+                geotiffwrite(Z1, map, R, CoordRefSysCode=coor_sys)
             # end
 
             # === Output images
             # Z = [loc_out, id, '_', loc, '_Bathy1']
-            # geotiffwrite(Z, Bathy, R(1, 1), 'CoordRefSysCode', coor_sys)
+            # geotiffwrite(Z, Bathy, R(1, 1), CoordRefSysCode=coor_sys)
             Z2 = [loc_out, id, '_', loc, '_rrssub']  # last=52
-            geotiffwrite(Z2, Rrs, R(1, 1), 'CoordRefSysCode', coor_sys)
+            geotiffwrite(Z2, Rrs, R, CoordRefSysCode=coor_sys)
         # end  # If dt = 1
     # end  # If dt>0
 # end

@@ -3,6 +3,10 @@
 import math
 import numpy
 
+import gdal
+# from osgeo import gdal  ?
+# from osgeo import osr
+
 
 def d2r(deg):
     return deg * math.pi / 180.0
@@ -49,14 +53,38 @@ def rdivide(A, B):
     return A / B
 
 
-def geotiffread(X):
+def geotiffread(filename):
     # https://www.mathworks.com/help/map/ref/geotiffread.html
     # TODO: read geotiff w/ gdal (or other)
-    pass
-    # return data_grid, spatial_ref
+    ds = gdal.Open(filename)
+    band = ds.GetRasterBand(1)
+    data_grid = band.ReadAsArray()
+
+    # prj = ds.GetProjection()
+    # spatial_ref = osr.SpatialReference(wkt=prj)
+
+    spatial_ref = ds.SpatialReference()
+    return data_grid, spatial_ref
 
 
-def geotiffwrite():
-    # TODO
-    # https://www.mathworks.com/help/map/ref/geotiffwrite.html
-    pass
+def geotiffwrite(outFileName, arr_out, ds, CoordRefSysCode):
+    """
+    https://www.mathworks.com/help/map/ref/geotiffwrite.html
+
+    parameters:
+    ----------
+    coor_sys :
+        code for projection. eg 4326
+    """
+    driver = gdal.GetDriverByName("GTiff")
+    cols, rows = arr_out.shape
+    outdata = driver.Create(outFileName, rows, cols, 1, gdal.GDT_UInt16)
+    # set same geotransform as input
+    outdata.SetGeoTransform(ds.GetGeoTransform())
+    # TODO: set projection using coor_sys
+    # sets same projection as input
+    outdata.SetProjection(ds.GetProjection())
+    outdata.GetRasterBand(1).WriteArray(arr_out)
+    # if you want these values transparent
+    outdata.GetRasterBand(1).SetNoDataValue(numpy.nan)
+    outdata.FlushCache()  # saves to disk!!
