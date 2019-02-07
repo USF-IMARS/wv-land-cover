@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Example of submission script used for sending processing jobs to SLURM.
+#
 #SBATCH --job-name ="wv2_classification_py"
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=20480
