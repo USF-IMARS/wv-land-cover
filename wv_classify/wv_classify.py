@@ -1130,3 +1130,6 @@ def main():
             # end  # If dt = 1
         # end  # If dt>0
     # end
+
+if __name__ == "__main__":
+    main()
