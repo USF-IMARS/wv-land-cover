@@ -273,24 +273,24 @@ def process_file(
     # TODO: use numpy.array([interven[-N:]])
     # numpy.array([szA[0], szA[1], 8])
     Rrs = zeros((szA[0], szA[1], 8), dtype=float)  # 8 bands x input size
-    for j in range(sz(1)):
+    for j in range(sz[0]):
         # Assign NaN to pixels of no data
         # If a pixel contains data values other than "zero" or
         # "two thousand and forty seven" in any band, it is calibrated;
         # otherwise, it is considered "no-data" - this avoids a
         # problem created during the orthorectification process
         # wherein reprojecting the image may resample data
-        for k in range(sz(2)):
+        for k in range(sz[1]):
             if (
-                (A(j, k, 1)) != 0 and
-                (A(j, k, 1)) != 2047 or (A(j, k, 2)) != 0 and
-                (A(j, k, 2)) != 2047 or (A(j, k, 3)) != 0 and
-                (A(j, k, 3)) != 2047 or (A(j, k, 4)) != 0 and
-                (A(j, k, 4)) != 2047 or (A(j, k, 5)) != 0 and
-                (A(j, k, 5)) != 2047 or (A(j, k, 6)) != 0 and
-                (A(j, k, 6)) != 2047 or (A(j, k, 7)) != 0 and
-                (A(j, k, 7)) != 2047 or (A(j, k, 8)) != 0 and
-                (A(j, k, 8)) != 2047
+                (A[j, k, 1]) != 0 and
+                (A[j, k, 1]) != 2047 or (A[j, k, 2]) != 0 and
+                (A[j, k, 2]) != 2047 or (A[j, k, 3]) != 0 and
+                (A[j, k, 3]) != 2047 or (A[j, k, 4]) != 0 and
+                (A[j, k, 4]) != 2047 or (A[j, k, 5]) != 0 and
+                (A[j, k, 5]) != 2047 or (A[j, k, 6]) != 0 and
+                (A[j, k, 6]) != 2047 or (A[j, k, 7]) != 0 and
+                (A[j, k, 7]) != 2047 or (A[j, k, 8]) != 0 and
+                (A[j, k, 8]) != 2047
             ):
                 for d in range(8):
                     # Radiometrically calibrate and convert to Rrs
@@ -299,7 +299,7 @@ def process_file(
                     Rrs[j, k, d] = float(
                         (
                             pi*(
-                                (float(A(j, k, d))*kf[d]/ebw[d]) -
+                                (float(A[j, k, d])*kf[d]/ebw[d]) -
                                 ray_rad[d]
                                 # ray_rad{1, 1}(1, d)
                             )*ESd**2
@@ -379,11 +379,11 @@ def process_file(
         sum_veg2 = []
         dead_veg = [0]
         sum_water_rrs = []
-        sz_ar = sz(1)*sz(2)
+        sz_ar = sz[0]*sz[1]
         water = zeros(sz_ar, 9)
         c_val = []
-        for j in range(sz(1)):
-            for k in range(sz(2)):
+        for j in range(sz[0]):
+            for k in range(sz[1]):
                 if isnan(Rrs[j, k, 1]) is False:
                     num_pix = num_pix + 1  # Count number of non-NaN pixels
                     # Record coastal band value for cloud mask prediction
@@ -1087,7 +1087,7 @@ def process_file(
 
             # === DT Filter
             if filter > 0:
-                dt_filt = DT_Filter(map, filter, sz(1), sz(2))
+                dt_filt = DT_Filter(map, filter, sz[0], sz[1])
                 AA = [
                     loc_out, id, '_', loc, '_Map_filt_', str(filter),
                     '_benthicnew'
