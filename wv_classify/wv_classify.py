@@ -152,7 +152,7 @@ def process_file(
         satel, sensaz, aqday, satview, kf, cl_cov
     ) = read_xml(Z)
 
-    szB[3] = 8
+    szB[2] = 8
 
     # ==================================================================
     # === Calculate Earth-Sun distance and relevant geometry
@@ -263,16 +263,16 @@ def process_file(
     # Adjust file size: Input file (A) warped may contain more or fewer
     # columns/rows than original NITF file, and some may be corrupt.
     sz = [0]*3
-    sz[1] = min(szA(1), szB(1))
-    sz[2] = min(szA(2), szB(2))
+    sz[1] = min(szA[0], szB[0])
+    sz[2] = min(szA[0], szB[1])
     sz[3] = 8
 
     # === Assign NaN to no-data pixels and radiometrically calibrate and
     # convert to Rrs
     # Create empty matrix for Rrs output
     # TODO: use numpy.array([interven[-N:]])
-    # numpy.array([szA(1), szA(2), 8])
-    Rrs = float(zeros(szA(1), szA(2), 8))  # 8 bands x input size
+    # numpy.array([szA[0], szA[1], 8])
+    Rrs = float(zeros(szA[0], szA[1], 8))  # 8 bands x input size
     for j in range(sz(1)):
         # Assign NaN to pixels of no data
         # If a pixel contains data values other than "zero" or
@@ -656,12 +656,12 @@ def process_file(
             cld_mask = max(c_val)+1
         # end
 
-        Bathy = float(zeros(szA(1), szA(2)))  # Preallocate for Bathymetry
+        Bathy = float(zeros(szA[0], szA[1]))  # Preallocate for Bathymetry
         Rrs_deglint = float(zeros(5, 1))  # Preallocate for deglinted Rrs
         # Preallocate water-column corrected Rrs
         Rrs_0 = float(zeros(5, 1))
         # Create empty matrix for classification output
-        map = zeros(szA(1), szA(2), 'uint8')
+        map = zeros(szA[0], szA[1], 'uint8')
 
     if d_t == 1:  # Execute Deglinting rrs and Bathymetry
         if v > u*0.25:
@@ -730,8 +730,8 @@ def process_file(
     # Execute Deglinting rrs, Bathymetery, and Decision Tree
     elif d_t == 2:
         update = 'Running DT'
-        for j in range(1, szA(1)):
-            for k in range(1, szA(2)):
+        for j in range(1, szA[0]):
+            for k in range(1, szA[1]):
                 if isnan(Rrs[j, k, 1]) == 0:
                     # === Mud, Developed and Sand
                     if (
@@ -1064,13 +1064,13 @@ def process_file(
                 # end  # If water/land
             # end  # If isnan
         # end  # k
-        # if j == szA(1)/4
+        # if j == szA[0]/4
         #     update = 'DT 25# Complete'
         # end
-        # if j == szA(1)/2
+        # if j == szA[0]/2
         #     update = 'DT 50# Complete'
         # end
-        # if j == szA(1)/4*3
+        # if j == szA[0]/4*3
         #     update = 'DT 75# Complete'
         # end
     # end  # j
