@@ -145,7 +145,8 @@ def process_file(
     id = fname[1:19]
 
     A, R = geotiffread(X)
-    szA = A.shape
+    print("\tinput size: {}".format(A.shape))
+    szA = [A.shape[1], A.shape[2], A.shape[0]]
 
     (
         szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel,
@@ -267,6 +268,10 @@ def process_file(
     sz[1] = min(szA[0], szB[1])
     sz[2] = 8
 
+    print("\tszA: {}".format(szA))
+    print("\tszB: {}".format(szB))
+    print("\tsz : {}".format(sz))
+
     # === Assign NaN to no-data pixels and radiometrically calibrate and
     # convert to Rrs
     # Create empty matrix for Rrs output
@@ -275,6 +280,8 @@ def process_file(
     print("calculating Rrs...")
     Rrs = zeros((szA[0], szA[1], 8), dtype=float)  # 8 bands x input size
     for j in range(sz[0]):
+        if j/50 == 0:  # print every Nth row number to entertain the user
+            print(j, end='\t', flush=True)
         # Assign NaN to pixels of no data
         # If a pixel contains data values other than "zero" or
         # "two thousand and forty seven" in any band, it is calibrated;
@@ -282,16 +289,17 @@ def process_file(
         # problem created during the orthorectification process
         # wherein reprojecting the image may resample data
         for k in range(sz[1]):
+            # print(k, end='|')
             if (
-                (A[j, k, 1]) != 0 and
-                (A[j, k, 1]) != 2047 or (A[j, k, 2]) != 0 and
-                (A[j, k, 2]) != 2047 or (A[j, k, 3]) != 0 and
-                (A[j, k, 3]) != 2047 or (A[j, k, 4]) != 0 and
-                (A[j, k, 4]) != 2047 or (A[j, k, 5]) != 0 and
-                (A[j, k, 5]) != 2047 or (A[j, k, 6]) != 0 and
-                (A[j, k, 6]) != 2047 or (A[j, k, 7]) != 0 and
-                (A[j, k, 7]) != 2047 or (A[j, k, 8]) != 0 and
-                (A[j, k, 8]) != 2047
+                (A[0, j, k]) != 0 and
+                (A[0, j, k]) != 2047 or (A[1, j, k]) != 0 and
+                (A[1, j, k]) != 2047 or (A[2, j, k]) != 0 and
+                (A[2, j, k]) != 2047 or (A[3, j, k]) != 0 and
+                (A[3, j, k]) != 2047 or (A[4, j, k]) != 0 and
+                (A[4, j, k]) != 2047 or (A[5, j, k]) != 0 and
+                (A[5, j, k]) != 2047 or (A[6, j, k]) != 0 and
+                (A[6, j, k]) != 2047 or (A[7, j, k]) != 0 and
+                (A[7, j, k]) != 2047
             ):
                 for d in range(8):
                     # Radiometrically calibrate and convert to Rrs
@@ -300,7 +308,7 @@ def process_file(
                     Rrs[j, k, d] = float(
                         (
                             pi*(
-                                (float(A[j, k, d])*kf[d]/ebw[d]) -
+                                (float(A[d, j, k])*kf[d]/ebw[d]) -
                                 ray_rad[d]
                                 # ray_rad{1, 1}(1, d)
                             )*ESd**2
@@ -314,7 +322,7 @@ def process_file(
     # end
 
     # clear A
-
+    print("\t  Rrs size: {}".format(Rrs.shape))
     # === Output reflectance image
     if Rrs_write == 1:
         Z = ''.join([loc_out, id, '_', loc, '_Rrs'])

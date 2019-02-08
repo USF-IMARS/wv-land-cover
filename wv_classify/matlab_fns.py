@@ -110,11 +110,12 @@ def geotiffwrite(outFileName, arr_out, ds, CoordRefSysCode):
     # same projection as input
     outdata.SetProjection(ds.GetProjection())
     for band in range(bands):
+        print('\twriting band #{}...'.format(band+1))
         band_arr = arr_out[:, :, band]
-        outdata.GetRasterBand(band).WriteArray(band_arr)
+        outdata.GetRasterBand(band+1).WriteArray(band_arr)
 
         # if you want these values transparent
-        outdata.GetRasterBand(band).SetNoDataValue(numpy.nan)
+        outdata.GetRasterBand(band+1).SetNoDataValue(numpy.nan)
 
         outdata.FlushCache()  # saves to disk!!
         # === required dereference?
