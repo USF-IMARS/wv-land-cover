@@ -61,14 +61,22 @@ def geotiffread(filename):
     returns:
     --------
     A : array
-        raster band array
+        3D array of all raster bands
     R : gdal data object
         NOTE: not a SpatialReference like matlab uses, but
             is passed to geotiffwrite in the same way.
     """
     ds = gdal.Open(filename)
-    band = ds.GetRasterBand(1)
-    data_grid = band.ReadAsArray()
+    data_grid = numpy.array([
+        ds.GetRasterBand(band+1).ReadAsArray()
+        for band in range(ds.RasterCount)
+    ])
+    # # if srcband is None:
+    # #     continue
+    # # stats = srcband.GetStatistics(True, True)
+    # # if stats is None:
+    # #     continue
+    # data_grid.append(srcband.ReadAsArray())
 
     # prj = ds.GetProjection()
     # spatial_ref = osr.SpatialReference(wkt=prj)
