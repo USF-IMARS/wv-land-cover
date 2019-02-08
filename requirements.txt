@@ -1,0 +1,2 @@
+-- python packages needed to run wv2-processing
+scikit-image
