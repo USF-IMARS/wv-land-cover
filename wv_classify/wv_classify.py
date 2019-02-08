@@ -210,8 +210,8 @@ def process_file(
     for d in range(8):
         # Rayleigh scattering phase function (described in Bucholtz 1995)
         Pr[d] = (
-            (3/(4*(1+2*gamma(d)))) *
-            ((1+3*gamma(d))+(1-gamma(d))*cosd(thetaplus)**2)
+            (3/(4*(1+2*gamma[d]))) *
+            ((1+3*gamma[d])+(1-gamma[d])*cosd(thetaplus)**2)
         )
     # end
 
@@ -219,8 +219,8 @@ def process_file(
     for d in range(8):
         # Rayleigh optical thickness (assume std pressure of 1013.25 mb)
         tau[d] = (
-            0.008569*(cw(d)**-4) *
-            (1 + 0.0113*(cw(d)**-2) + 0.00013*cw(d)**-4)
+            0.008569*(cw[d]**-4) *
+            (1 + 0.0113*(cw[d]**-2) + 0.00013*cw[d]**-4)
         )
     # end
 
@@ -230,10 +230,10 @@ def process_file(
         # Assume standard pressure (1013.25 mb)
         # TODO: cell array -> list?
         ray_rad.append(  # Rayleigh Radience
-            ((irr(1, d)/ESd)*1*tau(d)*Pr(d))/(4*pi*cosd(90-satel))
+            ((irr[d]/ESd)*1*tau[d]*Pr[d])/(4*pi*cosd(90-satel))
         )
         # ray_rad{1, 1}(d) = (  # Rayleigh Radience
-        #     ((irr(1, d)/ESd)*1*tau(d)*Pr(d))/(4*pi*cosd(90-satel))
+        #     ((irr[d]/ESd)*1*tau(d)*Pr[d])/(4*pi*cosd(90-satel))
         # )
     # end
 
@@ -263,16 +263,16 @@ def process_file(
     # Adjust file size: Input file (A) warped may contain more or fewer
     # columns/rows than original NITF file, and some may be corrupt.
     sz = [0]*3
-    sz[1] = min(szA[0], szB[0])
-    sz[2] = min(szA[0], szB[1])
-    sz[3] = 8
+    sz[0] = min(szA[0], szB[0])
+    sz[1] = min(szA[0], szB[1])
+    sz[2] = 8
 
     # === Assign NaN to no-data pixels and radiometrically calibrate and
     # convert to Rrs
     # Create empty matrix for Rrs output
     # TODO: use numpy.array([interven[-N:]])
     # numpy.array([szA[0], szA[1], 8])
-    Rrs = float(zeros(szA[0], szA[1], 8))  # 8 bands x input size
+    Rrs = zeros((szA[0], szA[1], 8), dtype=float)  # 8 bands x input size
     for j in range(sz(1)):
         # Assign NaN to pixels of no data
         # If a pixel contains data values other than "zero" or
@@ -299,11 +299,11 @@ def process_file(
                     Rrs[j, k, d] = float(
                         (
                             pi*(
-                                (float(A(j, k, d))*kf(d, 1)/ebw(1, d)) -
+                                (float(A(j, k, d))*kf[d]/ebw[d]) -
                                 ray_rad[d]
                                 # ray_rad{1, 1}(1, d)
                             )*ESd**2
-                        ) / (irr(1, d)*TZ*TV)
+                        ) / (irr[d]*TZ*TV)
                     )
                 # end
             else:
