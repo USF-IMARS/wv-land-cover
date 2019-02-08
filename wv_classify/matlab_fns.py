@@ -3,9 +3,9 @@
 import math
 import numpy
 
-import gdal
-# from osgeo import gdal  ?
-# from osgeo import osr
+# try:
+from osgeo import gdal
+# except: import gdal
 
 
 def d2r(deg):
