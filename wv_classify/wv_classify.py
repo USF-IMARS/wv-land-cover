@@ -230,7 +230,7 @@ def process_file(
     for d in range(8):
         # Assume standard pressure (1013.25 mb)
         # TODO: cell array -> list?
-        ray_rad.append(  # Rayleigh Radience
+        ray_rad[d] = (  # Rayleigh Radience
             ((irr[d]/ESd)*1*tau[d]*Pr[d])/(4*pi*cosd(90-satel))
         )
         # ray_rad{1, 1}(d) = (  # Rayleigh Radience
@@ -280,7 +280,7 @@ def process_file(
     print("calculating Rrs...")
     Rrs = zeros((szA[0], szA[1], 8), dtype=float)  # 8 bands x input size
     for j in range(sz[0]):
-        if j/50 == 0:  # print every Nth row number to entertain the user
+        if j % 50 == 0:  # print every Nth row number to entertain the user
             print(j, end='\t', flush=True)
         # Assign NaN to pixels of no data
         # If a pixel contains data values other than "zero" or
