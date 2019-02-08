@@ -4,6 +4,14 @@ Processing scripts for decision-tree land use classification on WorldView-2 imag
 The submit_py.sh file is what I use in Circe to call the pgc_ortho.py script, which has a number of sub-scripts called.
 The submit_py.sh also contains the Matlab script call, so you'll want to comment out those lines before testing it.
 
+# Installation
+1. download: `git clone git@github.com:USF-IMARS/wv2-processing.git`
+2. install dependencies
+    1. OS-level:
+        * Ubuntu:
+            * for gdal: `sudo apt istall -y python3-gdal`
+    2. remaining python packages w/ setup.py `pip install -e .`
+
 ## github basics
 
 #### download repo to local machine

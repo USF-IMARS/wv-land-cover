@@ -54,17 +54,27 @@ def rdivide(A, B):
 
 
 def geotiffread(filename):
-    # https://www.mathworks.com/help/map/ref/geotiffread.html
-    # TODO: read geotiff w/ gdal (or other)
+    """
+    Reads geotiff w/ gdal.
+    https://www.mathworks.com/help/map/ref/geotiffread.html
+
+    returns:
+    --------
+    A : array
+        raster band array
+    R : gdal data object
+        NOTE: not a SpatialReference like matlab uses, but
+            is passed to geotiffwrite in the same way.
+    """
     ds = gdal.Open(filename)
     band = ds.GetRasterBand(1)
     data_grid = band.ReadAsArray()
 
     # prj = ds.GetProjection()
     # spatial_ref = osr.SpatialReference(wkt=prj)
+    # spatial_ref = ds.SpatialReference()
 
-    spatial_ref = ds.SpatialReference()
-    return data_grid, spatial_ref
+    return data_grid, ds
 
 
 def geotiffwrite(outFileName, arr_out, ds, CoordRefSysCode):
@@ -75,16 +85,20 @@ def geotiffwrite(outFileName, arr_out, ds, CoordRefSysCode):
     ----------
     coor_sys :
         code for projection. eg 4326
+    ds :
+        gdal data object used only to get the GeoTransform & projection info
     """
     driver = gdal.GetDriverByName("GTiff")
     cols, rows = arr_out.shape
     outdata = driver.Create(outFileName, rows, cols, 1, gdal.GDT_UInt16)
     # set same geotransform as input
     outdata.SetGeoTransform(ds.GetGeoTransform())
-    # TODO: set projection using coor_sys
-    # sets same projection as input
+
+    # TODO: set projection using CoordRefSysCode instead of:
+    # same projection as input
     outdata.SetProjection(ds.GetProjection())
     outdata.GetRasterBand(1).WriteArray(arr_out)
+
     # if you want these values transparent
     outdata.GetRasterBand(1).SetNoDataValue(numpy.nan)
     outdata.FlushCache()  # saves to disk!!

@@ -1,1 +1,2 @@
 -- python packages needed for testing this package
+pytest
