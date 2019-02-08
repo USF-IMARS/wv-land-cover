@@ -288,19 +288,11 @@ def process_file(
         # otherwise, it is considered "no-data" - this avoids a
         # problem created during the orthorectification process
         # wherein reprojecting the image may resample data
+        invalid_pixels = 0
+        good_pixels = 0
         for k in range(sz[1]):
             # print(k, end='|')
-            if (
-                (A[0, j, k]) != 0 and
-                (A[0, j, k]) != 2047 or (A[1, j, k]) != 0 and
-                (A[1, j, k]) != 2047 or (A[2, j, k]) != 0 and
-                (A[2, j, k]) != 2047 or (A[3, j, k]) != 0 and
-                (A[3, j, k]) != 2047 or (A[4, j, k]) != 0 and
-                (A[4, j, k]) != 2047 or (A[5, j, k]) != 0 and
-                (A[5, j, k]) != 2047 or (A[6, j, k]) != 0 and
-                (A[6, j, k]) != 2047 or (A[7, j, k]) != 0 and
-                (A[7, j, k]) != 2047
-            ):
+            if any(band_val not in [0, 2047] for band_val in A[:, j, k]):
                 for d in range(8):
                     # Radiometrically calibrate and convert to Rrs
                     # (adapted from Radiometric Use of
@@ -315,12 +307,18 @@ def process_file(
                         ) / (irr[d]*TZ*TV)
                     )
                 # end
+                good_pixels += 1
             else:
                 Rrs[j, k, :] = OUTPUT_NaN
+                invalid_pixels += 1
             # end
         # end
     # end
-
+    print(
+        "\t{} px calculated. {} px skipped.".format(
+            good_pixels, invalid_pixels
+        )
+    )
     # clear A
     print("\t  Rrs size: {}".format(Rrs.shape))
     # === Output reflectance image
