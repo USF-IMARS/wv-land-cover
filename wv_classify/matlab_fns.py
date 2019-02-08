@@ -66,6 +66,7 @@ def geotiffread(filename):
         NOTE: not a SpatialReference like matlab uses, but
             is passed to geotiffwrite in the same way.
     """
+    print("reading geotiff '{}'".format(filename))
     ds = gdal.Open(filename)
     data_grid = numpy.array([
         ds.GetRasterBand(band+1).ReadAsArray()
@@ -91,22 +92,34 @@ def geotiffwrite(outFileName, arr_out, ds, CoordRefSysCode):
 
     parameters:
     ----------
+    arr_out : 3d numpy.array
+        values to write to geotiff
     coor_sys :
         code for projection. eg 4326
     ds :
         gdal data object used only to get the GeoTransform & projection info
     """
+    print("writing geotiff to '{}'".format(outFileName))
     driver = gdal.GetDriverByName("GTiff")
-    cols, rows = arr_out.shape
-    outdata = driver.Create(outFileName, rows, cols, 1, gdal.GDT_UInt16)
+    cols, rows, bands = arr_out.shape
+    outdata = driver.Create(outFileName, rows, cols, bands, gdal.GDT_UInt16)
     # set same geotransform as input
     outdata.SetGeoTransform(ds.GetGeoTransform())
 
     # TODO: set projection using CoordRefSysCode instead of:
     # same projection as input
     outdata.SetProjection(ds.GetProjection())
-    outdata.GetRasterBand(1).WriteArray(arr_out)
+    for band in range(bands):
+        band_arr = arr_out[:, :, band]
+        outdata.GetRasterBand(band).WriteArray(band_arr)
 
-    # if you want these values transparent
-    outdata.GetRasterBand(1).SetNoDataValue(numpy.nan)
-    outdata.FlushCache()  # saves to disk!!
+        # if you want these values transparent
+        outdata.GetRasterBand(band).SetNoDataValue(numpy.nan)
+
+        outdata.FlushCache()  # saves to disk!!
+        # === required dereference?
+        # https://trac.osgeo.org/gdal/wiki/PythonGotchas#Savingandclosingdatasetsdatasources
+        # band_arr = None
+    # === required dereference?
+    # https://trac.osgeo.org/gdal/wiki/PythonGotchas#Savingandclosingdatasetsdatasources
+    # outdata = None

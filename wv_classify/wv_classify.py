@@ -272,6 +272,7 @@ def process_file(
     # Create empty matrix for Rrs output
     # TODO: use numpy.array([interven[-N:]])
     # numpy.array([szA[0], szA[1], 8])
+    print("calculating Rrs...")
     Rrs = zeros((szA[0], szA[1], 8), dtype=float)  # 8 bands x input size
     for j in range(sz[0]):
         # Assign NaN to pixels of no data
@@ -316,12 +317,13 @@ def process_file(
 
     # === Output reflectance image
     if Rrs_write == 1:
-        Z = [loc_out, id, '_', loc, '_Rrs']
+        Z = ''.join([loc_out, id, '_', loc, '_Rrs'])
         geotiffwrite(Z, Rrs, R, CoordRefSysCode=coor_sys)
     # end
 
     if d_t > 0:
         # Run DT and/or rrs conversion; otherwise end
+        print('Running DT and/or rrs conversion...')
 
         # Calculate Kd (water column attenuation coefficient) from
         # Chuanmin Hu's Rrs_Kd_Model.xlsx sheet
@@ -664,6 +666,7 @@ def process_file(
         map = zeros(szA[0], szA[1], 'uint8')
 
     if d_t == 1:  # Execute Deglinting rrs and Bathymetry
+        print('Executing Deglinting rrs and Bathymetry...')
         if v > u*0.25:
             # Deglint equation
             Rrs_deglint[1, 1] = (
@@ -729,6 +732,7 @@ def process_file(
 
     # Execute Deglinting rrs, Bathymetery, and Decision Tree
     elif d_t == 2:
+        print('Executing Deglinting rrs, Bathymetery, and Decision Tree...')
         update = 'Running DT'
         for j in range(1, szA[0]):
             for k in range(1, szA[1]):
@@ -1088,22 +1092,22 @@ def process_file(
             # === DT Filter
             if filter > 0:
                 dt_filt = DT_Filter(map, filter, sz[0], sz[1])
-                AA = [
+                AA = ''.join([
                     loc_out, id, '_', loc, '_Map_filt_', str(filter),
                     '_benthicnew'
-                ]
+                ])
                 geotiffwrite(
                     AA, dt_filt, R, CoordRefSysCode=coor_sys
                 )
             else:
-                Z1 = [loc_out, id, '_', loc, '_Map_benthicnew']
+                Z1 = ''.join([loc_out, id, '_', loc, '_Map_benthicnew'])
                 geotiffwrite(Z1, map, R, CoordRefSysCode=coor_sys)
             # end
 
             # === Output images
             # Z = [loc_out, id, '_', loc, '_Bathy1']
             # geotiffwrite(Z, Bathy, R(1, 1), CoordRefSysCode=coor_sys)
-            Z2 = [loc_out, id, '_', loc, '_rrssub']  # last=52
+            Z2 = ''.join([loc_out, id, '_', loc, '_rrssub'])  # last=52
             geotiffwrite(Z2, Rrs, R, CoordRefSysCode=coor_sys)
         # end  # If dt = 1
     # end  # If dt>0
