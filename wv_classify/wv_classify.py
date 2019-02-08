@@ -142,7 +142,7 @@ def process_file(
     process a single set of files
     """
     fname = path.basename(X)
-    id = fname[1:19]
+    id = fname[0:18]
 
     A, R = geotiffread(X)
     print("\tinput size: {}".format(A.shape))
@@ -325,7 +325,7 @@ def process_file(
     print("\t  Rrs size: {}".format(Rrs.shape))
     # === Output reflectance image
     if Rrs_write == 1:
-        Z = ''.join([loc_out, id, '_', loc, '_Rrs'])
+        Z = ''.join([loc_out, id, '_', loc, '_Rrs.tif'])
         geotiffwrite(Z, Rrs, R, CoordRefSysCode=coor_sys)
     # end
 
@@ -1102,20 +1102,20 @@ def process_file(
                 dt_filt = DT_Filter(map, filter, sz[0], sz[1])
                 AA = ''.join([
                     loc_out, id, '_', loc, '_Map_filt_', str(filter),
-                    '_benthicnew'
+                    '_benthicnew.tif'
                 ])
                 geotiffwrite(
                     AA, dt_filt, R, CoordRefSysCode=coor_sys
                 )
             else:
-                Z1 = ''.join([loc_out, id, '_', loc, '_Map_benthicnew'])
+                Z1 = ''.join([loc_out, id, '_', loc, '_Map_benthicnew.tif'])
                 geotiffwrite(Z1, map, R, CoordRefSysCode=coor_sys)
             # end
 
             # === Output images
             # Z = [loc_out, id, '_', loc, '_Bathy1']
             # geotiffwrite(Z, Bathy, R(1, 1), CoordRefSysCode=coor_sys)
-            Z2 = ''.join([loc_out, id, '_', loc, '_rrssub'])  # last=52
+            Z2 = ''.join([loc_out, id, '_', loc, '_rrssub.tif'])  # last=52
             geotiffwrite(Z2, Rrs, R, CoordRefSysCode=coor_sys)
         # end  # If dt = 1
     # end  # If dt>0
