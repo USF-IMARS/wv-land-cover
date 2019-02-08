@@ -18,6 +18,7 @@
 # Outputs images as GEOTIFF files with geospatial information.
 
 # built-in imports:
+import sys
 from os import path
 from glob import glob
 from math import pi
@@ -51,25 +52,33 @@ from matlab_fns import rdivide
 
 # TODO: + printout timing of run
 
+DATA_DIR = '/home1/mmccarthy/Matt/USF/Other/NERRS_Mapping/Processing'
 OUTPUT_NaN = numpy.nan
 # dst_ds.GetRasterBand(1).SetNoDataValue(OUTPUT_NaN)
 
 
-def main():
+def main(
+    loc_in=DATA_DIR + '/Ortho/',
+    _id=0,  # NOTE: unused?
+    met_in=DATA_DIR + '/Raw/',
+    crd_sys="EPSG:4326",
+    d_t=1,  # 0=End after Rrs conversion; 1=rrs, bathy, DT; 2 = rrs, bathy & DT
+    sgw=0,  # Sunglint moving-window box = sgw*2 +1 (i.e. 2 = 5x5 box)
+    filter=3,  # 0=None, 1=3x3, 3=7x7, 5=11x11
+    _stat=3,  # NOTE: unused?
+    loc='RB',  # Typically the estuary acronym,
+    id_number=0,  # (prev SLURM_ARRAY_TASK_ID) TODO: rm this?
+    loc_out=DATA_DIR + '/Output/'
+):
     # === Assign input and output locations
-    loc = 'RB'  # Typically the estuary acronym
-    coor_sys = 4326  # Change coordinate system code here
+    if crd_sys == "EPSG:4326":
+        coor_sys = 4326  # Change coordinate system code here
+    else:
+        raise ValueError("unknown coord sys: '{}'".format(crd_sys))
+
     Rrs_write = 0  # 1=write Rrs geotiff; 0=do not write
-    # 0=End after Rrs conversion; 1 = rrs, bathy, DT; 2 = rrs, bathy & DT
-    d_t = 1
-    filter = 3  # 0=None, 1=3x3, 3=7x7, 5=11x11
-    # sgw = 0;  # Sunglint moving-window box = sgw*2 +1 (i.e. 2 = 5x5 box)
     # sgwid =  num2str(sgw)
 
-    DATA_DIR = '/home1/mmccarthy/Matt/USF/Other/NERRS_Mapping/Processing'
-    loc_in = DATA_DIR + '/Ortho/'
-    met_in = DATA_DIR + '/Raw/'
-    loc_out = DATA_DIR + '/Output/'
     # === get list of all product files in directory
     matfiles = glob(path.join(
         'Matt', 'USF', 'Other', 'NERRS_Mapping', 'Processing', 'Ortho', '*.tif'
@@ -1132,4 +1141,4 @@ def main():
     # end
 
 if __name__ == "__main__":
-    main()
+    main(*sys.argv[1:])
