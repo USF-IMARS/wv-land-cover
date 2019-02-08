@@ -92,7 +92,7 @@ def read_xml(filename):
         0
     ]
     kf = [
-        int(imd.find(band).find('ABSCALFACTOR').text) for band in [
+        float(imd.find(band).find('ABSCALFACTOR').text) for band in [
             'BAND_C', 'BAND_B', 'BAND_G', 'BAND_Y', 'BAND_R', 'BAND_RE',
             'BAND_N', 'BAND_N2'
         ]
@@ -101,7 +101,7 @@ def read_xml(filename):
     aq_dt = datetime.strptime(
         imd.find('IMAGE').find('FIRSTLINETIME').text,
         # "2017-12-22T16:48:10.923850Z"
-        "%Y-%m-%dT%H:%M:%S.%f%Z"
+        "%Y-%m-%dT%H:%M:%S.%fZ"
     )
     aqyear = aq_dt.year
     aqmonth = aq_dt.month
@@ -110,13 +110,13 @@ def read_xml(filename):
     aqminute = aq_dt.minute
     aqsecond = aq_dt.second
     # Extract Mean Sun Elevation angle from metadata.Text(18:26))
-    sunel = int(imd.find('IMAGE').find('MEANSUNEL').text)
+    sunel = float(imd.find('IMAGE').find('MEANSUNEL').text)
     # Extract Mean Off Nadir View angle from metadata
-    satview = int(imd.find('IMAGE').find('MEANOFFNADIRVIEWANGLE').text)
-    sunaz = int(imd.find('IMAGE').find('MEANSUNAZ').text)
-    sensaz = int(imd.find('IMAGE').find('MEANSATAZ').text)
-    satel = int(imd.find('IMAGE').find('MEANSATEL').text)
-    cl_cov = int(imd.find('IMAGE').find('CLOUDCOVER').text)
+    satview = float(imd.find('IMAGE').find('MEANOFFNADIRVIEWANGLE').text)
+    sunaz = float(imd.find('IMAGE').find('MEANSUNAZ').text)
+    sensaz = float(imd.find('IMAGE').find('MEANSATAZ').text)
+    satel = float(imd.find('IMAGE').find('MEANSATEL').text)
+    cl_cov = float(imd.find('IMAGE').find('CLOUDCOVER').text)
     # TODO: why this if/else?
     # if isfield(s, 'IMD') == 1:
     #     c = struct2cell(s.Children(2).Children(:))
