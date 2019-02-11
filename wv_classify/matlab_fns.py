@@ -3,9 +3,10 @@
 import math
 import numpy
 
-# try:
-from osgeo import gdal
-# except: import gdal
+try:
+    from osgeo import gdal
+except ImportError:
+    import gdal
 
 
 def d2r(deg):
