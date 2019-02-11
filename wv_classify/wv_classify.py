@@ -229,13 +229,10 @@ def process_file(
     ray_rad = [0]*8
     for d in range(8):
         # Assume standard pressure (1013.25 mb)
-        # TODO: cell array -> list?
         ray_rad[d] = (  # Rayleigh Radience
-            ((irr[d]/ESd)*1*tau[d]*Pr[d])/(4*pi*cosd(90-satel))
+            ((irr[d]/ESd)*1*tau[d]*Pr[d]) /  # TODO: why *1* ?
+            (4*pi*cosd(90-satel))
         )
-        # ray_rad{1, 1}(d) = (  # Rayleigh Radience
-        #     ((irr[d]/ESd)*1*tau(d)*Pr[d])/(4*pi*cosd(90-satel))
-        # )
     # end
 
     # rrs constant calculation (Kerr et al. 2018 and Mobley 1994)
@@ -302,7 +299,6 @@ def process_file(
                             pi*(
                                 (float(A[d, j, k])*kf[d]/ebw[d]) -
                                 ray_rad[d]
-                                # ray_rad{1, 1}(1, d)
                             )*ESd**2
                         ) / (irr[d]*TZ*TV)
                     )
