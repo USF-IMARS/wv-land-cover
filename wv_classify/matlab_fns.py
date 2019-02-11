@@ -89,10 +89,17 @@ def geotiffread(filename):
     assert len(data_grid[0, 0, :]) == n_cols
     print("read {} bands at resolution {}x{}".format(n_bands, n_rows, n_cols))
 
+    # TODO: use numpy.swapaxes to make indices match geotiffwrite?
+
     return data_grid, ds
 
 
-def geotiffwrite(outFileName, arr_out, ds, CoordRefSysCode=4326):
+def geotiffwrite(
+    outFileName, arr_out, ds, CoordRefSysCode=4326,
+    row_index=0,
+    col_index=1,
+    band_index=2,
+):
     """
     https://www.mathworks.com/help/map/ref/geotiffwrite.html
 
@@ -111,7 +118,9 @@ def geotiffwrite(outFileName, arr_out, ds, CoordRefSysCode=4326):
         numpy.uint16: gdal.GDT_UInt16,
     }
     driver = gdal.GetDriverByName("GTiff")
-    n_bands, n_rows, n_cols = arr_out.shape
+    n_bands = arr_out.shape[band_index]
+    n_rows = arr_out.shape[row_index]
+    n_cols = arr_out.shape[col_index]
     print("writing {}x{}, {}-band geotiff to '{}'".format(
         n_rows, n_cols, n_bands, outFileName
     ))

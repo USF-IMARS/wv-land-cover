@@ -230,7 +230,7 @@ def process_file(
     for d in range(8):
         # Assume standard pressure (1013.25 mb)
         ray_rad[d] = (  # Rayleigh Radience
-            ((irr[d]/ESd)*1*tau[d]*Pr[d]) /  # TODO: why *1* ?
+            ((irr[d]/ESd)*1*tau[d]*Pr[d]) /  # *1* to match publication
             (4*pi*cosd(90-satel))
         )
     # end
@@ -272,8 +272,6 @@ def process_file(
     # === Assign NaN to no-data pixels and radiometrically calibrate and
     # convert to Rrs
     # Create empty matrix for Rrs output
-    # TODO: use numpy.array([interven[-N:]])
-    # numpy.array([szA[0], szA[1], 8])
     print("calculating Rrs...")
     Rrs = zeros((szA[0], szA[1], 8), dtype=float)  # 8 bands x input size
     for j in range(sz[0]):
