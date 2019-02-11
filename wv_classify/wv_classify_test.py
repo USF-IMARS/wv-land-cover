@@ -22,11 +22,12 @@ def test_process_file():
     - /rrs_subsurface = output rrs tifs - also important to test, but less so
     - /Mapped = filtered and unfiltered classification maps
     """
-    os.chdir("test/WV_Testing/")
+    os.chdir("test_data/")
+    os.mkdir("/tmp/wv_test_output")
     process_file(
         "Ortho/16FEB12162517-M1BS-057380245010_01_P001_u16ns4326.tif",
         "Raw/16FEB12162517-M1BS-057380245010_01_P001.xml",
-        "test_output/",
+        "/tmp/wv_test_output",
         "RB",
         4326, 0, Rrs_write=1
     )
