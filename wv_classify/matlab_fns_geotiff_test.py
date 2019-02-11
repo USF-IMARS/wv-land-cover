@@ -9,7 +9,7 @@ from matlab_fns import geotiffwrite
 class Test_geotiff_io(TestCase):
     def test_geotiff_cp(self):
         """read then write geotiff; output matches input."""
-        INFILEPATH = "test/WV_Testing/Rrs/16FEB12162517-M1BS-_RB_Rrs.tif"
+        INFILEPATH = "test_data/Rrs/16FEB12162517-M1BS-_RB_Rrs.tif"
         OUTFILEPATH = "/tmp/cp_test.tif"
         data_array, data_obj = geotiffread(INFILEPATH)
         geotiffwrite(
