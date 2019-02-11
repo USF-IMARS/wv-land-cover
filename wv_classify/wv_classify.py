@@ -274,6 +274,14 @@ def process_file(
     # Create empty matrix for Rrs output
     print("calculating Rrs...")
     Rrs = zeros((szA[0], szA[1], 8), dtype=float)  # 8 bands x input size
+
+    def calc_Rrs(A_d_j_k, kf_d, ebw_d, ray_rad_d, irr_d):
+        return (
+            pi*(
+                (A_d_j_k * kf_d / ebw_d) - ray_rad_d
+            )*ESd**2
+        ) / (irr_d * TZ * TV)
+
     for j in range(sz[0]):
         if j % 50 == 0:  # print every Nth row number to entertain the user
             print(j, end='\t', flush=True)
@@ -292,13 +300,8 @@ def process_file(
                     # Radiometrically calibrate and convert to Rrs
                     # (adapted from Radiometric Use of
                     # WorldView-2 Imagery(
-                    Rrs[j, k, d] = float(
-                        (
-                            pi*(
-                                (float(A[d, j, k])*kf[d]/ebw[d]) -
-                                ray_rad[d]
-                            )*ESd**2
-                        ) / (irr[d]*TZ*TV)
+                    Rrs[j, k, d] = calc_Rrs(
+                        A[d, j, k], kf[d], ebw[d], ray_rad[d], irr[d]
                     )
                 # end
                 good_pixels += 1
