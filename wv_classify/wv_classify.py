@@ -311,7 +311,7 @@ def process_file(
         # end
     # end
     print(
-        "\t{} px calculated. {} px skipped.".format(
+        "\n\tDone. {} px calculated. {} px skipped.".format(
             good_pixels, invalid_pixels
         )
     )
