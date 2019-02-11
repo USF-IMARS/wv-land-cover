@@ -315,7 +315,7 @@ def process_file(
             good_pixels, invalid_pixels
         )
     )
-    # clear A
+    A = None  # clear A
     print("\t  Rrs size: {}".format(Rrs.shape))
     # === Output reflectance image
     if Rrs_write == 1:
