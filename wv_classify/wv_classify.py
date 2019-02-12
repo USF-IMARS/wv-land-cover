@@ -219,20 +219,32 @@ def process_file(
 
     tau = [0]*8
     for d in range(8):
-        # Rayleigh optical thickness (assume std pressure of 1013.25 mb)
+        # Rayleigh optical thickness
+        # (Hansen and Travis); Dash et al. 2012 eq 7
+        # P_0 = 1013.25
+        # rayleigh_optical_thickness = (
+        #     (P / P_O) * 0.008569 * wavelength**-4 *
+        #     (1 + 0.0113*wavelength**-2 + 0.00013*wavelength**-4)
+        # )
+        # assuming std pressure of 1013.25 mb (P == P_0)
+        # rayleigh_optical_thickness = (
+        #     1 * 0.008569 * wavelength**-4 *
+        #     (1 + 0.0113*wavelength**-2 + 0.00013*wavelength**-4)
+        # )
         tau[d] = (
-            0.008569*(cw[d]**-4) *
+            1 * 0.008569*(cw[d]**-4) *
             (1 + 0.0113*(cw[d]**-2) + 0.00013*cw[d]**-4)
         )
 
     # end
 
-    # Rayleigh calculation (Dash et al., 2012)
+    # Rayleigh calculation (aerosol path radiance)
+    # (Dash et al., 2012) eq 16
+    w_0 = 1  # single_scattering_albedo
     ray_rad = [0]*8
     for d in range(8):
-        # Assume standard pressure (1013.25 mb)
-        ray_rad[d] = (  # *1* to match publication
-            ((irr[d] / ESd) * 1 * tau[d] * Pr[d]) /
+        ray_rad[d] = (
+            ((irr[d] / ESd) * w_0 * tau[d] * Pr[d]) /
             (4 * pi * cosd(90-satel))
         )
 
@@ -296,7 +308,7 @@ def process_file(
     )
     C2 = numpy.array(
         [
-            ray_rad[d] * ESd**2 / (irr[d] * TZ * TV)
+            ESd**2 / (irr[d] * TZ * TV) * ray_rad[d]  # * pi
             for d in range(n_bands)
         ],
         BASE_DATATYPE
