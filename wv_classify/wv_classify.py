@@ -273,7 +273,6 @@ def process_file(
     # convert to Rrs
     # Create empty matrix for Rrs output
     print("calculating Rrs...")
-    Rrs = zeros((szA[0], szA[1], 8), dtype=float)  # 8 bands x input size
 
     def calc_Rrs(A_d_j_k, kf_d, ebw_d, ray_rad_d, irr_d):
         return (
@@ -282,6 +281,9 @@ def process_file(
             )*ESd**2
         ) / (irr_d * TZ * TV)
 
+    invalid_pixels = 0
+    good_pixels = 0
+    Rrs = zeros((szA[0], szA[1], 8), dtype=float)  # 8 bands x input size
     for j in range(sz[0]):
         if j % 50 == 0:  # print every Nth row number to entertain the user
             print(j, end='\t', flush=True)
@@ -291,8 +293,6 @@ def process_file(
         # otherwise, it is considered "no-data" - this avoids a
         # problem created during the orthorectification process
         # wherein reprojecting the image may resample data
-        invalid_pixels = 0
-        good_pixels = 0
         for k in range(sz[1]):
             # print(k, end='|')
             if any(band_val not in [0, 2047] for band_val in A[:, j, k]):
