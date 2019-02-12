@@ -13,10 +13,7 @@ class Test_geotiff_io(TestCase):
         OUTFILEPATH = "/tmp/cp_test.tif"
         data_array, data_obj = geotiffread(INFILEPATH)
         geotiffwrite(
-            OUTFILEPATH, data_array, data_obj, 4326,
-            row_index=1,
-            col_index=2,
-            band_index=0
+            OUTFILEPATH, data_array, data_obj, 4326
         )
         print("checking if copied file is EXACTLY the same...")
         self.assertTrue(filecmp.cmp(INFILEPATH, OUTFILEPATH))
