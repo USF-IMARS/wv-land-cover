@@ -23,7 +23,10 @@ def test_process_file():
     - /Mapped = filtered and unfiltered classification maps
     """
     os.chdir("test_data/")
-    os.mkdir("/tmp/wv_test_output")
+    try:
+        os.mkdir("/tmp/wv_test_output")
+    except FileExistsError:
+        pass
     process_file(
         "Ortho/16FEB12162517-M1BS-057380245010_01_P001_u16ns4326.tif",
         "Raw/16FEB12162517-M1BS-057380245010_01_P001.xml",
