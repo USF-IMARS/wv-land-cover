@@ -23,16 +23,23 @@ def test_process_file():
     - /Mapped = filtered and unfiltered classification maps
     """
     os.chdir("test_data/")
+    OUTPUT_DIR = "/tmp/wv_test_output"
     try:
-        os.mkdir("/tmp/wv_test_output")
+        os.mkdir(OUTPUT_DIR)
     except FileExistsError:
         pass
     process_file(
         "Ortho/16FEB12162517-M1BS-057380245010_01_P001_u16ns4326.tif",
         "Raw/16FEB12162517-M1BS-057380245010_01_P001.xml",
-        "/tmp/wv_test_output",
+        OUTPUT_DIR,
         "RB",
         4326, 0, Rrs_write=1
     )
+    print("test output written to {}; it must be verified manually.".format(
+        OUTPUT_DIR
+    ))
     # TODO: assert something?
+    raise NotImplementedError(
+        "Automated checking of output not yet implemented"
+    )
     # TODO: cleanup files.

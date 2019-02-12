@@ -18,5 +18,6 @@ class Test_geotiff_io(TestCase):
             col_index=2,
             band_index=0
         )
+        print("checking if copied file is EXACTLY the same...")
         self.assertTrue(filecmp.cmp(INFILEPATH, OUTFILEPATH))
         # TODO: cleanup rm OUTFILEPATH
