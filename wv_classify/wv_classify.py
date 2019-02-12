@@ -24,6 +24,8 @@ from glob import glob
 from math import pi
 from math import exp
 from math import log
+
+# dep packages:
 import numpy
 from numpy import zeros
 from numpy import mean
@@ -31,8 +33,7 @@ from numpy import isnan
 from numpy import std
 from xml.etree import ElementTree
 from datetime import datetime
-
-# dep packages:
+import concurrent.futures
 from skimage.morphology import square as square_strel
 from skimage.morphology import white_tophat as imtophat
 from skimage.filters import threshold_otsu as imbinarize
@@ -127,6 +128,15 @@ def read_xml(filename):
         szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel,
         satel, sensaz, aqday, satview, kf, cl_cov
     )
+
+
+def calc_Rrs(A_d_j_k, kf_d, ebw_d, ray_rad_d, irr_d, ESd, TZ, TV):
+    """calculate Rrs for one pixel j,k for band d"""
+    return (
+        pi*(
+            (A_d_j_k * kf_d / ebw_d) - ray_rad_d
+        )*ESd**2
+    ) / (irr_d * TZ * TV)
 
 
 def process_file(
@@ -275,42 +285,49 @@ def process_file(
     print("calculating Rrs...")
     Rrs = zeros((szA[0], szA[1], 8), dtype=float)  # 8 bands x input size
 
-    def calc_Rrs(A_d_j_k, kf_d, ebw_d, ray_rad_d, irr_d):
-        return (
-            pi*(
-                (A_d_j_k * kf_d / ebw_d) - ray_rad_d
-            )*ESd**2
-        ) / (irr_d * TZ * TV)
-
-    for j in range(sz[0]):
-        if j % 50 == 0:  # print every Nth row number to entertain the user
-            print(j, end='\t', flush=True)
-        # Assign NaN to pixels of no data
-        # If a pixel contains data values other than "zero" or
-        # "two thousand and forty seven" in any band, it is calibrated;
-        # otherwise, it is considered "no-data" - this avoids a
-        # problem created during the orthorectification process
-        # wherein reprojecting the image may resample data
-        invalid_pixels = 0
-        good_pixels = 0
-        for k in range(sz[1]):
-            # print(k, end='|')
-            if any(band_val not in [0, 2047] for band_val in A[:, j, k]):
-                for d in range(8):
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        for j in range(sz[0]):
+            if j % 50 == 0:  # print every Nth row number to entertain the user
+                print(j, end='\t', flush=True)
+            # Assign NaN to pixels of no data
+            # If a pixel contains data values other than "zero" or
+            # "two thousand and forty seven" in any band, it is calibrated;
+            # otherwise, it is considered "no-data" - this avoids a
+            # problem created during the orthorectification process
+            # wherein reprojecting the image may resample data
+            invalid_pixels = 0
+            good_pixels = 0
+            for k in range(sz[1]):
+                # print(k, end='|')
+                if any(band_val not in [0, 2047] for band_val in A[:, j, k]):
                     # Radiometrically calibrate and convert to Rrs
                     # (adapted from Radiometric Use of
                     # WorldView-2 Imagery(
-                    Rrs[j, k, d] = calc_Rrs(
-                        A[d, j, k], kf[d], ebw[d], ray_rad[d], irr[d]
-                    )
+                    for d, Rrs_j_k_d in zip(
+                        range(8), executor.map(
+                            calc_Rrs,
+                            A[:, j, k],
+                            kf[:],
+                            ebw[:],
+                            ray_rad[:],
+                            irr[:],
+                            [ESd]*8,
+                            [TZ]*8,
+                            [TV]*8,
+                        )
+                    ):
+                        Rrs[j, k, d] = Rrs_j_k_d
+                    # for d in range(8):
+                    #     Rrs[j, k, d] = calc_Rrs(
+                    #         A[d, j, k], kf[d], ebw[d], ray_rad[d], irr[d]
+                    #     )
+                    good_pixels += 1
+                else:
+                    Rrs[j, k, :] = OUTPUT_NaN
+                    invalid_pixels += 1
                 # end
-                good_pixels += 1
-            else:
-                Rrs[j, k, :] = OUTPUT_NaN
-                invalid_pixels += 1
             # end
         # end
-    # end
     print(
         "\n\tDone. {} px calculated. {} px skipped.".format(
             good_pixels, invalid_pixels
