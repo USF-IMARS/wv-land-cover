@@ -1129,7 +1129,7 @@ def process_file(
 
 
 def main(
-    input_tiff, input_xml, output_dir, roi_name
+    input_tiff, input_xml, output_dir, roi_name, crd_sys, dt_out, rrs_out
 ):
     crd_sys = "EPSG:4326"
     # === parse arguments:
@@ -1141,7 +1141,8 @@ def main(
     # sgwid =  num2str(sgw)
 
     process_file(
-        input_tiff, input_xml, output_dir, roi_name, coor_sys, 0, 0
+        input_tiff, input_xml, output_dir, roi_name, coor_sys,
+        int(dt_out), int(rrs_out)
     )
 
 
