@@ -54,6 +54,7 @@ from matlab_fns import rdivide
 
 DATA_DIR = '/home1/mmccarthy/Matt/USF/Other/NERRS_Mapping/Processing'
 OUTPUT_NaN = numpy.nan
+BASE_DATATYPE = numpy.float32
 # dst_ds.GetRasterBand(1).SetNoDataValue(OUTPUT_NaN)
 # === Assign constants for all images
 # Effective Bandwidth per band
@@ -144,7 +145,7 @@ def process_file(
     fname = path.basename(X)
     id = fname[0:18]
 
-    A, R = geotiffread(X)
+    A, R = geotiffread(X, numpy_dtype=BASE_DATATYPE)
     print("\tinput size: {}".format(A.shape))
     szA = [A.shape[0], A.shape[1], A.shape[2]]
 
@@ -280,8 +281,14 @@ def process_file(
     #   C1 = (KF / EBW)*pi*ESd**2 / (IRR*tz*tv)
     #   C2 = RAY_RAD   *pi*ESd**2 / (IRR*tz*tv)
     pi_esd_etc = [pi * ESd**2 / (irr[d] * TZ * TV) for d in range(n_bands)]
-    C1 = [pi_esd_etc[d] * kf[d] / ebw[d] for d in range(n_bands)]
-    C2 = [pi_esd_etc[d] * ray_rad[d] for d in range(n_bands)]
+    C1 = numpy.array(
+        [pi_esd_etc[d] * kf[d] / ebw[d] for d in range(n_bands)],
+        BASE_DATATYPE
+    )
+    C2 = numpy.array(
+        [pi_esd_etc[d] * ray_rad[d] for d in range(n_bands)],
+        BASE_DATATYPE
+    )
     # === calculate all at once w/ numpy element-wise broadcasing:
     Rrs = A * C1 - C2
     # === calculate all at once w/ list comprehension

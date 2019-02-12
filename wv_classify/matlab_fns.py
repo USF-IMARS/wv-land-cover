@@ -54,7 +54,7 @@ def rdivide(A, B):
     return A / B
 
 
-def geotiffread(filename):
+def geotiffread(filename, numpy_dtype=None):
     """
     Reads geotiff w/ gdal.
     https://www.mathworks.com/help/map/ref/geotiffread.html
@@ -72,7 +72,7 @@ def geotiffread(filename):
     data_grid = numpy.array([
         ds.GetRasterBand(band+1).ReadAsArray()
         for band in range(ds.RasterCount)
-    ])
+    ], dtype=numpy_dtype)
     # # if srcband is None:
     # #     continue
     # # stats = srcband.GetStatistics(True, True)
@@ -116,9 +116,9 @@ def geotiffwrite(
         gdal data object used only to get the GeoTransform & projection info
     """
     DTYPE_MAP = {  # mappings of array cell data types to gdal data types
-        numpy.float32: gdal.GDT_Float32,
-        numpy.float64: gdal.GDT_Float64,
         numpy.uint16: gdal.GDT_UInt16,
+        numpy.float32: gdal.GDT_Float32,
+        numpy.float64: gdal.GDT_Float64,  # this might be too big
     }
     driver = gdal.GetDriverByName("GTiff")
     n_bands = arr_out.shape[band_index]
@@ -134,12 +134,24 @@ def geotiffwrite(
             "Unable to map array of type {} to gdal type.".format(cell_dtype) +
             " Available mappings are: \n{}".format(DTYPE_MAP)
         )
+    # === downsize if output is too big (is it?)
+    # this is a workaround for:
+    # ERROR 6: A 8810 pixels x 7516 lines x 8 bands Float64 image would be
+    # larger than 4GB but this is the largest size a TIFF can be, and BigTIFF
+    # is unavailable. Creation failed.
+    if cell_dtype == numpy.float64:
+        print("WARNING: casting float64 to float32 to reduce image size")
+        arr_out = numpy.float32(arr_out)
+        cell_dtype = numpy.float32
+
     # implied else
     outdata = driver.Create(
-        outFileName, nXSize=n_cols, nYSize=n_rows, nBands=n_bands,
-        eType=DTYPE_MAP[cell_dtype]
+        # utf8_path, xsize, ysize, bands=1, eType=GDT_Byte, char options=None
+        outFileName, n_rows, n_cols, n_bands, DTYPE_MAP[cell_dtype]
     )
-    assert outdata is not None
+
+    if outdata is None:
+        raise ValueError("gdal driver failed!")
 
     # set same geotransform as input
     outdata.SetGeoTransform(ds.GetGeoTransform())
