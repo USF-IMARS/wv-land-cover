@@ -83,14 +83,16 @@ def geotiffread(filename):
     # prj = ds.GetProjection()
     # spatial_ref = osr.SpatialReference(wkt=prj)
     # spatial_ref = ds.SpatialReference()
-    n_bands, n_rows, n_cols = data_grid.shape
-    # usage check...
-    assert len(data_grid[:, 0, 0]) == n_bands
-    assert len(data_grid[0, :, 0]) == n_rows
-    assert len(data_grid[0, 0, :]) == n_cols
-    print("read {} bands at resolution {}x{}".format(n_bands, n_rows, n_cols))
 
-    # TODO: use numpy.swapaxes to make indices match geotiffwrite?
+    # use numpy.swapaxes to make indices match geotiffwrite
+    data_grid = numpy.moveaxis(data_grid, 0, 2)  # bands to index 2
+
+    n_rows, n_cols, n_bands = data_grid.shape
+    # usage check...
+    assert len(data_grid[:, 0, 0]) == n_rows
+    assert len(data_grid[0, :, 0]) == n_cols
+    assert len(data_grid[0, 0, :]) == n_bands
+    print("read {} bands at resolution {}x{}".format(n_bands, n_rows, n_cols))
 
     return data_grid, ds
 

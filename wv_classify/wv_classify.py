@@ -146,7 +146,7 @@ def process_file(
 
     A, R = geotiffread(X)
     print("\tinput size: {}".format(A.shape))
-    szA = [A.shape[1], A.shape[2], A.shape[0]]
+    szA = [A.shape[0], A.shape[1], A.shape[2]]
 
     (
         szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel,
@@ -273,7 +273,6 @@ def process_file(
     # convert to Rrs
     # Create empty matrix for Rrs output
     print("calculating Rrs...")
-    good_pixels = invalid_pixels = 0
     # === optimze calculation by pre-computing coefficients for each band
     # (A * KF / EBW - RAY_RAD) * pi * ESd**2 / ( IRR * tz * tv)
     # (A * KF / EBW - RAY_RAD) * PI_ESD_etc
@@ -287,11 +286,12 @@ def process_file(
     Rrs = A * C1 - C2
     # === calculate all at once w/ list comprehension
     # Rrs = [[[
-    #     C1[d] * A[d, j, k] - C2[d]
+    #     C1[d] * A[j, k, d] - C2[d]
     #     for d in range(8)] for j in range(sz[0])] for k in range(sz[1])
     # ]  # or...
     # === Preallocate & calculate each pixel:
     # Rrs = zeros((sz[0], sz[1], n_bands), dtype=float)  # 8 bands x input size
+    # good_pixels = invalid_pixels = 0
     # for j in range(sz[0]):
     #     if j % 50 == 0:  # print every Nth row number to entertain the user
     #         print(j, end='\t', flush=True)
@@ -303,12 +303,12 @@ def process_file(
     #     # wherein reprojecting the image may resample data
     #     for k in range(sz[1]):
     #         # print(k, end='|')
-    #         if any(band_val not in [0, 2047] for band_val in A[:, j, k]):
+    #         if any(band_val not in [0, 2047] for band_val in A[j, k, :]):
     #             # Radiometrically calibrate and convert to Rrs
     #             # (adapted from Radiometric Use of
     #             # WorldView-2 Imagery(
     #             Rrs[j, k, :] = [
-    #                 A[d, j, k] * C1[d] - C2[d]
+    #                 A[j, k, d] * C1[d] - C2[d]
     #                 for d in range(n_bands)
     #             ]
     #             good_pixels += 1
