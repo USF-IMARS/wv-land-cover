@@ -260,10 +260,10 @@ def process_file(
 
     # Adjust file size: Input file (A) warped may contain more or fewer
     # columns/rows than original NITF file, and some may be corrupt.
-    sz = [0]*3
+    sz = [0]*2
     sz[0] = min(szA[0], szB[0])
-    sz[1] = min(szA[0], szB[1])
-    sz[2] = 8
+    sz[1] = min(szA[1], szB[1])
+    n_bands = 8
 
     print("\tszA: {}".format(szA))
     print("\tszB: {}".format(szB))
@@ -273,17 +273,23 @@ def process_file(
     # convert to Rrs
     # Create empty matrix for Rrs output
     print("calculating Rrs...")
+    # === optimze calculation by pre-computing coefficients for each band
+    # (A * KF / EBW - RAY_RAD) * pi * ESd**2 / ( IRR * tz * tv)
+    # (A * KF / EBW - RAY_RAD) * PI_ESD_etc
+    # (A * C1       - C2     ) where
+    #   C1 = (KF / EBW)*pi*ESd**2 / (IRR*tz*tv)
+    #   C2 = RAY_RAD   *pi*ESd**2 / (IRR*tz*tv)
+    pi_esd_etc = [pi * ESd**2 / (irr[d] * TZ * TV) for d in range(n_bands)]
+    C1 = [pi_esd_etc[d] * kf[d] / ebw[d] for d in range(n_bands)]
+    C2 = [pi_esd_etc[d] * ray_rad[d] for d in range(n_bands)]
 
-    def calc_Rrs(A_d_j_k, kf_d, ebw_d, ray_rad_d, irr_d):
-        return (
-            pi*(
-                (A_d_j_k * kf_d / ebw_d) - ray_rad_d
-            )*ESd**2
-        ) / (irr_d * TZ * TV)
-
-    invalid_pixels = 0
-    good_pixels = 0
-    Rrs = zeros((szA[0], szA[1], 8), dtype=float)  # 8 bands x input size
+    good_pixels = invalid_pixels = 0
+    # Rrs = [[[  # calculate all at once
+    #     C1[d] * A[d, j, k] - C2[d]
+    #     for d in range(8)] for j in range(sz[0])] for k in range(sz[1])
+    # ]  # or...
+    # Preallocate & calculate each pixel:
+    Rrs = zeros((sz[0], sz[1], n_bands), dtype=float)  # 8 bands x input size
     for j in range(sz[0]):
         if j % 50 == 0:  # print every Nth row number to entertain the user
             print(j, end='\t', flush=True)
@@ -296,13 +302,13 @@ def process_file(
         for k in range(sz[1]):
             # print(k, end='|')
             if any(band_val not in [0, 2047] for band_val in A[:, j, k]):
-                for d in range(8):
-                    # Radiometrically calibrate and convert to Rrs
-                    # (adapted from Radiometric Use of
-                    # WorldView-2 Imagery(
-                    Rrs[j, k, d] = calc_Rrs(
-                        A[d, j, k], kf[d], ebw[d], ray_rad[d], irr[d]
-                    )
+                # Radiometrically calibrate and convert to Rrs
+                # (adapted from Radiometric Use of
+                # WorldView-2 Imagery(
+                Rrs[j, k, :] = [
+                    A[d, j, k] * C1[d] - C2[d]
+                    for d in range(n_bands)
+                ]
                 # end
                 good_pixels += 1
             else:
