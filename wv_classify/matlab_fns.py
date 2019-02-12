@@ -124,9 +124,6 @@ def geotiffwrite(
     n_bands = arr_out.shape[band_index]
     n_rows = arr_out.shape[row_index]
     n_cols = arr_out.shape[col_index]
-    print("writing {}x{}, {}-band geotiff to '{}'".format(
-        n_rows, n_cols, n_bands, outFileName
-    ))
     # === set up datatype for output file:
     cell_dtype = type(arr_out[0, 0, 0])
     if cell_dtype not in DTYPE_MAP.keys():
@@ -134,6 +131,10 @@ def geotiffwrite(
             "Unable to map array of type {} to gdal type.".format(cell_dtype) +
             " Available mappings are: \n{}".format(DTYPE_MAP)
         )
+    print("writing {}x{} '{}', {}-band geotiff to '{}'".format(
+        n_rows, n_cols, cell_dtype, n_bands, outFileName
+    ))
+
     # === downsize if output is too big (is it?)
     # this is a workaround for:
     # ERROR 6: A 8810 pixels x 7516 lines x 8 bands Float64 image would be
@@ -144,7 +145,6 @@ def geotiffwrite(
         arr_out = numpy.float32(arr_out)
         cell_dtype = numpy.float32
 
-    # implied else
     outdata = driver.Create(
         # utf8_path, xsize, ysize, bands=1, eType=GDT_Byte, char options=None
         outFileName, n_rows, n_cols, n_bands, DTYPE_MAP[cell_dtype]
