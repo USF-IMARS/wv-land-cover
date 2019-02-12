@@ -134,10 +134,11 @@ def geotiffwrite(
         )
     # implied else
     outdata = driver.Create(
-        outFileName, n_cols, n_rows, n_bands, DTYPE_MAP[cell_dtype]
+        outFileName, nXSize=n_cols, nYSize=n_rows, nBands=n_bands,
+        eType=DTYPE_MAP[cell_dtype]
     )
     assert outdata is not None
-    
+
     # set same geotransform as input
     outdata.SetGeoTransform(ds.GetGeoTransform())
 

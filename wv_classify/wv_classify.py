@@ -309,14 +309,10 @@ def process_file(
                     A[d, j, k] * C1[d] - C2[d]
                     for d in range(n_bands)
                 ]
-                # end
                 good_pixels += 1
             else:
                 Rrs[j, k, :] = OUTPUT_NaN
                 invalid_pixels += 1
-            # end
-        # end
-    # end
     print(
         "\n\tDone. {} px calculated. {} px skipped.".format(
             good_pixels, invalid_pixels
