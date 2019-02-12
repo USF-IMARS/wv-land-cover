@@ -52,7 +52,6 @@ from matlab_fns import rdivide
 
 # TODO: + printout timing of run
 
-DATA_DIR = '/home1/mmccarthy/Matt/USF/Other/NERRS_Mapping/Processing'
 OUTPUT_NaN = numpy.nan
 BASE_DATATYPE = numpy.float32
 # dst_ds.GetRasterBand(1).SetNoDataValue(OUTPUT_NaN)
@@ -167,7 +166,7 @@ def process_file(
         month = aqmonth
     # end
     # Convert time to UT
-    UT = aqhour + (aqminute/60.0) + (aqsecond/3600.0)
+    UT = aqhour + (aqminute/60) + (aqsecond/3600)
     B1 = int(year/100)
     B2 = 2-B1+int(B1/4)
     # Julian date
@@ -177,10 +176,11 @@ def process_file(
     )
     D = JD - 2451545.0
     degs = float(357.529 + 0.98560028*D)  # Degrees
-    # Earth-Sun distance at given date (should be between 0.983 and 1.017)
+    # Earth-Sun distance at given date
     ESd = 1.00014 - 0.01671*cosd(degs) - 0.00014*cosd(2*degs)
-
-    inc_ang = 90.0 - sunel
+    # (should be between 0.983 and 1.017)
+    assert 0.983 < ESd and ESd < 1.017
+    inc_ang = 90 - sunel
     # Atmospheric spectral transmittance in solar path with solar
     # zenith angle
     TZ = cosd(inc_ang)
@@ -224,20 +224,20 @@ def process_file(
             0.008569*(cw[d]**-4) *
             (1 + 0.0113*(cw[d]**-2) + 0.00013*cw[d]**-4)
         )
+
     # end
 
     # Rayleigh calculation (Dash et al., 2012)
     ray_rad = [0]*8
     for d in range(8):
         # Assume standard pressure (1013.25 mb)
-        ray_rad[d] = (  # Rayleigh Radience
-            ((irr[d]/ESd)*1*tau[d]*Pr[d]) /  # *1* to match publication
-            (4*pi*cosd(90-satel))
+        ray_rad[d] = (  # *1* to match publication
+            ((irr[d] / ESd) * 1 * tau[d] * Pr[d]) /
+            (4 * pi * cosd(90-satel))
         )
-    # end
 
     # rrs constant calculation (Kerr et al. 2018 and Mobley 1994)
-    G = float(1.56)  # constant (Kerr eq. 3)
+    G = 1.56  # constant (Kerr eq. 3)
     na = 1.00029  # Refractive index of air
     nw = 1.34  # Refractive index seawater
     # Incident angle for water-air from Snell's Law
@@ -280,15 +280,29 @@ def process_file(
     # (A * C1       - C2     ) where
     #   C1 = (KF / EBW)*pi*ESd**2 / (IRR*tz*tv)
     #   C2 = RAY_RAD   *pi*ESd**2 / (IRR*tz*tv)
-    pi_esd_etc = [pi * ESd**2 / (irr[d] * TZ * TV) for d in range(n_bands)]
+    print("ESd:{}\tTZ:{}\tTV:{}".format(ESd, TZ, TV))
+    print("irr\t", irr)
+    print("tau\t", tau)
+    print("Pr \t", Pr)
+    print("rrd\t", ray_rad)
+    print("kf \t", kf)
+    print("ebw\t", ebw)
     C1 = numpy.array(
-        [pi_esd_etc[d] * kf[d] / ebw[d] for d in range(n_bands)],
+        [
+            pi * ESd**2 / (irr[d] * TZ * TV) * kf[d] / ebw[d]
+            for d in range(n_bands)
+        ],
         BASE_DATATYPE
     )
     C2 = numpy.array(
-        [pi_esd_etc[d] * ray_rad[d] for d in range(n_bands)],
+        [
+            ray_rad[d] * ESd**2 / (irr[d] * TZ * TV)
+            for d in range(n_bands)
+        ],
         BASE_DATATYPE
     )
+    print("C1\t", C1)
+    print("C2\t", C2)
     # === calculate all at once w/ numpy element-wise broadcasing:
     Rrs = A * C1 - C2
     # === calculate all at once w/ list comprehension
@@ -1144,6 +1158,9 @@ def main(
         input_tiff, input_xml, output_dir, roi_name, coor_sys,
         int(dt_out), int(rrs_out)
     )
+
+# TODO: update/rm this:
+DATA_DIR = '/home1/mmccarthy/Matt/USF/Other/NERRS_Mapping/Processing'
 
 
 def process_files_in_dir(

@@ -181,3 +181,4 @@ def geotiffwrite(
     # === required dereference?
     # https://trac.osgeo.org/gdal/wiki/PythonGotchas#Savingandclosingdatasetsdatasources
     outdata = None
+    print(outFileName + "written.")
