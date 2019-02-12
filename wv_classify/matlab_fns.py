@@ -84,7 +84,7 @@ def geotiffread(filename, numpy_dtype=None):
     # spatial_ref = osr.SpatialReference(wkt=prj)
     # spatial_ref = ds.SpatialReference()
 
-    # use numpy.swapaxes to make indices match geotiffwrite
+    # swap indices around to match MATLAB geotiff[read/write]
     data_grid = numpy.moveaxis(data_grid, 0, 2)  # bands to index 2
 
     n_rows, n_cols, n_bands = data_grid.shape
@@ -146,8 +146,8 @@ def geotiffwrite(
         cell_dtype = numpy.float32
 
     outdata = driver.Create(
-        # utf8_path, xsize, ysize, bands=1, eType=GDT_Byte, char options=None
-        outFileName, n_rows, n_cols, n_bands, DTYPE_MAP[cell_dtype]
+        # utf8_path, xsize,  ysize,  bands=1, eType=GDT_Byte, char options=None
+        outFileName, n_cols, n_rows, n_bands, DTYPE_MAP[cell_dtype]
     )
 
     if outdata is None:
@@ -159,9 +159,15 @@ def geotiffwrite(
     # TODO: set projection using CoordRefSysCode instead of:
     # same projection as input
     outdata.SetProjection(ds.GetProjection())
+    # slicer is weirdness to slice out arbitrary band_index.
+    #   This is just arr_out[:,:,band], but with "band" in the position
+    #   specified by band_index.
+    #   ref: https://stackoverflow.com/a/24434707/1483986
+    slicer = [slice(None)] * 3
     for band in range(n_bands):
+        slicer[band_index] = band
+        band_arr = arr_out[tuple(slicer)]
         print('\twriting band #{}...'.format(band+1))
-        band_arr = arr_out[band, :, :]
         outdata.GetRasterBand(band+1).WriteArray(band_arr)
 
         # if you want these values transparent
@@ -170,7 +176,7 @@ def geotiffwrite(
         # === required dereference?
         # https://trac.osgeo.org/gdal/wiki/PythonGotchas#Savingandclosingdatasetsdatasources
         band_arr = None
-        # outdata.FlushCache()  # saves to disk
+        outdata.FlushCache()  # saves to disk
     outdata.FlushCache()  # saves to disk
     # === required dereference?
     # https://trac.osgeo.org/gdal/wiki/PythonGotchas#Savingandclosingdatasetsdatasources
