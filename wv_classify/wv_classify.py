@@ -58,9 +58,8 @@ BASE_DATATYPE = numpy.float32
 # === Assign constants for all images
 # Effective Bandwidth per band
 # (nm converted to um units; from IMD metadata files)
-ebw = [
-    e * 0.001 * e for e in [47.3, 54.3, 63.0, 37.4, 57.4, 39.3, 98.9, 99.6]
-]
+ebw = [0.0473, 0.0543, 0.0630, 0.0374, 0.0574, 0.0393, 0.0989, 0.0996]
+
 # Band-averaged Solar Spectral Irradiance (W/m2/um units)
 irr = [
     1758.2229, 1974.2416, 1856.4104, 1738.4791, 1559.4555, 1342.0695,
@@ -71,11 +70,7 @@ irr = [
 # Imagery)
 cw = [0.4273, 0.4779, 0.5462, 0.6078, 0.6588, 0.7237, 0.8313, 0.9080]
 # Factor used in Rayleigh Phase Function equation (Bucholtz 1995)
-gamma = [
-    g * 0.01 for g in
-    [1.499, 1.471, 1.442, 1.413, 1.413, 1.413, 1.384, 1.384]
-]
-
+gamma = [0.0150 0.0147 0.0144 0.0141 0.0141 0.0141 0.0138 0.0138]
 
 def read_xml(filename):
     # ==================================================================
@@ -287,8 +282,8 @@ def process_file(
     # Create empty matrix for Rrs output
     print("calculating Rrs...")
     # === optimze calculation by pre-computing coefficients for each band
-    # (A * KF / EBW - RAY_RAD) * pi * ESd**2 / ( IRR * tz * tv)
-    # (A * KF / EBW - RAY_RAD) * PI_ESD_etc
+    # (A * KF / - RAY_RAD) * pi * ESd**2 / ( IRR * tz * tv)
+    # (A * KF / - RAY_RAD) * PI_ESD_etc
     # (A * C1       - C2     ) where
     #   C1 = (KF / EBW)*pi*ESd**2 / (IRR*tz*tv)
     #   C2 = RAY_RAD   *pi*ESd**2 / (IRR*tz*tv)
