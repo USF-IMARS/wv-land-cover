@@ -24,6 +24,7 @@ from glob import glob
 from math import pi
 from math import exp
 from math import log
+
 import numpy
 from numpy import zeros
 from numpy import mean
@@ -288,6 +289,7 @@ def process_file(
     print("kf \t", kf)
     print("ebw\t", ebw)
     print("gamma\t", gamma)
+    print("thetaplus\T", thetaplus)
     # === Radiometrically calibrate and convert to Rrs
     # === optimze calculation by pre-computing coefficients for each band
     # (A * KF / - RAY_RAD) * pi * ESd**2 / ( IRR * tz * tv)
@@ -334,7 +336,7 @@ def process_file(
     print(" === calculating Rrs...")
     # === calculate all at once w/ numpy element-wise broadcasing:
     Rrs = A * C1 - C2
-    
+
     # TODO: rm less efficient alternatives below:
     # === calculate all at once w/ list comprehension
     # Rrs = [[[

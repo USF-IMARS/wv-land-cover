@@ -30,7 +30,7 @@ def cosd(x):
 
 
 def acosd(x):
-    return math.acos(d2r(x))
+    return math.degrees(math.acos(x))
 
 
 def mldivide(X, y):
