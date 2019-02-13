@@ -294,6 +294,7 @@ def process_file(
     print("rrd\t", ray_rad)
     print("kf \t", kf)
     print("ebw\t", ebw)
+    print("gamma\t", gamma)
     C1 = numpy.array(
         [
             (pi * ESd**2 * kf[d]) / (irr[d] * TZ * TV * ebw[d])
