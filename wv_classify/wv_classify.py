@@ -289,7 +289,7 @@ def process_file(
     print("kf \t", kf)
     print("ebw\t", ebw)
     print("gamma\t", gamma)
-    print("thetaplus\T", thetaplus)
+    print("thetaplus\t", thetaplus)
     # === Radiometrically calibrate and convert to Rrs
     # === optimze calculation by pre-computing coefficients for each band
     # (A * KF / - RAY_RAD) * pi * ESd**2 / ( IRR * tz * tv)
@@ -316,22 +316,27 @@ def process_file(
 
     # === Assign NaN to no-data pixels
     print(" === clearing invalid pixels...")
-
-    def validate_pixel(band_array):
-        """Assign NaN to all bands for pixels of no data.
-        If a pixel contains data values other than "zero" or
-        "two thousand and forty seven" in any band, it is calibrated;
-        otherwise, it is considered "no-data" - this avoids a
-        problem created during the orthorectification process
-        wherein reprojecting the image may resample data.
-        """
-        # assert len(band_array) == 8  # expecting 8 bands
-        if 0 in band_array or 2047 in band_array:
-            return [OUTPUT_NaN]*8
-        else:
-            return band_array
-    A = numpy.apply_along_axis(validate_pixel, 2, A)
-    # print("shape: ", A.shape)
+    # the equation below does invalidity_mask = numpy.where(A in [0, 2047])
+    # why abs & 1023.5? See https://stackoverflow.com/a/16343791/1483986
+    print("calc mask")
+    invalidity_mask = abs(A - 1023.5) == 1023.5  # or should this be <=
+    # sum across band dimension, resulting in 2d boolean array of only x,y
+    print("reduce ", invalidity_mask.shape)
+    invalidity_mask = numpy.add.reduce(invalidity_mask, 2, dtype=bool)
+    # get x,y indicies for all pixels who failed the test
+    print("index ", invalidity_mask.shape)
+    invalid_pixel_indicies = numpy.nonzero(invalidity_mask)
+    n_pixels = A.shape[0] * A.shape[1]
+    n_invalid = len(invalid_pixel_indicies[0])
+    n_valid = n_pixels - n_invalid
+    print("{} invalid pixels found at x,y:\n\t{}".format(
+        n_invalid, invalid_pixel_indicies
+    ))
+    print("percent of good pixels in image: {:2.2f}%".format(
+        100 * n_valid/n_pixels
+    ))
+    # set all bands in invalid pixels to NAN
+    A[invalid_pixel_indicies] = [OUTPUT_NaN]*8
 
     print(" === calculating Rrs...")
     # === calculate all at once w/ numpy element-wise broadcasing:
