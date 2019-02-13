@@ -24,6 +24,7 @@ from glob import glob
 from math import pi
 from math import exp
 from math import log
+
 import numpy
 from numpy import zeros
 from numpy import mean
@@ -293,8 +294,8 @@ def process_file(
     print("Pr \t", Pr)
     print("rrd\t", ray_rad)
     print("kf \t", kf)
-    print("ebw\t", ebw)
-    print("gamma\t", gamma)
+    print("thetaplus\T", thetaplus)
+
     C1 = numpy.array(
         [
             (pi * ESd**2 * kf[d]) / (irr[d] * TZ * TV * ebw[d])
