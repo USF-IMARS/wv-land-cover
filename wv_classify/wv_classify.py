@@ -301,14 +301,14 @@ def process_file(
     print("ebw\t", ebw)
     C1 = numpy.array(
         [
-            pi * ESd**2 / (irr[d] * TZ * TV) * kf[d] / ebw[d]
+            (pi * ESd**2 * kf[d]) / (irr[d] * TZ * TV * ebw[d])
             for d in range(n_bands)
         ],
         BASE_DATATYPE
     )
     C2 = numpy.array(
         [
-            ESd**2 / (irr[d] * TZ * TV) * ray_rad[d]  # * pi
+            (pi * ray_rad[d] * ESd**2 / (irr[d] * TZ * TV)
             for d in range(n_bands)
         ],
         BASE_DATATYPE
