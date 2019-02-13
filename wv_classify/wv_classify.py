@@ -304,7 +304,7 @@ def process_file(
     )
     C2 = numpy.array(
         [
-            (pi * ray_rad[d] * ESd**2 / (irr[d] * TZ * TV)
+            (pi * ray_rad[d] * ESd**2) / (irr[d] * TZ * TV)
             for d in range(n_bands)
         ],
         BASE_DATATYPE
