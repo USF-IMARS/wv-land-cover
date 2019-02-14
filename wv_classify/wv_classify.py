@@ -362,51 +362,7 @@ def process_file(
         # Run DT and/or rrs conversion; otherwise end
         print('Running DT and/or rrs conversion...')
 
-        # Calculate Kd (water column attenuation coefficient) from
-        # Chuanmin Hu's Rrs_Kd_Model.xlsx sheet
-        sunzen = 90.0 - sunel
-        # c1-4 hard-coded, but v1 and v2 change with modified values of
-        # aph(440), adg(440), bbp(440), Sdg, Y
-        c1 = 0.005
-        c2 = 4.18
-        c3 = 0.52
-        c4 = 10.8
-        v2 = [  # bb (backscatter)
-            0.023277868, 0.020883561, 0.018975346, 0.017605058,
-            0.016771098, 0.015875283, 0.072734281, 0.068046578
-        ]
-        v1 = [  # at (total absorption) DEF CHL (0.1 0.1 0.01 0.015 0.5)
-            0.22024, 0.142972, 0.099157, 0.286342, 0.443809, 1.491289,
-            2.276262, 2.223947
-        ]
-        v1 = [  # Belize test
-            0.069177389, 0.041529229, 0.061338823, 0.268134177,
-            0.411563873, 1.489684614, 2.275464564, 2.22325881
-        ]
-        v2 = [
-            0.023277868, 0.020883561, 0.018975346, 0.017605058,
-            0.016771098, 0.015875283, 0.049505144, 0.046268752
-        ]
-        v1 = [  # at (total absorption) LOWER CHL
-            0.006921, 0.013933, 0.051193, 0.264353, 0.409819, 1.489006,
-            2.275336, 2.223238
-        ]
-        v2 = [  # bb (backscatter)
-            0.023277868, 0.020883561, 0.018975346, 0.017605058,
-            0.016771098, 0.015875283, 0.000869138, 0.00067143
-        ]
-
-        Kd = [0]*8
-        for b in range(8):
-            Kd[b] = float(
-                (1+c1*sunzen)*v1(b)+c2*(1-c3*exp(-c4*v1(b)))*v2(b)
-            )
-        # end
-
-#         Kd = [0.036 0.037 0.075 0.32 0.484 1.416]
-
-        # === Setup for Deglint, Bathymetry, and Decision Tree
-        # TODO: these counters not needed now that list.append is used(?)
+	%% Setup for Deglint, Bathymetry, and Decision Tree
         b = 1  # developed land counter?
         t = 1  # veg counter?
         u = 1  # water counter?
@@ -1177,7 +1133,7 @@ def process_files_in_dir(
     _id=0,  # NOTE: unused?
     met_in=DATA_DIR + '/Raw/',
     coor_sys=4326,  # coordinate system code
-    d_t=1,  # 0=End after Rrs conversion; 1=rrs, bathy, DT; 2 = rrs, bathy & DT
+    d_t=2,  # 0=End after Rrs conversion; 1=rrs, bathy ; 2 = rrs, bathy & DT
     sgw=0,  # Sunglint moving-window box = sgw*2 +1 (i.e. 2 = 5x5 box)
     filter=3,  # 0=None, 1=3x3, 3=7x7, 5=11x11
     _stat=3,  # NOTE: unused?
