@@ -73,6 +73,7 @@ cw = [0.4273, 0.4779, 0.5462, 0.6078, 0.6588, 0.7237, 0.8313, 0.9080]
 # Factor used in Rayleigh Phase Function equation (Bucholtz 1995)
 gamma = [0.0150, 0.0147, 0.0144, 0.0141, 0.0141, 0.0141, 0.0138, 0.0138]
 
+
 def read_xml(filename):
     # ==================================================================
     # === read values from xml file
@@ -151,6 +152,7 @@ def process_file(
 
     szB[2] = 8
 
+    print(" === calculating coefficients...")
     # ==================================================================
     # === Calculate Earth-Sun distance and relevant geometry
     # ==================================================================
@@ -266,7 +268,6 @@ def process_file(
     # rrs constant (~0.52) from Mobley 1994
     zeta = (float((1-pf1)*(1-pf2)/(nw**2)))
     # ==================================================================
-
     # Adjust file size: Input file (A) warped may contain more or fewer
     # columns/rows than original NITF file, and some may be corrupt.
     sz = [0]*2
@@ -278,24 +279,24 @@ def process_file(
     print("\tszB: {}".format(szB))
     print("\tsz : {}".format(sz))
 
-    # === Assign NaN to no-data pixels and radiometrically calibrate and
-    # convert to Rrs
-    # Create empty matrix for Rrs output
-    print("calculating Rrs...")
-    # === optimze calculation by pre-computing coefficients for each band
-    # (A * KF / - RAY_RAD) * pi * ESd**2 / ( IRR * tz * tv)
-    # (A * KF / - RAY_RAD) * PI_ESD_etc
-    # (A * C1       - C2     ) where
-    #   C1 = (KF / EBW)*pi*ESd**2 / (IRR*tz*tv)
-    #   C2 = RAY_RAD   *pi*ESd**2 / (IRR*tz*tv)
+    # TODO: this diagnostic could be made pretting using
+    #    https://pypi.org/project/tabulate/
     print("ESd:{}\tTZ:{}\tTV:{}".format(ESd, TZ, TV))
     print("irr\t", irr)
     print("tau\t", tau)
     print("Pr \t", Pr)
     print("rrd\t", ray_rad)
     print("kf \t", kf)
-    print("thetaplus\T", thetaplus)
-
+    print("ebw\t", ebw)
+    print("gamma\t", gamma)
+    print("thetaplus\t", thetaplus)
+    # === Radiometrically calibrate and convert to Rrs
+    # === optimze calculation by pre-computing coefficients for each band
+    # (A * KF / - RAY_RAD) * pi * ESd**2 / ( IRR * tz * tv)
+    # (A * KF / - RAY_RAD) * PI_ESD_etc
+    # (A * C1       - C2     ) where
+    #   C1 = (KF / EBW)*pi*ESd**2 / (IRR*tz*tv)
+    #   C2 = RAY_RAD   *pi*ESd**2 / (IRR*tz*tv)
     C1 = numpy.array(
         [
             (pi * ESd**2 * kf[d]) / (irr[d] * TZ * TV * ebw[d])
@@ -312,8 +313,36 @@ def process_file(
     )
     print("C1\t", C1)
     print("C2\t", C2)
+
+    # === Assign NaN to no-data pixels
+    print(" === clearing invalid pixels...")
+    # the equation below does invalidity_mask = numpy.where(A in [0, 2047])
+    # why abs & 1023.5? See https://stackoverflow.com/a/16343791/1483986
+    print("calc mask")
+    invalidity_mask = abs(A - 1023.5) == 1023.5  # or should this be <=
+    # sum across band dimension, resulting in 2d boolean array of only x,y
+    print("reduce ", invalidity_mask.shape)
+    invalidity_mask = numpy.add.reduce(invalidity_mask, 2, dtype=bool)
+    # get x,y indicies for all pixels who failed the test
+    print("index ", invalidity_mask.shape)
+    invalid_pixel_indicies = numpy.nonzero(invalidity_mask)
+    n_pixels = A.shape[0] * A.shape[1]
+    n_invalid = len(invalid_pixel_indicies[0])
+    n_valid = n_pixels - n_invalid
+    print("{} invalid pixels found at x,y:\n\t{}".format(
+        n_invalid, invalid_pixel_indicies
+    ))
+    print("percent of good pixels in image: {:2.2f}%".format(
+        100 * n_valid/n_pixels
+    ))
+    # set all bands in invalid pixels to NAN
+    A[invalid_pixel_indicies] = [OUTPUT_NaN]*8
+
+    print(" === calculating Rrs...")
     # === calculate all at once w/ numpy element-wise broadcasing:
     Rrs = A * C1 - C2
+
+    # TODO: rm less efficient alternatives below:
     # === calculate all at once w/ list comprehension
     # Rrs = [[[
     #     C1[d] * A[j, k, d] - C2[d]
