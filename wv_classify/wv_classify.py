@@ -362,10 +362,10 @@ def process_file(
         # Run DT and/or rrs conversion; otherwise end
         print('Running DT and/or rrs conversion...')
 
-	%% Setup for Deglint, Bathymetry, and Decision Tree
+        # Setup for Deglint, Bathymetry, and Decision Tree
         b = 1  # developed land counter?
         t = 1  # veg counter?
-        u = 1  # water counter?
+        u = 0  # water counter?
         y = 0
         v = 0
         sum_SD = []  # sand & developed
@@ -375,74 +375,74 @@ def process_file(
         dead_veg = [0]
         sum_water_rrs = []
         sz_ar = sz[0]*sz[1]
-        water = zeros(sz_ar, 9)
+        water = zeros((sz_ar, 9))
         c_val = []
         for j in range(sz[0]):
             for k in range(sz[1]):
-                if isnan(Rrs[j, k, 1]) is False:
+                if isnan(Rrs[j, k, 0]) is False:
                     num_pix = num_pix + 1  # Count number of non-NaN pixels
                     # Record coastal band value for cloud mask prediction
-                    c_val.append(Rrs[j, k, 1])
+                    c_val.append(Rrs[j, k, 0])
                     if (
                         (
-                            (Rrs[j, k, 7] - Rrs[j, k, 2]) /
-                            (Rrs[j, k, 7] + Rrs[j, k, 2])
+                            (Rrs[j, k, 6] - Rrs[j, k, 1]) /
+                            (Rrs[j, k, 6] + Rrs[j, k, 1])
                         ) < 0.65 and
-                        Rrs[j, k, 5] > Rrs[j, k, 4] and
-                        Rrs[j, k, 4] > Rrs[j, k, 3]
+                        Rrs[j, k, 4] > Rrs[j, k, 3] and
+                        Rrs[j, k, 3] > Rrs[j, k, 2]
                     ):  # Sand & Developed
-                        sum_SD.append(sum(Rrs[j, k, 6:8]))
+                        sum_SD.append(sum(Rrs[j, k, 5:7]))
                         b = b+1
                     # Identify vegetation (excluding grass)
                     elif (
                         (
-                            (Rrs[j, k, 8] - Rrs[j, k, 5]) /
-                            (Rrs[j, k, 8] + Rrs[j, k, 5])
+                            (Rrs[j, k, 7] - Rrs[j, k, 4]) /
+                            (Rrs[j, k, 7] + Rrs[j, k, 4])
                         ) > 0.6 and
-                        Rrs[j, k, 7] > Rrs[j, k, 3]
+                        Rrs[j, k, 6] > Rrs[j, k, 2]
                     ):
                         if (  # Shadow filter
                             (
-                                (Rrs[j, k, 7] - Rrs[j, k, 2]) /
-                                (Rrs[j, k, 7] + Rrs[j, k, 2])
+                                (Rrs[j, k, 6] - Rrs[j, k, 1]) /
+                                (Rrs[j, k, 6] + Rrs[j, k, 1])
                             ) > 0.20
                         ):
                             # Sum bands 3-5 for selected veg to distinguish
                             # wetland from upland
-                            sum_veg.append(sum(Rrs[j, k, 3:5]))
-                            sum_veg2.append(sum(Rrs[j, k, 7:8]))
+                            sum_veg.append(sum(Rrs[j, k, 2:4]))
+                            sum_veg2.append(sum(Rrs[j, k, 6:7]))
                             # Compute difference of predicted B5 value from
                             # actual valute
                             dead_veg.append(
                                 (
-                                    ((Rrs[j, k, 7] - Rrs[j, k, 4])/3) +
-                                    Rrs[j, k, 4]
-                                ) - Rrs[j, k, 5]
+                                    ((Rrs[j, k, 6] - Rrs[j, k, 3])/3) +
+                                    Rrs[j, k, 3]
+                                ) - Rrs[j, k, 4]
                             )
                             t = t+1
                         # end
                     elif (  # Identify glint-free water
-                        Rrs[j, k, 8] < 0.11 and
+                        Rrs[j, k, 7] < 0.11 and
+                        Rrs[j, k, 0] > 0 and
                         Rrs[j, k, 1] > 0 and
                         Rrs[j, k, 2] > 0 and
                         Rrs[j, k, 3] > 0 and
                         Rrs[j, k, 4] > 0 and
                         Rrs[j, k, 5] > 0 and
                         Rrs[j, k, 6] > 0 and
-                        Rrs[j, k, 7] > 0 and
-                        Rrs[j, k, 8] > 0
+                        Rrs[j, k, 7] > 0
                     ):
-                        water[u, 1:8] = float(Rrs[j, k, :])
+                        water[u, 0:7] = float(Rrs[j, k, :])
                         water_rrs = rdivide(
-                            Rrs[j, k, 1:6],
-                            (zeta + G*Rrs[j, k, 1:6])
+                            Rrs[j, k, 0:5],
+                            (zeta + G*Rrs[j, k, 0:5])
                         )
                         if (
-                            water_rrs[4] > water_rrs[2] and
-                            water_rrs[4] < 0.12 and
-                            water_rrs[5] < water_rrs[3]
+                            water_rrs[3] > water_rrs[1] and
+                            water_rrs[3] < 0.12 and
+                            water_rrs[4] < water_rrs[2]
                         ):
-                            sum_water_rrs.append(sum(water_rrs[3:5]))
+                            sum_water_rrs.append(sum(water_rrs[2:4]))
                         # end
                         # WARN: u increments regardless sum_water_rrs
                         #       append? Is this intentional and what does
@@ -451,51 +451,51 @@ def process_file(
                         # NDGI to identify glinted water pixels
                         # (some confusion w/ clouds)
                         if (
-                            Rrs[j, k, 8] < Rrs[j, k, 7] and
-                            Rrs[j, k, 6] < Rrs[j, k, 7] and
-                            Rrs[j, k, 6] < Rrs[j, k, 5] and
-                            Rrs[j, k, 4] < Rrs[j, k, 5] and
-                            Rrs[j, k, 4] < Rrs[j, k, 3]
+                            Rrs[j, k, 7] < Rrs[j, k, 6] and
+                            Rrs[j, k, 5] < Rrs[j, k, 6] and
+                            Rrs[j, k, 5] < Rrs[j, k, 4] and
+                            Rrs[j, k, 3] < Rrs[j, k, 4] and
+                            Rrs[j, k, 3] < Rrs[j, k, 2]
                         ):
                             v = v+1
                             # Mark array2<array1 glinted pixls
-                            water[u, 9] = 2
+                            water[u, 8] = 2
                         elif(
-                            Rrs[j, k, 8] > Rrs[j, k, 7] and
-                            Rrs[j, k, 6] > Rrs[j, k, 7] and
-                            Rrs[j, k, 6] > Rrs[j, k, 5] and
-                            Rrs[j, k, 4] > Rrs[j, k, 5] and
-                            Rrs[j, k, 4] > Rrs[j, k, 3]
+                            Rrs[j, k, 7] > Rrs[j, k, 6] and
+                            Rrs[j, k, 5] > Rrs[j, k, 6] and
+                            Rrs[j, k, 5] > Rrs[j, k, 4] and
+                            Rrs[j, k, 3] > Rrs[j, k, 4] and
+                            Rrs[j, k, 3] > Rrs[j, k, 2]
                         ):
                             v = v+1
                             # Mark array2>array1 glinted pixls
-                            water[u, 9] = 3
+                            water[u, 8] = 3
                         else:
                             # Mark records of glint-free water
-                            water[u, 9] = 1
+                            water[u, 8] = 1
                         # end
                     elif(
-                        Rrs[j, k, 8] < Rrs[j, k, 7] and
-                        Rrs[j, k, 6] < Rrs[j, k, 7] and
-                        Rrs[j, k, 6] < Rrs[j, k, 5] and
-                        Rrs[j, k, 4] < Rrs[j, k, 5] and
-                        Rrs[j, k, 4] < Rrs[j, k, 3]
+                        Rrs[j, k, 7] < Rrs[j, k, 6] and
+                        Rrs[j, k, 5] < Rrs[j, k, 6] and
+                        Rrs[j, k, 5] < Rrs[j, k, 4] and
+                        Rrs[j, k, 3] < Rrs[j, k, 4] and
+                        Rrs[j, k, 3] < Rrs[j, k, 2]
                     ):
-                        water[u, 1:8] = float(Rrs[j, k, :])
+                        water[u, 0:7] = float(Rrs[j, k, :])
                         # Mark array2<array1 glinted pixels
-                        water[u, 9] = 2
+                        water[u, 8] = 2
                         u = u+1
                         v = v+1
                     elif (
-                        Rrs[j, k, 8] > Rrs[j, k, 7] and
-                        Rrs[j, k, 6] > Rrs[j, k, 7] and
-                        Rrs[j, k, 6] > Rrs[j, k, 5] and
-                        Rrs[j, k, 4] > Rrs[j, k, 5] and
-                        Rrs[j, k, 4] > Rrs[j, k, 3]
+                        Rrs[j, k, 7] > Rrs[j, k, 6] and
+                        Rrs[j, k, 5] > Rrs[j, k, 6] and
+                        Rrs[j, k, 5] > Rrs[j, k, 4] and
+                        Rrs[j, k, 3] > Rrs[j, k, 4] and
+                        Rrs[j, k, 3] > Rrs[j, k, 2]
                     ):
                         # Mark array2>array1 glinted pixels
-                        water[u, 9] = 3
-                        water[u, 1:8] = float(Rrs[j, k, :])
+                        water[u, 8] = 3
+                        water[u, 0:7] = float(Rrs[j, k, :])
                         u = u + 1
                         v = v + 1
                     # elif (
@@ -525,15 +525,20 @@ def process_file(
         # end
         # Number of water pixels used to derive E_glint relationships
         n_water = u
-        n_glinted = v  # Number of glinted water pixels
+        n_glInted = v  # Number of glinted water pixels
 
-        water[water[:, 1] == 0] = numpy.nan
-        water7 = water[:, 7]
-        water8 = water[:, 8]
+        import pdb; pdb.set_trace()
+
+        print("n_water", n_water)
+        print("n_glinted", n_glinted)
+
+        water[water[:, 0] == 0] = numpy.nan
+        water7 = water[:, 6]
+        water8 = water[:, 7]
         # Positive minimum Band 7 value used for deglinting
-        mnNIR1 = min(water7(water7 > 0))
+        mnNIR1 = min(i for i in water7 if i > 0)
         # Positive minimum Band 8 value used for deglinting
-        mnNIR2 = min(water8(water8 > 0))
+        mnNIR2 = min(i for i in water8 if i > 0)
 
         # idx_gf = find(water[:, 9] == 1)  # Glint-free water
 
@@ -548,17 +553,17 @@ def process_file(
             # for deglinting in DT (Hedley et al. 2005)
             E_glint = [0]*6
             for b in range(6):
-                if b == 1 or b == 4 or b == 6:
-                    # slope1 = water(:, b)\water(:, 8)
-                    slope1 = mldivide(
-                        water[:, b],
-                        water[:, 8]
-                    )
-                else:
+                if b == 0 or b == 3 or b == 5:
                     # slope1 = water(:, b)\water(:, 7)
                     slope1 = mldivide(
                         water[:, b],
                         water[:, 7]
+                    )
+                else:
+                    # slope1 = water(:, b)\water(:, 6)
+                    slope1 = mldivide(
+                        water[:, b],
+                        water[:, 6]
                     )
                 # end
             E_glint[b] = float(slope1)
@@ -662,37 +667,37 @@ def process_file(
         print('Executing Deglinting rrs and Bathymetry...')
         if v > u*0.25:
             # Deglint equation
+            Rrs_deglint[0, 0] = (
+                Rrs[j, k, 0] - (E_glint[0]*(Rrs[j, k, 7] - mnNIR2))
+            )
             Rrs_deglint[1, 1] = (
-                Rrs[j, k, 1] - (E_glint[1]*(Rrs[j, k, 8] - mnNIR2))
+                Rrs[j, k, 1] - (E_glint[1]*(Rrs[j, k, 6] - mnNIR1))
             )
             Rrs_deglint[2, 1] = (
-                Rrs[j, k, 2] - (E_glint[2]*(Rrs[j, k, 7] - mnNIR1))
+                Rrs[j, k, 2] - (E_glint[2]*(Rrs[j, k, 6] - mnNIR1))
             )
             Rrs_deglint[3, 1] = (
-                Rrs[j, k, 3] - (E_glint[3]*(Rrs[j, k, 7] - mnNIR1))
+                Rrs[j, k, 3] - (E_glint[3]*(Rrs[j, k, 7] - mnNIR2))
             )
             Rrs_deglint[4, 1] = (
-                Rrs[j, k, 4] - (E_glint[4]*(Rrs[j, k, 8] - mnNIR2))
+                Rrs[j, k, 4] - (E_glint[4]*(Rrs[j, k, 6] - mnNIR1))
             )
             Rrs_deglint[5, 1] = (
-                Rrs[j, k, 5] - (E_glint[5]*(Rrs[j, k, 7] - mnNIR1))
-            )
-            Rrs_deglint[6, 1] = (
-                Rrs[j, k, 6] - (E_glint[6]*(Rrs[j, k, 8] - mnNIR2))
+                Rrs[j, k, 5] - (E_glint[5]*(Rrs[j, k, 7] - mnNIR2))
             )
 
             # Convert above-surface Rrs to below-surface rrs
             # (Kerr et al. 2018)
             # Was Rrs_0=
-            Rrs[j, k, 1:6] = rdivide(
-                Rrs_deglint[1:6],
-                (zeta + G*Rrs_deglint[1:6])
+            Rrs[j, k, 0:5] = rdivide(
+                Rrs_deglint[0:5],
+                (zeta + G*Rrs_deglint[0:5])
             )
 
             # Relative depth estimate
             # Calculate relative depth
             # (Stumpf 2003 ratio transform scaled to 1-10)
-            dp = (log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
+            dp = (log(1000*Rrs_0(1))/log(1000*Rrs_0(2)))
             if dp > 0 and dp < 2:
                 Bathy[j, k] = dp
             else:
@@ -710,9 +715,9 @@ def process_file(
         else:  # For glint-free/low-glint images
             # Convert above-surface Rrs to subsurface rrs
             # (Kerr et al. 2018, Lee et al. 1998)
-            Rrs[j, k, 1:6] = rdivide(
-                Rrs[j, k, 1:6],
-                (zeta + G*Rrs[j, k, 1:6])
+            Rrs[j, k, 0:5] = rdivide(
+                Rrs[j, k, 0:5],
+                (zeta + G*Rrs[j, k, 0:5])
             )
             # Calculate relative depth (Stumpf 2003 ratio transform)
             dp = (log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
@@ -729,59 +734,59 @@ def process_file(
         update = 'Running DT'
         for j in range(1, szA[0]):
             for k in range(1, szA[1]):
-                if isnan(Rrs[j, k, 1]) == 0:
+                if isnan(Rrs[j, k, 0]) == 0:
                     # === Mud, Developed and Sand
                     if (
-                        (Rrs[j, k, 7] - Rrs[j, k, 2]) /
-                        (Rrs[j, k, 7] + Rrs[j, k, 2]) < 0.60 and
-                        Rrs[j, k, 5] > Rrs[j, k, 4] and
-                        Rrs[j, k, 4] > Rrs[j, k, 3]
+                        (Rrs[j, k, 6] - Rrs[j, k, 1]) /
+                        (Rrs[j, k, 6] + Rrs[j, k, 1]) < 0.60 and
+                        Rrs[j, k, 4] > Rrs[j, k, 3] and
+                        Rrs[j, k, 3] > Rrs[j, k, 2]
                     ):
                         if (
-                            Rrs[j, k, 7] < Rrs[j, k, 2] and
-                            Rrs[j, k, 8] > Rrs[j, k, 5]
+                            Rrs[j, k, 6] < Rrs[j, k, 1] and
+                            Rrs[j, k, 7] > Rrs[j, k, 4]
                         ):
                             map[j, k] = 0  # Shadow
                         elif (  # Buildings & bright sand
-                            (Rrs[j, k, 8] - Rrs[j, k, 5]) /
-                            (Rrs[j, k, 8] + Rrs[j, k, 5]) < 0.01 and
-                            Rrs[j, k, 8] > 0.05
+                            (Rrs[j, k, 7] - Rrs[j, k, 4]) /
+                            (Rrs[j, k, 7] + Rrs[j, k, 4]) < 0.01 and
+                            Rrs[j, k, 7] > 0.05
                         ):
                             if BW(j, k) == 1:
                                 map[j, k] = 11  # Developed
-                            elif sum(Rrs[j, k, 6:8]) < avg_SD_sum:
+                            elif sum(Rrs[j, k, 5:8]) < avg_SD_sum:
                                 map[j, k] = 22  # Mud (intertidal?)
                             else:
                                 map[j, k] = 21  # Beach/sand/soil
                             # end
                         elif (
-                            Rrs[j, k, 5] >
+                            Rrs[j, k, 4] >
                             (
-                                Rrs[j, k, 2] +
-                                ((Rrs[j, k, 7]-Rrs[j, k, 2])/5)*2
+                                Rrs[j, k, 1] +
+                                ((Rrs[j, k, 6]-Rrs[j, k, 1])/5)*2
                             )
                         ):
                             map[j, k] = 21  # Beach/sand/soil
                         elif (
-                            Rrs[j, k, 5] < (
-                                ((Rrs[j, k, 7] - Rrs[j, k, 2])/5)*3 +
-                                Rrs[j, k, 2]
-                            )*0.60 and Rrs[j, k, 7] > 0.2
+                            Rrs[j, k, 4] < (
+                                ((Rrs[j, k, 6] - Rrs[j, k, 1])/5)*3 +
+                                Rrs[j, k, 1]
+                            )*0.60 and Rrs[j, k, 6] > 0.2
                         ):
                             map[j, k] = 31  # Marsh grass
                         else:
                             map[j, k] = 22  # Mud
                         # end
                     elif (
-                        Rrs[j, k, 2] > Rrs[j, k, 3] and
-                        Rrs[j, k, 7] > Rrs[j, k, 3] and
-                        Rrs[j, k, 2] < 0.1 and
-                        (Rrs[j, k, 8] - Rrs[j, k, 5]) /
-                        (Rrs[j, k, 8] + Rrs[j, k, 5]) < 0.20 or
-                        Rrs[j, k, 8] > 0.05 and
-                        Rrs[j, k, 7] > Rrs[j, k, 2] and
-                        (Rrs[j, k, 8] - Rrs[j, k, 5]) /
-                        (Rrs[j, k, 8] + Rrs[j, k, 5]) < 0.1
+                        Rrs[j, k, 1] > Rrs[j, k, 2] and
+                        Rrs[j, k, 6] > Rrs[j, k, 2] and
+                        Rrs[j, k, 1] < 0.1 and
+                        (Rrs[j, k, 7] - Rrs[j, k, 4]) /
+                        (Rrs[j, k, 7] + Rrs[j, k, 4]) < 0.20 or
+                        Rrs[j, k, 7] > 0.05 and
+                        Rrs[j, k, 6] > Rrs[j, k, 1] and
+                        (Rrs[j, k, 7] - Rrs[j, k, 4]) /
+                        (Rrs[j, k, 7] + Rrs[j, k, 4]) < 0.1
                     ):
                         if BW(j, k) == 1:
                             map[j, k] = 11  # Shadow/Developed
@@ -790,34 +795,34 @@ def process_file(
                         # end
                     # === Vegetation
                     elif (  # Vegetation pixels (NDVI)
-                        (Rrs[j, k, 8] - Rrs[j, k, 5]) /
-                        (Rrs[j, k, 8] + Rrs[j, k, 5]) > 0.20 and
-                        Rrs[j, k, 7] > Rrs[j, k, 3]
+                        (Rrs[j, k, 7] - Rrs[j, k, 4]) /
+                        (Rrs[j, k, 7] + Rrs[j, k, 4]) > 0.20 and
+                        Rrs[j, k, 6] > Rrs[j, k, 2]
                     ):
                         # Shadowed-vegetation filter
                         # (B7/B8 ratio excludes marsh, which tends
                         # to have very similar values here)
                         if (
-                            Rrs[j, k, 7] > Rrs[j, k, 2] and
+                            Rrs[j, k, 6] > Rrs[j, k, 1] and
                             (
-                                (Rrs[j, k, 7] - Rrs[j, k, 2]) /
-                                (Rrs[j, k, 7] + Rrs[j, k, 2])
+                                (Rrs[j, k, 6] - Rrs[j, k, 1]) /
+                                (Rrs[j, k, 6] + Rrs[j, k, 1])
                             ) < 0.20 and
-                            (Rrs[j, k, 7] - Rrs[j, k, 8]) /
-                            (Rrs[j, k, 7] + Rrs[j, k, 8]) > 0.01
+                            (Rrs[j, k, 6] - Rrs[j, k, 7]) /
+                            (Rrs[j, k, 6] + Rrs[j, k, 7]) > 0.01
                         ):
                             map[j, k] = 0  # Shadow
-                        elif sum(Rrs[j, k, 3:5]) < avg_veg_sum:
+                        elif sum(Rrs[j, k, 2:4]) < avg_veg_sum:
                             # Agriculture filter based on elevated Blue
                             # band values
                             if (
-                                (Rrs[j, k, 2] - Rrs[j, k, 5]) /
-                                (Rrs[j, k, 2] + Rrs[j, k, 5]) < 0.4
+                                (Rrs[j, k, 1] - Rrs[j, k, 4]) /
+                                (Rrs[j, k, 1] + Rrs[j, k, 4]) < 0.4
                             ):
                                 if (
-                                    Rrs[j, k, 7] > 0.12 and
-                                    sum(Rrs[j, k, 7:8]) /
-                                    sum(Rrs[j, k, 3:5]) > 2
+                                    Rrs[j, k, 6] > 0.12 and
+                                    sum(Rrs[j, k, 6:7]) /
+                                    sum(Rrs[j, k, 2:4]) > 2
                                 ):
                                     map[j, k] = 33  # Forested Wetland
                                 # Dead vegetation or Marsh
@@ -829,19 +834,19 @@ def process_file(
                                 # (most likely agriculture)
                                 map[j, k] = 32
                             # end
-                        elif sum(Rrs[j, k, 7:8]) < avg_mang_sum:
+                        elif sum(Rrs[j, k, 6:7]) < avg_mang_sum:
                             # Agriculture filter based on elevated
                             # blue band values
                             if (
                                 (
-                                    (Rrs[j, k, 2] - Rrs[j, k, 5]) /
-                                    (Rrs[j, k, 2] + Rrs[j, k, 5])
+                                    (Rrs[j, k, 1] - Rrs[j, k, 4]) /
+                                    (Rrs[j, k, 1] + Rrs[j, k, 4])
                                 ) < 0.4
                             ):
                                 if (
-                                    Rrs[j, k, 7] > 0.12 and
-                                    sum(Rrs[j, k, 7:8]) /
-                                    sum(Rrs[j, k, 3:5]) > 2
+                                    Rrs[j, k, 6] > 0.12 and
+                                    sum(Rrs[j, k, 6:7]) /
+                                    sum(Rrs[j, k, 2:4]) > 2
                                 ):
                                     map[j, k] = 33  # Forested Wetland
                                 else:  # Marsh or Dead Vegetation
@@ -853,83 +858,83 @@ def process_file(
                                 map[j, k] = 32
                             # end
                         elif (  # NDVI for high upland values
-                            (Rrs[j, k, 8] - Rrs[j, k, 5]) /
-                            (Rrs[j, k, 8] + Rrs[j, k, 5]) > 0.65
+                            (Rrs[j, k, 7] - Rrs[j, k, 4]) /
+                            (Rrs[j, k, 7] + Rrs[j, k, 4]) > 0.65
                         ):
                             map[j, k] = 32  # Upland Forest/Grass
                         elif (
 
-                            Rrs[j, k, 5] > (
-                                ((Rrs[j, k, 7] - Rrs[j, k, 2])/5)*3 +
-                                Rrs[j, k, 2]
-                                )*0.60 and Rrs[j, k, 7] < 0.2
+                            Rrs[j, k, 4] > (
+                                ((Rrs[j, k, 6] - Rrs[j, k, 1])/5)*3 +
+                                Rrs[j, k, 1]
+                                )*0.60 and Rrs[j, k, 6] < 0.2
                         ):
                             # Difference of B5 from predicted B5 by
                             # slope of B7:B4 to distinguish marsh
                             # (old: live vs dead trees/grass/marsh)
                             map[j, k] = 31  # Marsh grass
-                        elif Rrs[j, k, 7] < 0.12:
+                        elif Rrs[j, k, 6] < 0.12:
                             map[j, k] = 30  # Dead vegetation
                         else:
                             map[j, k] = 32  # Upland Forest/Grass
                         # end
                     # === Water
                     elif (  # Identify all water (glinted & glint-free)
-                        Rrs[j, k, 8] < 0.2 and Rrs[j, k, 8] > 0 or
-                        Rrs[j, k, 8] < Rrs[j, k, 7] and
-                        Rrs[j, k, 6] < Rrs[j, k, 7] and
-                        Rrs[j, k, 6] < Rrs[j, k, 5] and
-                        Rrs[j, k, 4] < Rrs[j, k, 5] and
-                        Rrs[j, k, 4] < Rrs[j, k, 3] and
-                        Rrs[j, k, 8] > 0 or
-                        Rrs[j, k, 8] > Rrs[j, k, 7] and
-                        Rrs[j, k, 6] > Rrs[j, k, 7] and
-                        Rrs[j, k, 6] > Rrs[j, k, 5] and
-                        Rrs[j, k, 4] > Rrs[j, k, 5] and
-                        Rrs[j, k, 4] > Rrs[j, k, 3] and
-                        Rrs[j, k, 8] > 0
+                        Rrs[j, k, 7] < 0.2 and Rrs[j, k, 7] > 0 or
+                        Rrs[j, k, 7] < Rrs[j, k, 6] and
+                        Rrs[j, k, 5] < Rrs[j, k, 6] and
+                        Rrs[j, k, 5] < Rrs[j, k, 4] and
+                        Rrs[j, k, 3] < Rrs[j, k, 4] and
+                        Rrs[j, k, 3] < Rrs[j, k, 2] and
+                        Rrs[j, k, 7] > 0 or
+                        Rrs[j, k, 7] > Rrs[j, k, 6] and
+                        Rrs[j, k, 5] > Rrs[j, k, 6] and
+                        Rrs[j, k, 5] > Rrs[j, k, 4] and
+                        Rrs[j, k, 3] > Rrs[j, k, 4] and
+                        Rrs[j, k, 3] > Rrs[j, k, 2] and
+                        Rrs[j, k, 7] > 0
                     ):
                         # map[j, k] = 5
                         if v > u*0.25:
                             # Deglint equation
-                            Rrs_deglint[1, 1] = (
+                            Rrs_deglint[0, 0] = (
+                                Rrs[j, k, 0] -
+                                (E_glint[0]*(Rrs[j, k, 7] - mnNIR2))
+                            )
+                            Rrs_deglint[1, 0] = (
                                 Rrs[j, k, 1] -
-                                (E_glint[1]*(Rrs[j, k, 8] - mnNIR2))
+                                (E_glint[1]*(Rrs[j, k, 6] - mnNIR1))
                             )
-                            Rrs_deglint[2, 1] = (
+                            Rrs_deglint[2, 0] = (
                                 Rrs[j, k, 2] -
-                                (E_glint[2]*(Rrs[j, k, 7] - mnNIR1))
+                                (E_glint[2]*(Rrs[j, k, 6] - mnNIR1))
                             )
-                            Rrs_deglint[3, 1] = (
+                            Rrs_deglint[3, 0] = (
                                 Rrs[j, k, 3] -
-                                (E_glint[3]*(Rrs[j, k, 7] - mnNIR1))
+                                (E_glint[3]*(Rrs[j, k, 7] - mnNIR2))
                             )
-                            Rrs_deglint[4, 1] = (
+                            Rrs_deglint[4, 0] = (
                                 Rrs[j, k, 4] -
-                                (E_glint[4]*(Rrs[j, k, 8] - mnNIR2))
+                                (E_glint[4]*(Rrs[j, k, 6] - mnNIR1))
                             )
-                            Rrs_deglint[5, 1] = (
+                            Rrs_deglint[5, 0] = (
                                 Rrs[j, k, 5] -
-                                (E_glint[5]*(Rrs[j, k, 7] - mnNIR1))
-                            )
-                            Rrs_deglint[6, 1] = (
-                                Rrs[j, k, 6] -
-                                (E_glint[6]*(Rrs[j, k, 8] - mnNIR2))
+                                (E_glint[5]*(Rrs[j, k, 7] - mnNIR2))
                             )
 
                             # Convert above-surface Rrs to
                             # below-surface rrs (Kerr et al. 2018)
-                            Rrs[j, k, 1:6] = rdivide(
-                                Rrs_deglint[1:6],
+                            Rrs[j, k, 0:5] = rdivide(
+                                Rrs_deglint[0:5],
                                 # Was Rrs_0=
-                                (zeta + G*Rrs_deglint[1:6])
+                                (zeta + G*Rrs_deglint[0:5])
                             )
 
                         # Relative depth estimate
                         # Calculate relative depth
                         # (Stumpf 2003 ratio transform scaled to 1-10)
                         dp = (
-                            log(1000*Rrs_0(2))/log(1000*Rrs_0(3))
+                            log(1000*Rrs_0(1))/log(1000*Rrs_0(2))
                         )
                         if dp > 0 and dp < 2:
                             Bathy[j, k] = dp
@@ -948,36 +953,36 @@ def process_file(
                         # end
 
                         # === DT
-                        if Rrs[j, k, 6] < Rrs[j, k, 7]:
+                        if Rrs[j, k, 5] < Rrs[j, k, 6]:
                             map[j, k] = 0  # Shadow
                         elif (
-                            (Rrs[j, k, 3] - Rrs[j, k, 4]) /
-                            (Rrs[j, k, 3] + Rrs[j, k, 4]) < 0.10
-                            # (Rrs[j, k, 2] - Rrs[j, k, 4]) /
-                            # (Rrs[j, k, 2]+Rrs[j, k, 4]) < 0
+                            (Rrs[j, k, 2] - Rrs[j, k, 3]) /
+                            (Rrs[j, k, 2] + Rrs[j, k, 3]) < 0.10
+                            # (Rrs[j, k, 1] - Rrs[j, k, 3]) /
+                            # (Rrs[j, k, 1]+Rrs[j, k, 3]) < 0
                         ):
                             if (
-                                Rrs[j, k, 4] > Rrs[j, k, 3] or
-                                Rrs[j, k, 5] > Rrs[j, k, 3]
+                                Rrs[j, k, 3] > Rrs[j, k, 2] or
+                                Rrs[j, k, 4] > Rrs[j, k, 2]
                             ):
                                 map[j, k] = 53  # Soft bottom
                             elif (  # NEW from 0.05
-                                sum(Rrs[j, k, 3:5]) > avg_water_sum and
-                                (Rrs[j, k, 5] - Rrs[j, k, 2]) /
-                                (Rrs[j, k, 5] + Rrs[j, k, 2]) > 0.1
+                                sum(Rrs[j, k, 2:4]) > avg_water_sum and
+                                (Rrs[j, k, 4] - Rrs[j, k, 1]) /
+                                (Rrs[j, k, 4] + Rrs[j, k, 1]) > 0.1
                             ):
                                 map[j, k] = 52  # Soft bottom
                             # Separate seagrass from dark water NEW
                             elif (
-                                Rrs[j, k, 4] > Rrs[j, k, 2] and
-                                (Rrs[j, k, 3] - Rrs[j, k, 6]) /
-                                (Rrs[j, k, 3] + Rrs[j, k, 6]) < 0.60
+                                Rrs[j, k, 3] > Rrs[j, k, 1] and
+                                (Rrs[j, k, 2] - Rrs[j, k, 5]) /
+                                (Rrs[j, k, 2] + Rrs[j, k, 5]) < 0.60
                             ):
                                 # Separate seagrass from turbid water
                                 # NEW
                                 if (
-                                    (Rrs[j, k, 3] - Rrs[j, k, 5]) /
-                                    (Rrs[j, k, 3] + Rrs[j, k, 5]) > 0.1
+                                    (Rrs[j, k, 2] - Rrs[j, k, 4]) /
+                                    (Rrs[j, k, 2] + Rrs[j, k, 4]) > 0.1
                                 ):
                                     map[j, k] = 54  # Seagrass
                                 else:
@@ -992,14 +997,14 @@ def process_file(
                     else:  # For glint-free/low-glint images
                         # Convert above-surface Rrs to subsurface rrs
                         # (Kerr et al. 2018,  Lee et al. 1998)
-                        Rrs[j, k, 1:6] = rdivide(
-                            Rrs[j, k, 1:6],
-                            (zeta + G*Rrs[j, k, 1:6])
+                        Rrs[j, k, 0:5] = rdivide(
+                            Rrs[j, k, 0:5],
+                            (zeta + G*Rrs[j, k, 0:5])
                         )
                         # Calculate relative depth
                         # (Stumpf 2003 ratio transform)
                         dp = (
-                            log(1000*Rrs_0(2))/log(1000*Rrs_0(3))
+                            log(1000*Rrs_0(1))/log(1000*Rrs_0(2))
                         )
                         if dp > 0 and dp < 2:
                             Bathy[j, k] = dp
@@ -1017,34 +1022,34 @@ def process_file(
                         #     )
                         # end
                         # === DT
-                        if Rrs[j, k, 6] < Rrs[j, k, 7]:
+                        if Rrs[j, k, 5] < Rrs[j, k, 6]:
                             map[j, k] = 0  # Shadow
                         elif (
-                            (Rrs[j, k, 3] - Rrs[j, k, 4]) /
-                            (Rrs[j, k, 3] + Rrs[j, k, 4]) < 0.10
-                            # (Rrs[j, k, 2] - Rrs[j, k, 4]) /
-                            # (Rrs[j, k, 2]+Rrs[j, k, 4]) < 0
+                            (Rrs[j, k, 2] - Rrs[j, k, 3]) /
+                            (Rrs[j, k, 2] + Rrs[j, k, 3]) < 0.10
+                            # (Rrs[j, k, 1] - Rrs[j, k, 3]) /
+                            # (Rrs[j, k, 1]+Rrs[j, k, 3]) < 0
                         ):
                             if (
-                                Rrs[j, k, 4] > Rrs[j, k, 3] or
-                                Rrs[j, k, 5] > Rrs[j, k, 3]
+                                Rrs[j, k, 3] > Rrs[j, k, 2] or
+                                Rrs[j, k, 4] > Rrs[j, k, 2]
                             ):
                                 map[j, k] = 53  # Soft bottom
                             elif (
-                                sum(Rrs[j, k, 3:5]) > avg_water_sum and
-                                (Rrs[j, k, 5] - Rrs[j, k, 2]) /
-                                (Rrs[j, k, 5] + Rrs[j, k, 2]) > 0.1
+                                sum(Rrs[j, k, 2:4]) > avg_water_sum and
+                                (Rrs[j, k, 4] - Rrs[j, k, 1]) /
+                                (Rrs[j, k, 4] + Rrs[j, k, 1]) > 0.1
                             ):
                                 map[j, k] = 52  # Soft bottom
                             elif (  # Separate seagrass from dark water
-                                Rrs[j, k, 4] > Rrs[j, k, 2] and
-                                (Rrs[j, k, 3] - Rrs[j, k, 6]) /
-                                (Rrs[j, k, 3] + Rrs[j, k, 6]) < 0.60
+                                Rrs[j, k, 3] > Rrs[j, k, 1] and
+                                (Rrs[j, k, 2] - Rrs[j, k, 5]) /
+                                (Rrs[j, k, 2] + Rrs[j, k, 5]) < 0.60
                             ):
                                 # Separate seagrass from turbid water
                                 if (
-                                    (Rrs[j, k, 3] - Rrs[j, k, 5]) /
-                                    (Rrs[j, k, 3] + Rrs[j, k, 5]) >
+                                    (Rrs[j, k, 2] - Rrs[j, k, 4]) /
+                                    (Rrs[j, k, 2] + Rrs[j, k, 4]) >
                                     0.10
                                 ):
                                     map[j, k] = 54  # Seagrass
