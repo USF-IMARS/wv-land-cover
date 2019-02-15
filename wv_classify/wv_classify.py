@@ -22,7 +22,6 @@ import sys
 from os import path
 from glob import glob
 from math import pi
-from math import exp
 from math import log
 
 import numpy
@@ -30,8 +29,6 @@ from numpy import zeros
 from numpy import mean
 from numpy import isnan
 from numpy import std
-from xml.etree import ElementTree
-from datetime import datetime
 
 # dep packages:
 from skimage.morphology import square as square_strel
@@ -49,9 +46,8 @@ from matlab_fns import acosd
 from matlab_fns import asind
 from matlab_fns import mldivide
 from matlab_fns import rdivide
+from read_wv_xml import read_wv_xml
 
-
-# TODO: + printout timing of run
 
 OUTPUT_NaN = numpy.nan
 BASE_DATATYPE = numpy.float32
@@ -72,58 +68,6 @@ irr = [
 cw = [0.4273, 0.4779, 0.5462, 0.6078, 0.6588, 0.7237, 0.8313, 0.9080]
 # Factor used in Rayleigh Phase Function equation (Bucholtz 1995)
 gamma = [0.0150, 0.0147, 0.0144, 0.0141, 0.0141, 0.0141, 0.0138, 0.0138]
-
-
-def read_xml(filename):
-    # ==================================================================
-    # === read values from xml file
-    # ==================================================================
-    # Extract calibration factors & acquisition time from
-    # metadata for each band
-    tree = ElementTree.parse(filename)
-    root = tree.getroot()  # assumes tag == 'isd'
-    imd = root.find('IMD')  # assumes only one element w/ 'IMD' tag
-    szB = [
-        int(imd.find('NUMROWS').text),
-        int(imd.find('NUMCOLUMNS').text),
-        0
-    ]
-    kf = [
-        float(imd.find(band).find('ABSCALFACTOR').text) for band in [
-            'BAND_C', 'BAND_B', 'BAND_G', 'BAND_Y', 'BAND_R', 'BAND_RE',
-            'BAND_N', 'BAND_N2'
-        ]
-    ]
-    # Extract Acquisition Time from metadata
-    aq_dt = datetime.strptime(
-        imd.find('IMAGE').find('FIRSTLINETIME').text,
-        # "2017-12-22T16:48:10.923850Z"
-        "%Y-%m-%dT%H:%M:%S.%fZ"
-    )
-    aqyear = aq_dt.year
-    aqmonth = aq_dt.month
-    aqday = aq_dt.day
-    aqhour = aq_dt.hour
-    aqminute = aq_dt.minute
-    aqsecond = aq_dt.second
-    # Extract Mean Sun Elevation angle from metadata.Text(18:26))
-    sunel = float(imd.find('IMAGE').find('MEANSUNEL').text)
-    # Extract Mean Off Nadir View angle from metadata
-    satview = float(imd.find('IMAGE').find('MEANOFFNADIRVIEWANGLE').text)
-    sunaz = float(imd.find('IMAGE').find('MEANSUNAZ').text)
-    sensaz = float(imd.find('IMAGE').find('MEANSATAZ').text)
-    satel = float(imd.find('IMAGE').find('MEANSATEL').text)
-    cl_cov = float(imd.find('IMAGE').find('CLOUDCOVER').text)
-    # TODO: why this if/else?
-    # if isfield(s, 'IMD') == 1:
-    #     c = struct2cell(s.Children(2).Children(:))
-    # else
-    # # end
-    # ==================================================================
-    return (
-        szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel,
-        satel, sensaz, aqday, satview, kf, cl_cov
-    )
 
 
 def process_file(
@@ -148,7 +92,7 @@ def process_file(
     (
         szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel,
         satel, sensaz, aqday, satview, kf, cl_cov
-    ) = read_xml(Z)
+    ) = read_wv_xml(Z)
 
     szB[2] = 8
 
