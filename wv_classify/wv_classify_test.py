@@ -33,7 +33,9 @@ def test_process_file():
         "Raw/16FEB12162517-M1BS-057380245010_01_P001.xml",
         OUTPUT_DIR,
         "RB",
-        4326, 0, Rrs_write=1
+        4326,
+        d_t=1,
+        Rrs_write=1
     )
     print("test output written to {}; it must be verified manually.".format(
         OUTPUT_DIR

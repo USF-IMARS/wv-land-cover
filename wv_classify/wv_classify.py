@@ -342,7 +342,8 @@ def process_file(
         y = 0
         v = 0
         sum_SD = []  # sand & developed
-        num_pix = 0
+        num_pix = 0  # count of good pixels
+        nan_pix = 0  # count of nan pixels
         sum_veg = [0]
         sum_veg2 = []
         dead_veg = [0]
@@ -352,7 +353,10 @@ def process_file(
         c_val = []
         for j in range(sz[0]):
             for k in range(sz[1]):
-                if isnan(Rrs[j, k, 0]) is False:
+                if isnan(Rrs[j, k, 0]):
+                    nan_pix += 1
+                else:
+                    print("{},{}".format(j, k), end="\r")
                     num_pix = num_pix + 1  # Count number of non-NaN pixels
                     # Record coastal band value for cloud mask prediction
                     c_val.append(Rrs[j, k, 0])
@@ -405,7 +409,7 @@ def process_file(
                         Rrs[j, k, 6] > 0 and
                         Rrs[j, k, 7] > 0
                     ):
-                        water[u, 0:7] = float(Rrs[j, k, :])
+                        water[u, 0:8] = Rrs[j, k, :]
                         water_rrs = rdivide(
                             Rrs[j, k, 0:5],
                             (zeta + G*Rrs[j, k, 0:5])
@@ -454,7 +458,7 @@ def process_file(
                         Rrs[j, k, 3] < Rrs[j, k, 4] and
                         Rrs[j, k, 3] < Rrs[j, k, 2]
                     ):
-                        water[u, 0:7] = float(Rrs[j, k, :])
+                        water[u, 0:8] = Rrs[j, k, :]
                         # Mark array2<array1 glinted pixels
                         water[u, 8] = 2
                         u = u+1
@@ -468,7 +472,7 @@ def process_file(
                     ):
                         # Mark array2>array1 glinted pixels
                         water[u, 8] = 3
-                        water[u, 0:7] = float(Rrs[j, k, :])
+                        water[u, 0:8] = Rrs[j, k, :]
                         u = u + 1
                         v = v + 1
                     # elif (
@@ -489,17 +493,16 @@ def process_file(
                     #     and Rrs(j,k,8) > 0
                     # ):
                     #
-                    #     water(u, 1:8) = float(Rrs(j, k, :))
+                    #     water(u, 1:8) = Rrs(j, k, :)
                     #     u = u + 1
                     #     v = v + 1
-                    # end
-                # end
-            # end
-        # end
         # Number of water pixels used to derive E_glint relationships
         n_water = u
         n_glInted = v  # Number of glinted water pixels
 
+        print("% good pixels by nan-count: {:05.2}".format(
+            nan_pix/(num_pix+nan_pix)
+        ))
         import pdb; pdb.set_trace()
 
         print("n_water", n_water)
@@ -629,10 +632,10 @@ def process_file(
             cld_mask = max(c_val)+1
         # end
 
-        Bathy = float(zeros(szA[0], szA[1]))  # Preallocate for Bathymetry
-        Rrs_deglint = float(zeros(5, 1))  # Preallocate for deglinted Rrs
+        Bathy = zeros(szA[0], szA[1])  # Preallocate for Bathymetry
+        Rrs_deglint = zeros(5, 1)  # Preallocate for deglinted Rrs
         # Preallocate water-column corrected Rrs
-        Rrs_0 = float(zeros(5, 1))
+        Rrs_0 = zeros(5, 1)
         # Create empty matrix for classification output
         map = zeros(szA[0], szA[1], 'uint8')
 
