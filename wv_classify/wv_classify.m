@@ -429,7 +429,7 @@ Z = [met_in, matfiles2(z,1).name]; % Change location of XML files here
                             elseif Rrs(j,k,5) > (Rrs(j,k,2)+((Rrs(j,k,7)-Rrs(j,k,2))/5)*2)
                                 map(j,k) = 21; % Beach/sand/soil
                             elseif Rrs(j,k,5) < (((Rrs(j,k,7) - Rrs(j,k,2))/5)*3+Rrs(j,k,2))*0.60 && Rrs(j,k,7) > 0.2
-                                map(j,k) = 31; % Marsh grass
+                                map(j,k) = 61; % Marsh grass
                             else map(j,k) = 22; % Mud
                             end
                        elseif Rrs(j,k,2) > Rrs(j,k,3) && Rrs(j,k,7) > Rrs(j,k,3) && Rrs(j,k,2) < 0.1 && (Rrs(j,k,8) - Rrs(j,k,5))/(Rrs(j,k,8) + Rrs(j,k,5)) < 0.20|| Rrs(j,k,8) > 0.05 && Rrs(j,k,7) > Rrs(j,k,2) && (Rrs(j,k,8) - Rrs(j,k,5))/(Rrs(j,k,8) + Rrs(j,k,5)) < 0.1
@@ -444,27 +444,27 @@ Z = [met_in, matfiles2(z,1).name]; % Change location of XML files here
                            elseif sum(Rrs(j,k,3:5)) < avg_veg_sum
                                 if ((Rrs(j,k,2) - Rrs(j,k,5))/(Rrs(j,k,2) + Rrs(j,k,5))) < 0.4% Agriculture filter based on elevated Blue band values
                                     if Rrs(j,k,7) > 0.12 && sum(Rrs(j,k,7:8))/sum(Rrs(j,k,3:5)) > 2
-                                        map(j,k) = 33; % Forested Wetland
-                                    else map(j,k) = 31; % Dead vegetation or Marsh
+                                        map(j,k) = 63; % Forested Wetland
+                                    else map(j,k) = 61; % Dead vegetation or Marsh
                                     end
-                                else map(j,k) = 32; % Forested Upland (most likely agriculture)
+                                else map(j,k) = 62; % Forested Upland (most likely agriculture)
                                 end
                            elseif sum(Rrs(j,k,7:8)) < avg_mang_sum
                                if ((Rrs(j,k,2) - Rrs(j,k,5))/(Rrs(j,k,2) + Rrs(j,k,5))) < 0.4% Agriculture filter based on elevated Blue band values
                                    if Rrs(j,k,7) > 0.12 && sum(Rrs(j,k,7:8))/sum(Rrs(j,k,3:5)) > 2
-                                       map(j,k) = 33; % Forested Wetland
-                                   else map(j,k) = 31; % Marsh or Dead Vegetation
+                                       map(j,k) = 63; % Forested Wetland
+                                   else map(j,k) = 61; % Marsh or Dead Vegetation
                                    end
-                                else map(j,k) = 32; % Forested Upland (most likely agriculture)
+                                else map(j,k) = 62; % Forested Upland (most likely agriculture)
                                 end
                            elseif (Rrs(j,k,8) - Rrs(j,k,5))/(Rrs(j,k,8) + Rrs(j,k,5)) > 0.65 % NDVI for high upland values
-                                map(j,k) = 32; % Upland Forest/Grass;
+                                map(j,k) = 62; % Upland Forest/Grass;
                            elseif Rrs(j,k,5) > (((Rrs(j,k,7) - Rrs(j,k,2))/5)*3+Rrs(j,k,2))*0.60 && Rrs(j,k,7) < 0.2 % Difference of B5 from predicted B5 by slope of B7:B4 to distinguish marsh (old: live vs dead trees/grass/marsh)
-                               map(j,k) = 31; % Marsh grass
+                               map(j,k) = 61; % Marsh grass
                            elseif Rrs(j,k,7) < 0.12
-                               map(j,k) = 30; % Dead vegetation
+                               map(j,k) = 60; % Dead vegetation
                            else
-                               map(j,k) = 32; % Upland Forest/Grass
+                               map(j,k) = 62; % Upland Forest/Grass
                            end
                        %% Water
                        elseif Rrs(j,k,8)<0.2 && Rrs(j,k,8)>0|| Rrs(j,k,8)<Rrs(j,k,7) && Rrs(j,k,6)<Rrs(j,k,7) && Rrs(j,k,6)<Rrs(j,k,5) && Rrs(j,k,4)<Rrs(j,k,5) && Rrs(j,k,4)<Rrs(j,k,3) && Rrs(j,k,8)>0 || Rrs(j,k,8)>Rrs(j,k,7) && Rrs(j,k,6)>Rrs(j,k,7) && Rrs(j,k,6)>Rrs(j,k,5) && Rrs(j,k,4)>Rrs(j,k,5) && Rrs(j,k,4)>Rrs(j,k,3) && Rrs(j,k,8)>0% Identify all water (glinted and glint-free)
