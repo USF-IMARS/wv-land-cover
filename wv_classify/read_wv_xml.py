@@ -9,7 +9,16 @@ def read_wv_xml(filename):
     # Extract calibration factors & acquisition time from
     # metadata for each band
     tree = ElementTree.parse(filename)
-    root = tree.getroot()  # assumes tag == 'isd'
+    root = tree.getroot()  # tag == 'isd' or 'IMD'
+    if root.tag == 'isd':  # xml from digital globe
+        pass
+    elif root.tag == 'IMD':  # xml output from pgc_ortho
+        root = root.find('SOURCE_IMD')
+    else:
+        raise ValueError(
+            "unrecognized .xml format - root element expected to be one of "
+            " (isd, IMD)"
+        )
     imd = root.find('IMD')  # assumes only one element w/ 'IMD' tag
     szB = [
         int(imd.find('NUMROWS').text),
