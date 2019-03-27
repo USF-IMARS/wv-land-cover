@@ -82,6 +82,9 @@ def process_file(
     """
     process a single set of files
     """
+    if not loc_out.endswith("/"):
+        loc_out += "/"
+
     fname = path.basename(X)
     id = fname[0:18]
 
