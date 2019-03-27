@@ -1,0 +1,648 @@
+<?xml version="1.0" ?>
+<IMD>
+  <PGC_IMD>
+    <BITDEPTH>UInt16</BITDEPTH>
+    <COMPRESSION>lzw</COMPRESSION>
+    <EPSG_CODE>4326</EPSG_CODE>
+    <FORMAT>GTiff</FORMAT>
+    <STRETCH>ns</STRETCH>
+    <VERSION>imagery_utils v1.5.2</VERSION>
+    <ORTHO_HEIGHT>7.0</ORTHO_HEIGHT>
+    <RESAMPLEMETHOD>near</RESAMPLEMETHOD>
+    <PROCESS_DATE>26-Mar-2019 20:56:06</PROCESS_DATE>
+  </PGC_IMD>
+  <SOURCE_IMD>
+    <SOURCE_IMAGE>wv02_19890607101112_fake0catalog0id0.ntf</SOURCE_IMAGE>
+    <VENDOR>DigitalGlobe</VENDOR>
+    <IMD>
+      
+		
+      <VERSION>27.6</VERSION>
+      
+		
+      <GENERATIONTIME>2016-01-05T22:15:58.000000Z</GENERATIONTIME>
+      
+		
+      <PRODUCTORDERID>500534934070_01_P004</PRODUCTORDERID>
+      
+		
+      <PRODUCTCATALOGID>A010011EFAAAC100</PRODUCTCATALOGID>
+      
+		
+      <CHILDCATALOGID>2020011EFAAAC500</CHILDCATALOGID>
+      
+		
+      <IMAGEDESCRIPTOR>Basic1B</IMAGEDESCRIPTOR>
+      
+		
+      <BANDID>Multi</BANDID>
+      
+		
+      <PANSHARPENALGORITHM>None</PANSHARPENALGORITHM>
+      
+		
+      <NUMROWS>8192</NUMROWS>
+      
+		
+      <NUMCOLUMNS>9216</NUMCOLUMNS>
+      
+		
+      <PRODUCTLEVEL>LV1B</PRODUCTLEVEL>
+      
+		
+      <PRODUCTTYPE>Basic</PRODUCTTYPE>
+      
+		
+      <NUMBEROFLOOKS>1</NUMBEROFLOOKS>
+      
+		
+      <RADIOMETRICLEVEL>Corrected</RADIOMETRICLEVEL>
+      
+		
+      <BITSPERPIXEL>16</BITSPERPIXEL>
+      
+		
+      <COMPRESSIONTYPE>JPEG2000</COMPRESSIONTYPE>
+      
+		
+      <JPEGPROFILENAME>nga_npje_pan_nl</JPEGPROFILENAME>
+      
+		
+      <OUTPUTFORMAT>NITF21NCDRD</OUTPUTFORMAT>
+      
+		
+      <BAND_C>
+        
+			
+        <ULLON>-8.467998983000000e+01</ULLON>
+        
+			
+        <ULLAT>3.039360758000000e+01</ULLAT>
+        
+			
+        <ULHAE>5.770000000000000e+00</ULHAE>
+        
+			
+        <URLON>-8.445780292000001e+01</URLON>
+        
+			
+        <URLAT>3.039600215000000e+01</URLAT>
+        
+			
+        <URHAE>1.074000000000000e+01</URHAE>
+        
+			
+        <LRLON>-8.445812144000000e+01</LRLON>
+        
+			
+        <LRLAT>3.025004132000000e+01</LRLAT>
+        
+			
+        <LRHAE>-4.000000000000000e+00</LRHAE>
+        
+			
+        <LLLON>-8.467940383000000e+01</LLLON>
+        
+			
+        <LLLAT>3.024700532000000e+01</LLLAT>
+        
+			
+        <LLHAE>2.390000000000000e+00</LLHAE>
+        
+			
+        <ABSCALFACTOR>9.295654000000000e-03</ABSCALFACTOR>
+        
+			
+        <EFFECTIVEBANDWIDTH>4.730000000000000e-02</EFFECTIVEBANDWIDTH>
+        
+			
+        <TDILEVEL>24</TDILEVEL>
+        
+		
+      </BAND_C>
+      
+		
+      <BAND_B>
+        
+			
+        <ULLON>-8.467998983000000e+01</ULLON>
+        
+			
+        <ULLAT>3.039360758000000e+01</ULLAT>
+        
+			
+        <ULHAE>5.770000000000000e+00</ULHAE>
+        
+			
+        <URLON>-8.445780292000001e+01</URLON>
+        
+			
+        <URLAT>3.039600215000000e+01</URLAT>
+        
+			
+        <URHAE>1.074000000000000e+01</URHAE>
+        
+			
+        <LRLON>-8.445812144000000e+01</LRLON>
+        
+			
+        <LRLAT>3.025004132000000e+01</LRLAT>
+        
+			
+        <LRHAE>-4.000000000000000e+00</LRHAE>
+        
+			
+        <LLLON>-8.467940383000000e+01</LLLON>
+        
+			
+        <LLLAT>3.024700532000000e+01</LLLAT>
+        
+			
+        <LLHAE>2.390000000000000e+00</LLHAE>
+        
+			
+        <ABSCALFACTOR>1.260825000000000e-02</ABSCALFACTOR>
+        
+			
+        <EFFECTIVEBANDWIDTH>5.430000000000000e-02</EFFECTIVEBANDWIDTH>
+        
+			
+        <TDILEVEL>14</TDILEVEL>
+        
+		
+      </BAND_B>
+      
+		
+      <BAND_G>
+        
+			
+        <ULLON>-8.467998983000000e+01</ULLON>
+        
+			
+        <ULLAT>3.039360758000000e+01</ULLAT>
+        
+			
+        <ULHAE>5.770000000000000e+00</ULHAE>
+        
+			
+        <URLON>-8.445780292000001e+01</URLON>
+        
+			
+        <URLAT>3.039600215000000e+01</URLAT>
+        
+			
+        <URHAE>1.074000000000000e+01</URHAE>
+        
+			
+        <LRLON>-8.445812144000000e+01</LRLON>
+        
+			
+        <LRLAT>3.025004132000000e+01</LRLAT>
+        
+			
+        <LRHAE>-4.000000000000000e+00</LRHAE>
+        
+			
+        <LLLON>-8.467940383000000e+01</LLLON>
+        
+			
+        <LLLAT>3.024700532000000e+01</LLLAT>
+        
+			
+        <LLHAE>2.390000000000000e+00</LLHAE>
+        
+			
+        <ABSCALFACTOR>9.713071000000000e-03</ABSCALFACTOR>
+        
+			
+        <EFFECTIVEBANDWIDTH>6.300000000000000e-02</EFFECTIVEBANDWIDTH>
+        
+			
+        <TDILEVEL>14</TDILEVEL>
+        
+		
+      </BAND_G>
+      
+		
+      <BAND_Y>
+        
+			
+        <ULLON>-8.467998983000000e+01</ULLON>
+        
+			
+        <ULLAT>3.039360758000000e+01</ULLAT>
+        
+			
+        <ULHAE>5.770000000000000e+00</ULHAE>
+        
+			
+        <URLON>-8.445780292000001e+01</URLON>
+        
+			
+        <URLAT>3.039600215000000e+01</URLAT>
+        
+			
+        <URHAE>1.074000000000000e+01</URHAE>
+        
+			
+        <LRLON>-8.445812144000000e+01</LRLON>
+        
+			
+        <LRLAT>3.025004132000000e+01</LRLAT>
+        
+			
+        <LRHAE>-4.000000000000000e+00</LRHAE>
+        
+			
+        <LLLON>-8.467940383000000e+01</LLLON>
+        
+			
+        <LLLAT>3.024700532000000e+01</LLLAT>
+        
+			
+        <LLHAE>2.390000000000000e+00</LLHAE>
+        
+			
+        <ABSCALFACTOR>5.101088000000000e-03</ABSCALFACTOR>
+        
+			
+        <EFFECTIVEBANDWIDTH>3.740000000000000e-02</EFFECTIVEBANDWIDTH>
+        
+			
+        <TDILEVEL>24</TDILEVEL>
+        
+		
+      </BAND_Y>
+      
+		
+      <BAND_R>
+        
+			
+        <ULLON>-8.467998983000000e+01</ULLON>
+        
+			
+        <ULLAT>3.039360758000000e+01</ULLAT>
+        
+			
+        <ULHAE>5.770000000000000e+00</ULHAE>
+        
+			
+        <URLON>-8.445780292000001e+01</URLON>
+        
+			
+        <URLAT>3.039600215000000e+01</URLAT>
+        
+			
+        <URHAE>1.074000000000000e+01</URHAE>
+        
+			
+        <LRLON>-8.445812144000000e+01</LRLON>
+        
+			
+        <LRLAT>3.025004132000000e+01</LRLAT>
+        
+			
+        <LRHAE>-4.000000000000000e+00</LRHAE>
+        
+			
+        <LLLON>-8.467940383000000e+01</LLLON>
+        
+			
+        <LLLAT>3.024700532000000e+01</LLLAT>
+        
+			
+        <LLHAE>2.390000000000000e+00</LLHAE>
+        
+			
+        <ABSCALFACTOR>1.103623000000000e-02</ABSCALFACTOR>
+        
+			
+        <EFFECTIVEBANDWIDTH>5.740000000000000e-02</EFFECTIVEBANDWIDTH>
+        
+			
+        <TDILEVEL>10</TDILEVEL>
+        
+		
+      </BAND_R>
+      
+		
+      <BAND_RE>
+        
+			
+        <ULLON>-8.467998983000000e+01</ULLON>
+        
+			
+        <ULLAT>3.039360758000000e+01</ULLAT>
+        
+			
+        <ULHAE>5.770000000000000e+00</ULHAE>
+        
+			
+        <URLON>-8.445780292000001e+01</URLON>
+        
+			
+        <URLAT>3.039600215000000e+01</URLAT>
+        
+			
+        <URHAE>1.074000000000000e+01</URHAE>
+        
+			
+        <LRLON>-8.445812144000000e+01</LRLON>
+        
+			
+        <LRLAT>3.025004132000000e+01</LRLAT>
+        
+			
+        <LRHAE>-4.000000000000000e+00</LRHAE>
+        
+			
+        <LLLON>-8.467940383000000e+01</LLLON>
+        
+			
+        <LLLAT>3.024700532000000e+01</LLLAT>
+        
+			
+        <LLHAE>2.390000000000000e+00</LLHAE>
+        
+			
+        <ABSCALFACTOR>4.539619000000000e-03</ABSCALFACTOR>
+        
+			
+        <EFFECTIVEBANDWIDTH>3.930000000000000e-02</EFFECTIVEBANDWIDTH>
+        
+			
+        <TDILEVEL>24</TDILEVEL>
+        
+		
+      </BAND_RE>
+      
+		
+      <BAND_N>
+        
+			
+        <ULLON>-8.467998983000000e+01</ULLON>
+        
+			
+        <ULLAT>3.039360758000000e+01</ULLAT>
+        
+			
+        <ULHAE>5.770000000000000e+00</ULHAE>
+        
+			
+        <URLON>-8.445780292000001e+01</URLON>
+        
+			
+        <URLAT>3.039600215000000e+01</URLAT>
+        
+			
+        <URHAE>1.074000000000000e+01</URHAE>
+        
+			
+        <LRLON>-8.445812144000000e+01</LRLON>
+        
+			
+        <LRLAT>3.025004132000000e+01</LRLAT>
+        
+			
+        <LRHAE>-4.000000000000000e+00</LRHAE>
+        
+			
+        <LLLON>-8.467940383000000e+01</LLLON>
+        
+			
+        <LLLAT>3.024700532000000e+01</LLLAT>
+        
+			
+        <LLHAE>2.390000000000000e+00</LLHAE>
+        
+			
+        <ABSCALFACTOR>1.224380000000000e-02</ABSCALFACTOR>
+        
+			
+        <EFFECTIVEBANDWIDTH>9.890000000000000e-02</EFFECTIVEBANDWIDTH>
+        
+			
+        <TDILEVEL>10</TDILEVEL>
+        
+		
+      </BAND_N>
+      
+		
+      <BAND_N2>
+        
+			
+        <ULLON>-8.467998983000000e+01</ULLON>
+        
+			
+        <ULLAT>3.039360758000000e+01</ULLAT>
+        
+			
+        <ULHAE>5.770000000000000e+00</ULHAE>
+        
+			
+        <URLON>-8.445780292000001e+01</URLON>
+        
+			
+        <URLAT>3.039600215000000e+01</URLAT>
+        
+			
+        <URHAE>1.074000000000000e+01</URHAE>
+        
+			
+        <LRLON>-8.445812144000000e+01</LRLON>
+        
+			
+        <LRLAT>3.025004132000000e+01</LRLAT>
+        
+			
+        <LRHAE>-4.000000000000000e+00</LRHAE>
+        
+			
+        <LLLON>-8.467940383000000e+01</LLLON>
+        
+			
+        <LLLAT>3.024700532000000e+01</LLLAT>
+        
+			
+        <LLHAE>2.390000000000000e+00</LLHAE>
+        
+			
+        <ABSCALFACTOR>9.042234000000000e-03</ABSCALFACTOR>
+        
+			
+        <EFFECTIVEBANDWIDTH>9.959999999999999e-02</EFFECTIVEBANDWIDTH>
+        
+			
+        <TDILEVEL>24</TDILEVEL>
+        
+		
+      </BAND_N2>
+      
+		
+      <IMAGE>
+        
+			
+        <SATID>WV02</SATID>
+        
+			
+        <MODE>FullSwath</MODE>
+        
+			
+        <SCANDIRECTION>Forward</SCANDIRECTION>
+        
+			
+        <CATID>103001002E9AC500</CATID>
+        
+			
+        <TLCTIME>2014-03-01T16:29:05.548250Z</TLCTIME>
+        
+			
+        <NUMTLC>2</NUMTLC>
+        
+			
+        <TLCLISTList>
+          
+				
+          <TLCLIST>0.000000000000000e+00 0.000000000000000e+00</TLCLIST>
+          
+				
+          <TLCLIST>7.746000000000000e+03 1.549200000000000e+00</TLCLIST>
+          
+			
+        </TLCLISTList>
+        
+			
+        <FIRSTLINETIME>2014-03-01T16:29:05.548250Z</FIRSTLINETIME>
+        
+			
+        <AVGLINERATE>5.000000000000000e+03</AVGLINERATE>
+        
+			
+        <EXPOSUREDURATION>2.000000000000000e-04</EXPOSUREDURATION>
+        
+			
+        <MINCOLLECTEDROWGSD>2.092000000000000e+00</MINCOLLECTEDROWGSD>
+        
+			
+        <MAXCOLLECTEDROWGSD>2.094000000000000e+00</MAXCOLLECTEDROWGSD>
+        
+			
+        <MEANCOLLECTEDROWGSD>2.093000000000000e+00</MEANCOLLECTEDROWGSD>
+        
+			
+        <MINCOLLECTEDCOLGSD>2.405000000000000e+00</MINCOLLECTEDCOLGSD>
+        
+			
+        <MAXCOLLECTEDCOLGSD>2.410000000000000e+00</MAXCOLLECTEDCOLGSD>
+        
+			
+        <MEANCOLLECTEDCOLGSD>2.408000000000000e+00</MEANCOLLECTEDCOLGSD>
+        
+			
+        <MEANCOLLECTEDGSD>2.245000000000000e+00</MEANCOLLECTEDGSD>
+        
+			
+        <MEANPRODUCTROWGSD>2.103000000000000e+00</MEANPRODUCTROWGSD>
+        
+			
+        <MEANPRODUCTCOLGSD>2.418000000000000e+00</MEANPRODUCTCOLGSD>
+        
+			
+        <MEANPRODUCTGSD>2.255000000000000e+00</MEANPRODUCTGSD>
+        
+			
+        <ROWUNCERTAINTY>3.087000000000000e+01</ROWUNCERTAINTY>
+        
+			
+        <COLUNCERTAINTY>7.687000000000000e+01</COLUNCERTAINTY>
+        
+			
+        <MINSUNAZ>1.492000000000000e+02</MINSUNAZ>
+        
+			
+        <MAXSUNAZ>1.492000000000000e+02</MAXSUNAZ>
+        
+			
+        <MEANSUNAZ>1.492000000000000e+02</MEANSUNAZ>
+        
+			
+        <MINSUNEL>4.760000000000000e+01</MINSUNEL>
+        
+			
+        <MAXSUNEL>4.770000000000000e+01</MAXSUNEL>
+        
+			
+        <MEANSUNEL>4.760000000000000e+01</MEANSUNEL>
+        
+			
+        <MINSATAZ>8.620000000000000e+01</MINSATAZ>
+        
+			
+        <MAXSATAZ>8.770000000000000e+01</MAXSATAZ>
+        
+			
+        <MEANSATAZ>8.690000000000001e+01</MEANSATAZ>
+        
+			
+        <MINSATEL>6.030000000000000e+01</MINSATEL>
+        
+			
+        <MAXSATEL>6.050000000000000e+01</MAXSATEL>
+        
+			
+        <MEANSATEL>6.040000000000000e+01</MEANSATEL>
+        
+			
+        <MININTRACKVIEWANGLE>4.700000000000000e+00</MININTRACKVIEWANGLE>
+        
+			
+        <MAXINTRACKVIEWANGLE>5.100000000000000e+00</MAXINTRACKVIEWANGLE>
+        
+			
+        <MEANINTRACKVIEWANGLE>4.900000000000000e+00</MEANINTRACKVIEWANGLE>
+        
+			
+        <MINCROSSTRACKVIEWANGLE>2.570000000000000e+01</MINCROSSTRACKVIEWANGLE>
+        
+			
+        <MAXCROSSTRACKVIEWANGLE>2.580000000000000e+01</MAXCROSSTRACKVIEWANGLE>
+        
+			
+        <MEANCROSSTRACKVIEWANGLE>2.580000000000000e+01</MEANCROSSTRACKVIEWANGLE>
+        
+			
+        <MINOFFNADIRVIEWANGLE>2.610000000000000e+01</MINOFFNADIRVIEWANGLE>
+        
+			
+        <MAXOFFNADIRVIEWANGLE>2.620000000000000e+01</MAXOFFNADIRVIEWANGLE>
+        
+			
+        <MEANOFFNADIRVIEWANGLE>2.620000000000000e+01</MEANOFFNADIRVIEWANGLE>
+        
+			
+        <PNIIRS>2.800000000000000e+00</PNIIRS>
+        
+			
+        <CLOUDCOVER>1.500000000000000e-02</CLOUDCOVER>
+        
+			
+        <RESAMPLINGKERNEL>CC</RESAMPLINGKERNEL>
+        
+			
+        <POSITIONKNOWLEDGESRC>R</POSITIONKNOWLEDGESRC>
+        
+			
+        <ATTITUDEKNOWLEDGESRC>R</ATTITUDEKNOWLEDGESRC>
+        
+			
+        <REVNUMBER>23056</REVNUMBER>
+        
+		
+      </IMAGE>
+      
+	
+    </IMD>
+    
+	
+  </SOURCE_IMD>
+</IMD>

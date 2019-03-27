@@ -1,4 +1,5 @@
 import os
+import warnings
 
 from wv_classify import process_file
 
@@ -23,25 +24,31 @@ def test_process_file():
     - /Mapped = filtered and unfiltered classification maps
     """
     os.chdir("test_data/")
-    OUTPUT_DIR = "/tmp/wv_test_output"
-    try:
-        os.mkdir(OUTPUT_DIR)
-    except FileExistsError:
-        pass
-    process_file(
-        "Ortho/16FEB12162517-M1BS-057380245010_01_P001_u16ns4326.tif",
-        "Raw/16FEB12162517-M1BS-057380245010_01_P001.xml",
-        OUTPUT_DIR,
-        "RB",
-        4326,
-        d_t=1,
-        Rrs_write=1
-    )
-    print("test output written to {}; it must be verified manually.".format(
-        OUTPUT_DIR
-    ))
-    # TODO: assert something?
-    raise NotImplementedError(
-        "Automated checking of output not yet implemented"
-    )
-    # TODO: cleanup files.
+    INFILEPATH = "Ortho/16FEB12162517-M1BS-057380245010_01_P001_u16ns4326.tif"
+    if os.path.isfile(INFILEPATH):
+        OUTPUT_DIR = "/tmp/wv_test_output"
+        try:
+            os.mkdir(OUTPUT_DIR)
+        except FileExistsError:
+            pass
+        process_file(
+            INFILEPATH,
+            "Raw/16FEB12162517-M1BS-057380245010_01_P001.xml",
+            OUTPUT_DIR,
+            "RB",
+            4326,
+            d_t=1,
+            Rrs_write=1
+        )
+        print(
+            "test output written to {}; it must be verified manually.".format(
+                OUTPUT_DIR
+            )
+        )
+        # TODO: assert something?
+        raise NotImplementedError(
+            "Automated checking of output not yet implemented"
+        )
+        # TODO: cleanup files.
+    else:
+        warnings.warn("Test data not found; skipping test.")
