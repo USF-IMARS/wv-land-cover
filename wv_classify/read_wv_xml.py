@@ -51,11 +51,6 @@ def read_wv_xml(filename):
     sensaz = float(imd.find('IMAGE').find('MEANSATAZ').text)
     satel = float(imd.find('IMAGE').find('MEANSATEL').text)
     cl_cov = float(imd.find('IMAGE').find('CLOUDCOVER').text)
-    # TODO: why this if/else?
-    # if isfield(s, 'IMD') == 1:
-    #     c = struct2cell(s.Children(2).Children(:))
-    # else
-    # # end
     # ==================================================================
     return (
         szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel,

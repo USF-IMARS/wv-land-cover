@@ -506,7 +506,6 @@ def process_file(
         print("% good pixels by nan-count: {:05.2}".format(
             nan_pix/(num_pix+nan_pix)
         ))
-        import pdb; pdb.set_trace()
 
         print("n_water", n_water)
         print("n_glinted", n_glinted)
@@ -515,9 +514,9 @@ def process_file(
         water7 = water[:, 6]
         water8 = water[:, 7]
         # Positive minimum Band 7 value used for deglinting
-        mnNIR1 = min(i for i in water7 if i > 0)
+        mnNIR1 = min(i for i in water7 if i > 0 and i < 1)
         # Positive minimum Band 8 value used for deglinting
-        mnNIR2 = min(i for i in water8 if i > 0)
+        mnNIR2 = min(i for i in water8 if i > 0 and i < 1)
 
         # idx_gf = find(water[:, 9] == 1)  # Glint-free water
 
@@ -554,7 +553,8 @@ def process_file(
         # end
 
         # === Edge Detection
-        img_sub = Rrs[:, :, 5]
+        # img_sub = Rrs[:, :, 5]
+        # img_sub = img_sub[numpy.logical_not(numpy.isnan(img_sub))]^M
         # TODO: align imtophat usage w/ docs here:
         # http://scikit-image.org/docs/dev/auto_examples/xx_applications/plot_morphology.html#white-tophat
         # and here:
@@ -562,8 +562,9 @@ def process_file(
         # IE:
         # img_sub = data.camera()
         # BWbin = img_as_ubyte(io.imread(png_path),as_gray=True))
-        BWbin = imbinarize(img_sub)
-        BW = imtophat(BWbin, square_strel(10))
+        # BWbin = imbinarize(img_sub)
+        # BW = imtophat(BWbin, square_strel(10))
+        BW = zeros((sz[0], sz[1]))
 #        BW1 = edge(BWtop, 'canny')
 #        seDil = strel('square', 1)
 #        BWdil = imdilate(BW1, seDil)
@@ -623,24 +624,28 @@ def process_file(
         sum_water_rrs[sum_water_rrs == 0] = numpy.nan
         avg_water_sum = mean(sum_water_rrs)
 
-        if cl_cov > 0:
-            # Number of cloud pixels (rounded down to nearest integer)
-            # based on metadata-reported percent cloud cover
-            num_cld_pix = round(num_pix*cl_cov*0.01)
-            # Sort all pixel blue-values in descending order. Cloud mask
-            # threshold will be num_cld_pix'th highest value
-            srt_c = list(c_val).sort(reverse=True)
-            cld_mask = srt_c(num_cld_pix)  # Set cloud mask threshold
-        else:
-            cld_mask = max(c_val)+1
+        if numpy.isnan(avg_water_sum):
+            avg_water_sum = [0]
+        # if cl_cov > 0:
+        #     # Number of cloud pixels (rounded down to nearest integer)
+        #     # based on metadata-reported percent cloud cover
+        #     num_cld_pix = round(num_pix*cl_cov*0.01)
+        #     # Sort all pixel blue-values in descending order. Cloud mask
+        #     # threshold will be num_cld_pix'th highest value
+        #     srt_c = list(c_val).sort(reverse=True)
+        #     cld_mask = srt_c(num_cld_pix)  # Set cloud mask threshold
+        # else:
+        cld_mask = max(c_val)+1
         # end
 
-        Bathy = zeros(szA[0], szA[1])  # Preallocate for Bathymetry
-        Rrs_deglint = zeros(5, 1)  # Preallocate for deglinted Rrs
+        # Preallocate for Bathymetry
+        Bathy = numpy.zeros((szA[0], szA[1]), dtype=numpy.float)
+        Rrs_deglint = float(zeros(5, 1))  # Preallocate for deglinted Rrs
         # Preallocate water-column corrected Rrs
         Rrs_0 = zeros(5, 1)
         # Create empty matrix for classification output
-        map = zeros(szA[0], szA[1], 'uint8')
+        map = numpy.zeros((5, 5), dtype=numpy.int)
+        # map = zeros(szA[0], szA[1], 'uint8')
 
     if d_t == 1:  # Execute Deglinting rrs and Bathymetry
         print('Executing Deglinting rrs and Bathymetry...')
@@ -1044,50 +1049,49 @@ def process_file(
                     # end  # if v>u
                 # end  # If water/land
             # end  # If isnan
-        # end  # k
-        # if j == szA[0]/4
-        #     update = 'DT 25# Complete'
-        # end
-        # if j == szA[0]/2
-        #     update = 'DT 50# Complete'
-        # end
-        # if j == szA[0]/4*3
-        #     update = 'DT 75# Complete'
-        # end
-    # end  # j
-
-            # === Classes:
-            # 1 = Developed
-            # 2 = Vegetation
-            # 3 = Soil/sand/beach
-            # 41 = Deep water
-            # 42 = Benthic Sand
-            # 43 = Benthic Seagrass
-            # 44 = Benthic Coral
-            # 45 = Benthic patch coral
-
-            # === DT Filter
-            if filter > 0:
-                dt_filt = DT_Filter(map, filter, sz[0], sz[1])
-                AA = ''.join([
-                    loc_out, id, '_', loc, '_Map_filt_', str(filter),
-                    '_benthicnew.tif'
-                ])
-                geotiffwrite(
-                    AA, dt_filt, R, CoordRefSysCode=coor_sys
-                )
-            else:
-                Z1 = ''.join([loc_out, id, '_', loc, '_Map_benthicnew.tif'])
-                geotiffwrite(Z1, map, R, CoordRefSysCode=coor_sys)
+            # end  # k
+            # if j == szA[0]/4
+            #     update = 'DT 25# Complete'
             # end
+            # if j == szA[0]/2
+            #     update = 'DT 50# Complete'
+            # end
+            # if j == szA[0]/4*3
+            #     update = 'DT 75# Complete'
+            # end
+        # end  # j
 
-            # === Output images
-            # Z = [loc_out, id, '_', loc, '_Bathy1']
-            # geotiffwrite(Z, Bathy, R(1, 1), CoordRefSysCode=coor_sys)
-            Z2 = ''.join([loc_out, id, '_', loc, '_rrssub.tif'])  # last=52
-            geotiffwrite(Z2, Rrs, R, CoordRefSysCode=coor_sys)
-        # end  # If dt = 1
-    # end  # If dt>0
+        # === Classes:
+        # 1 = Developed
+        # 2 = Vegetation
+        # 3 = Soil/sand/beach
+        # 41 = Deep water
+        # 42 = Benthic Sand
+        # 43 = Benthic Seagrass
+        # 44 = Benthic Coral
+        # 45 = Benthic patch coral
+
+        # === DT Filter
+        # if filter > 0:
+        #     dt_filt = DT_Filter(map, filter, sz[0], sz[1])
+        #     AA = ''.join([
+        #         loc_out, id, '_', loc, '_Map_filt_', str(filter),
+        #         '_benthicnew.tif'
+        #     ])
+        #     geotiffwrite(
+        #         AA, dt_filt, R, CoordRefSysCode=coor_sys
+        #     )
+        # else:
+        Z1 = ''.join([loc_out, id, '_', loc, '_Map_pytest.tif'])
+        geotiffwrite(Z1, map, R, CoordRefSysCode=coor_sys)
+        # end
+
+        # === Output images
+        # Z = [loc_out, id, '_', loc, '_Bathy1']
+        # geotiffwrite(Z, Bathy, R(1, 1), CoordRefSysCode=coor_sys)
+        Z2 = ''.join([loc_out, id, '_', loc, '_rrssub.tif'])  # last=52
+        geotiffwrite(Z2, Rrs, R, CoordRefSysCode=coor_sys)
+    # end  # If dt == 2
 # end
 
 
