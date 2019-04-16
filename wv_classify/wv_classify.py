@@ -28,15 +28,15 @@ import numpy
 from numpy import zeros
 from numpy import mean
 from numpy import isnan
-from numpy import std
+# from numpy import std
 
 # dep packages:
-from skimage.morphology import square as square_strel
-from skimage.morphology import white_tophat as imtophat
-from skimage.filters import threshold_otsu as imbinarize
+# from skimage.morphology import square as square_strel
+# from skimage.morphology import white_tophat as imtophat
+# from skimage.filters import threshold_otsu as imbinarize
 
 # local imports:
-from DT_Filter import DT_Filter
+# from DT_Filter import DT_Filter
 from matlab_fns import geotiffread
 from matlab_fns import geotiffwrite
 from matlab_fns import cosd
@@ -342,7 +342,7 @@ def process_file(
         b = 1  # developed land counter?
         t = 1  # veg counter?
         u = 0  # water counter?
-        y = 0
+        # y = 0
         v = 0
         sum_SD = []  # sand & developed
         num_pix = 0  # count of good pixels
@@ -521,8 +521,8 @@ def process_file(
         # idx_gf = find(water[:, 9] == 1)  # Glint-free water
 
         if v > 0.25 * u:
-            Update = 'Deglinting'
-            id2 = 'deglinted'
+            # Update = 'Deglinting'
+            # id2 = 'deglinted'
             # idx_w1 = find(water(:, 9)==2) # Glinted water array1>array2
             # idx_w2 = find(water(:, 9)==3) # Glinted water array2>array1
             # water1 = [water(idx_gf, 1:8);water(idx_w1, 1:8)];
@@ -548,8 +548,9 @@ def process_file(
             # end
             # E_glint  # = [0.8075 0.7356 0.8697 0.7236 0.9482 0.7902]
         else:
-            Update = 'Glint-free'
-            id2 = 'glintfree'
+            # Update = 'Glint-free'
+            # id2 = 'glintfree'
+            pass
         # end
 
         # === Edge Detection
@@ -615,9 +616,9 @@ def process_file(
 # #         plot(rrs_inf)
         # === Calculate target class metrics
         avg_SD_sum = mean(sum_SD)
-        stdev_SD_sum = std(sum_SD)
+        # stdev_SD_sum = std(sum_SD)
         avg_veg_sum = mean(sum_veg)
-        avg_dead_veg = mean(dead_veg)
+        # avg_dead_veg = mean(dead_veg)
         avg_mang_sum = mean(sum_veg2)
 
         # exclude sum_water_rrs == 0 in avg calculations
@@ -635,7 +636,7 @@ def process_file(
         #     srt_c = list(c_val).sort(reverse=True)
         #     cld_mask = srt_c(num_cld_pix)  # Set cloud mask threshold
         # else:
-        cld_mask = max(c_val)+1
+        # cld_mask = max(c_val)+1
         # end
 
         # Preallocate for Bathymetry
@@ -715,7 +716,7 @@ def process_file(
     # Execute Deglinting rrs, Bathymetery, and Decision Tree
     elif d_t == 2:
         print('Executing Deglinting rrs, Bathymetery, and Decision Tree...')
-        update = 'Running DT'
+        # update = 'Running DT'
         for j in range(1, szA[0]):
             for k in range(1, szA[1]):
                 if isnan(Rrs[j, k, 0]) == 0:
