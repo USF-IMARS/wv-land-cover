@@ -501,7 +501,7 @@ def process_file(
                     #     v = v + 1
         # Number of water pixels used to derive E_glint relationships
         n_water = u
-        n_glInted = v  # Number of glinted water pixels
+        n_glinted = v  # Number of glinted water pixels
 
         print("% good pixels by nan-count: {:05.2}".format(
             nan_pix/(num_pix+nan_pix)
