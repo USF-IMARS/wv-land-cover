@@ -343,7 +343,7 @@ def process_file(
         Bathy = numpy.zeros((szA[0], szA[1]), dtype=numpy.float)
         Rrs_deglint = zeros((5, 1))  # Preallocate for deglinted Rrs
         # Preallocate water-column corrected Rrs
-        Rrs_0 = zeros(5, 1)
+        Rrs_0 = zeros((5, 1))
 
     if d_t == 1:  # Execute Deglinting rrs and Bathymetry
         raise NotImplementedError("rrs output only not yet supported")
