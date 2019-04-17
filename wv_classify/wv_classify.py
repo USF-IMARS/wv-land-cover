@@ -341,7 +341,7 @@ def process_file(
 
         # Preallocate for Bathymetry
         Bathy = numpy.zeros((szA[0], szA[1]), dtype=numpy.float)
-        Rrs_deglint = float(zeros(5, 1))  # Preallocate for deglinted Rrs
+        Rrs_deglint = zeros((5, 1))  # Preallocate for deglinted Rrs
         # Preallocate water-column corrected Rrs
         Rrs_0 = zeros(5, 1)
 
