@@ -95,7 +95,7 @@ def geotiffread(filename, numpy_dtype=None):
     print("read {} bands at resolution {}x{}".format(n_bands, n_rows, n_cols))
 
     spatial_ref = [ds.GetProjection(), ds.GetGeoTransform()]
-    ds = None  # close dataset
+    del ds  # close dataset
     return data_grid, spatial_ref
 
 
@@ -177,10 +177,10 @@ def geotiffwrite(
 
         # === required dereference?
         # https://trac.osgeo.org/gdal/wiki/PythonGotchas#Savingandclosingdatasetsdatasources
-        band_arr = None
+        del band_arr
         outdata.FlushCache()  # saves to disk
     outdata.FlushCache()  # saves to disk
     # === required dereference?
     # https://trac.osgeo.org/gdal/wiki/PythonGotchas#Savingandclosingdatasetsdatasources
-    outdata = None
+    del outdata
     print(outFileName + " written.")
