@@ -36,16 +36,16 @@ from numpy import zeros
 
 # local imports:
 # from DT_Filter import DT_Filter
-from matlab_fns import geotiffread
-from matlab_fns import geotiffwrite
-from matlab_fns import cosd
-from matlab_fns import sind
-from matlab_fns import tand
-from matlab_fns import acosd
-from matlab_fns import asind
-from matlab_fns import rdivide
-from read_wv_xml import read_wv_xml
-from run_rrs import run_rrs
+from wv_classify.matlab_fns import geotiffread
+from wv_classify.matlab_fns import geotiffwrite
+from wv_classify.matlab_fns import cosd
+from wv_classify.matlab_fns import sind
+from wv_classify.matlab_fns import tand
+from wv_classify.matlab_fns import acosd
+from wv_classify.matlab_fns import asind
+from wv_classify.matlab_fns import rdivide
+from wv_classify.read_wv_xml import read_wv_xml
+from wv_classify.run_rrs import run_rrs
 
 
 OUTPUT_NaN = numpy.nan

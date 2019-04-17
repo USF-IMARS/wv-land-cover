@@ -4,8 +4,8 @@ from numpy import mean
 from numpy import isnan
 from memory_profiler import profile
 
-from matlab_fns import mldivide
-from matlab_fns import rdivide
+from wv_classify.matlab_fns import mldivide
+from wv_classify.matlab_fns import rdivide
 
 
 @profile
