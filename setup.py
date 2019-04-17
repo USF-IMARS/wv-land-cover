@@ -39,7 +39,7 @@ _extras_require = {  # allows install w/ `pip install .[test]`
 }
 
 setup(
-    name='wv2_processing',
+    name='wv_classify',
     description='IMaRS WV2 classification processing scripts',
     author='Matthew McCarthy',
     author_email='mjm8@mail.usf.edu',
