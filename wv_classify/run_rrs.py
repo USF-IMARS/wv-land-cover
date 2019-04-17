@@ -194,8 +194,7 @@ def run_rrs(sz, Rrs, zeta, G, szA):
     # idx_gf = find(water[:, 9] == 1)  # Glint-free water
 
     if v > 0.25 * u:
-        # Update = 'Deglinting'
-        # id2 = 'deglinted'
+        print("Deglinting")
         # idx_w1 = find(water(:, 9)==2) # Glinted water array1>array2
         # idx_w2 = find(water(:, 9)==3) # Glinted water array2>array1
         # water1 = [water(idx_gf, 1:8);water(idx_w1, 1:8)];
@@ -221,9 +220,7 @@ def run_rrs(sz, Rrs, zeta, G, szA):
         # end
         # E_glint  # = [0.8075 0.7356 0.8697 0.7236 0.9482 0.7902]
     else:
-        # Update = 'Glint-free'
-        # id2 = 'glintfree'
-        pass
+        print("Glint-free")
     # end
 
     # === Edge Detection
@@ -288,6 +285,7 @@ def run_rrs(sz, Rrs, zeta, G, szA):
     # #         rrs_inf = [0.00512 0.00686 0.008898 0.002553 0.001506 0.000403]
     # #         plot(rrs_inf)
     # === Calculate target class metrics
+    print("Calculating target class metrics...")
     avg_SD_sum = mean(sum_SD)
     # stdev_SD_sum = std(sum_SD)
     avg_veg_sum = mean(sum_veg)
@@ -312,13 +310,7 @@ def run_rrs(sz, Rrs, zeta, G, szA):
     # cld_mask = max(c_val)+1
     # end
 
-    # Preallocate for Bathymetry
-    Bathy = numpy.zeros((szA[0], szA[1]), dtype=numpy.float)
-    Rrs_deglint = float(zeros(5, 1))  # Preallocate for deglinted Rrs
-    # Preallocate water-column corrected Rrs
-    Rrs_0 = zeros(5, 1)
-
     return (
-        v, u, Rrs_deglint, E_glint, mnNIR2, mnNIR1, Rrs_0, Bathy, BW,
+        v, u, E_glint, mnNIR2, mnNIR1, BW,
         avg_SD_sum, avg_veg_sum, avg_mang_sum, avg_water_sum
     )

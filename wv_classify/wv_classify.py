@@ -26,6 +26,7 @@ from math import log
 
 import numpy
 from numpy import isnan
+from numpy import zeros
 # from numpy import std
 
 # dep packages:
@@ -334,9 +335,15 @@ def process_file(
 
     if d_t > 0:
         (
-            v, u, Rrs_deglint, E_glint, mnNIR2, mnNIR1, Rrs_0, Bathy, BW,
+            v, u, E_glint, mnNIR2, mnNIR1, BW,
             avg_SD_sum, avg_veg_sum, avg_mang_sum, avg_water_sum
         ) = run_rrs(sz, Rrs, zeta, G, szA)
+
+        # Preallocate for Bathymetry
+        Bathy = numpy.zeros((szA[0], szA[1]), dtype=numpy.float)
+        Rrs_deglint = float(zeros(5, 1))  # Preallocate for deglinted Rrs
+        # Preallocate water-column corrected Rrs
+        Rrs_0 = zeros(5, 1)
 
     if d_t == 1:  # Execute Deglinting rrs and Bathymetry
         raise NotImplementedError("rrs output only not yet supported")
@@ -404,8 +411,8 @@ def process_file(
         #     # end
         # # end
 
-    # Execute Deglinting rrs, Bathymetery, and Decision Tree
     elif d_t == 2:
+        # Execute Deglinting rrs, Bathymetery, and Decision Tree
         print('Executing Deglinting rrs, Bathymetery, and Decision Tree...')
         # Create empty matrix for classification output
         classif_map = numpy.zeros((5, 5), dtype=numpy.int)
