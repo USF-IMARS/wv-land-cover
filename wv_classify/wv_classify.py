@@ -624,7 +624,7 @@ def process_file(
                         # Calculate relative depth
                         # (Stumpf 2003 ratio transform scaled to 1-10)
                         dp = (
-                            log(1000*Rrs_0(1))/log(1000*Rrs_0(2))
+                            log(1000*Rrs_0[1])/log(1000*Rrs_0[2])
                         )
                         if dp > 0 and dp < 2:
                             Bathy[j, k] = dp
@@ -694,7 +694,7 @@ def process_file(
                         # Calculate relative depth
                         # (Stumpf 2003 ratio transform)
                         dp = (
-                            log(1000*Rrs_0(1))/log(1000*Rrs_0(2))
+                            log(1000*Rrs_0[1])/log(1000*Rrs_0[2])
                         )
                         if dp > 0 and dp < 2:
                             Bathy[j, k] = dp
