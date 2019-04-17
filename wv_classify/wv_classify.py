@@ -346,7 +346,7 @@ def process_file(
         Bathy = numpy.zeros((szA[0], szA[1]), dtype=numpy.float)
         Rrs_deglint = zeros((5, 1))  # Preallocate for deglinted Rrs
         # Preallocate water-column corrected Rrs
-        Rrs_0 = zeros((5, 1))
+        # Rrs_0 = zeros((5, 1))
 
     if d_t == 1:  # Execute Deglinting rrs and Bathymetry
         raise NotImplementedError("rrs output only not yet supported")
@@ -624,7 +624,7 @@ def process_file(
                         # Calculate relative depth
                         # (Stumpf 2003 ratio transform scaled to 1-10)
                         dp = (
-                            log(1000*Rrs_0[1])/log(1000*Rrs_0[2])
+                            log(1000*Rrs[j, k, 1])/log(1000*Rrs[j, k, 2])
                         )
                         if dp > 0 and dp < 2:
                             Bathy[j, k] = dp
@@ -694,7 +694,7 @@ def process_file(
                         # Calculate relative depth
                         # (Stumpf 2003 ratio transform)
                         dp = (
-                            log(1000*Rrs_0[1])/log(1000*Rrs_0[2])
+                            log(1000*Rrs[j, k, 1])/log(1000*Rrs[j, k, 2])
                         )
                         if dp > 0 and dp < 2:
                             Bathy[j, k] = dp
