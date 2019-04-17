@@ -64,8 +64,8 @@ def geotiffread(filename, numpy_dtype=None):
     A : array
         3D array of all raster bands. Usage A[band, row, col]
     spatial_ref : gdal data object's SpatialReference like matlab uses.
-        actually just the output of `ds.GetProjection()` and
-        ` ds.GetGeoTransform` in an array.
+        actually just the output of `ds.GetGeoTransform()` and
+        ` ds.GetProjection()` in an array.
     """
     print("reading geotiff '{}'".format(filename))
     ds = gdal.Open(filename)
@@ -94,7 +94,7 @@ def geotiffread(filename, numpy_dtype=None):
     assert len(data_grid[0, 0, :]) == n_bands
     print("read {} bands at resolution {}x{}".format(n_bands, n_rows, n_cols))
 
-    spatial_ref = [ds.GetProjection(), ds.GetGeoTransform()]
+    spatial_ref = [ds.GetGeoTransform(), ds.GetProjection()]
     del ds  # close dataset
     return data_grid, spatial_ref
 
