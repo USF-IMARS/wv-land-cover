@@ -196,6 +196,7 @@ def run_rrs(sz, Rrs, zeta, G, szA):
 
     # idx_gf = find(water[:, 9] == 1)  # Glint-free water
 
+    E_glint = [0]*6
     if v > 0.25 * u:
         print("Deglinting")
         # idx_w1 = find(water(:, 9)==2) # Glinted water array1>array2
@@ -204,7 +205,6 @@ def run_rrs(sz, Rrs, zeta, G, szA):
         # water2 = [water(idx_gf, 1:8);water(idx_w2, 1:8)];
         # Calculate linear fitting of all MS bands vs NIR1 & NIR2
         # for deglinting in DT (Hedley et al. 2005)
-        E_glint = [0]*6
         for b in range(6):
             if b == 0 or b == 3 or b == 5:
                 # slope1 = water(:, b)\water(:, 7)
