@@ -2,13 +2,13 @@ import numpy
 from numpy import zeros
 from numpy import mean
 from numpy import isnan
-from memory_profiler import profile
+# from memory_profiler import profile
 
 from wv_classify.matlab_fns import mldivide
 from wv_classify.matlab_fns import rdivide
 
 
-@profile
+# @profile
 def run_rrs(sz, Rrs, zeta, G, szA):
     # Run DT and/or rrs conversion;
     print('Running DT and/or rrs conversion...')
