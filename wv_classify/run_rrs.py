@@ -296,7 +296,7 @@ def run_rrs(sz, Rrs, zeta, G, szA):
     avg_mang_sum = mean(sum_veg2)
 
     # exclude sum_water_rrs == 0 in avg calculations
-    sum_water_rrs[sum_water_rrs == 0] = numpy.nan
+    sum_water_rrs = list(filter((0).__ne__, sum_water_rrs))
     avg_water_sum = mean(sum_water_rrs)
 
     if numpy.isnan(avg_water_sum):
