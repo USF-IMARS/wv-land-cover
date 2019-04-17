@@ -63,9 +63,9 @@ def geotiffread(filename, numpy_dtype=None):
     --------
     A : array
         3D array of all raster bands. Usage A[band, row, col]
-    R : gdal data object
-        NOTE: not a SpatialReference like matlab uses, but
-            is passed to geotiffwrite in the same way.
+    spatial_ref : gdal data object's SpatialReference like matlab uses.
+        actually just the output of `ds.GetProjection()` and
+        ` ds.GetGeoTransform` in an array.
     """
     print("reading geotiff '{}'".format(filename))
     ds = gdal.Open(filename)
@@ -94,11 +94,13 @@ def geotiffread(filename, numpy_dtype=None):
     assert len(data_grid[0, 0, :]) == n_bands
     print("read {} bands at resolution {}x{}".format(n_bands, n_rows, n_cols))
 
-    return data_grid, ds
+    spatial_ref = [ds.GetProjection(), ds.GetGeoTransform()]
+    ds = None  # close dataset
+    return data_grid, spatial_ref
 
 
 def geotiffwrite(
-    outFileName, arr_out, ds, CoordRefSysCode=4326,
+    outFileName, arr_out, spatial_ref, CoordRefSysCode=4326,
     row_index=0,
     col_index=1,
     band_index=2,
@@ -112,7 +114,7 @@ def geotiffwrite(
         values to write to geotiff
     coor_sys :
         code for projection. eg 4326
-    ds :
+    spatial_ref :
         gdal data object used only to get the GeoTransform & projection info
     """
     DTYPE_MAP = {  # mappings of array cell data types to gdal data types
@@ -154,11 +156,11 @@ def geotiffwrite(
         raise ValueError("gdal driver failed!")
 
     # set same geotransform as input
-    outdata.SetGeoTransform(ds.GetGeoTransform())
+    outdata.SetGeoTransform(spatial_ref[0])
 
     # TODO: set projection using CoordRefSysCode instead of:
     # same projection as input
-    outdata.SetProjection(ds.GetProjection())
+    outdata.SetProjection(spatial_ref[1])
     # slicer is weirdness to slice out arbitrary band_index.
     #   This is just arr_out[:,:,band], but with "band" in the position
     #   specified by band_index.
