@@ -185,8 +185,12 @@ def run_rrs(sz, Rrs, zeta, G, szA):
     print("n_water", n_water)
     print("n_glinted", n_glinted)
 
-    # if any band == 0, set all bands in water[] to nan:
-    water[water[:, 0] == 0] = numpy.nan
+    # if band_0 == 0, remove row from water
+    # ```matlab
+    #   idx = find(water(:,1) == 0);
+    #   water(idx,:) = [];
+    # ```
+    water = water[water.any(axis=1)]  # water[water[:, 0] == 0] = numpy.nan
     print("Calc (+) min of Band 7 for deglinting...")
     # min(i for i in water[:, 6] if i > 0 and i < 1)
     mnNIR1 = numpy.amin(water[water[:, 6] > 0], initial=1)
