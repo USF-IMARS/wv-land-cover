@@ -28,11 +28,11 @@ def run_rrs(sz, Rrs, zeta, G, szA):
     water = zeros((sz_ar, 9))
     c_val = []
     for j in range(sz[0]):
+        print("\trow {}".format(j), end="\r")
         for k in range(sz[1]):
             if isnan(Rrs[j, k, 0]):
                 nan_pix += 1
             else:
-                print("{},{}".format(j, k), end="\r")
                 num_pix = num_pix + 1  # Count number of non-NaN pixels
                 # Record coastal band value for cloud mask prediction
                 c_val.append(Rrs[j, k, 0])
@@ -183,6 +183,7 @@ def run_rrs(sz, Rrs, zeta, G, szA):
     print("n_water", n_water)
     print("n_glinted", n_glinted)
 
+    # if any band == 0, set all bands in water[] to nan:
     water[water[:, 0] == 0] = numpy.nan
     print("Calc (+) min of Band 7 for deglinting...")
     # min(i for i in water[:, 6] if i > 0 and i < 1)
