@@ -2,11 +2,13 @@ import numpy
 from numpy import zeros
 from numpy import mean
 from numpy import isnan
+from memory_profiler import profile
 
 from matlab_fns import mldivide
 from matlab_fns import rdivide
 
 
+@profile
 def run_rrs(sz, Rrs, zeta, G, szA):
     # Run DT and/or rrs conversion;
     print('Running DT and/or rrs conversion...')
@@ -26,7 +28,7 @@ def run_rrs(sz, Rrs, zeta, G, szA):
     sum_water_rrs = []
     sz_ar = sz[0]*sz[1]
     water = zeros((sz_ar, 9))
-    c_val = []
+    # c_val = []
     for j in range(sz[0]):
         print("\trow {}".format(j), end="\r")
         for k in range(sz[1]):
@@ -35,7 +37,7 @@ def run_rrs(sz, Rrs, zeta, G, szA):
             else:
                 num_pix = num_pix + 1  # Count number of non-NaN pixels
                 # Record coastal band value for cloud mask prediction
-                c_val.append(Rrs[j, k, 0])
+                # c_val.append(Rrs[j, k, 0])
                 if (
                     (
                         (Rrs[j, k, 6] - Rrs[j, k, 1]) /
