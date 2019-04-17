@@ -75,12 +75,15 @@ def process_file(
     loc_out,  # output directory
     loc,  # RoI identifier string
     coor_sys=4326,  # coordinate system code
-    d_t=1,  # 0=End after Rrs conversion; 1=rrs, bathy, DT; 2 = rrs, bathy & DT
+    d_t=2,  # 0=End after Rrs conversion; 1=rrs, bathy, DT; 2 = rrs, bathy & DT
     Rrs_write=1,  # 1=write Rrs geotiff; 0=do not write
 ):
     """
     process a single set of files
     """
+    if d_t == 1:  # this is here to catch it quickly
+        raise NotImplementedError("rrs output only not yet supported")
+
     if not loc_out.endswith("/"):
         loc_out += "/"
 
