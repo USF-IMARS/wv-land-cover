@@ -184,12 +184,12 @@ def run_rrs(sz, Rrs, zeta, G, szA):
     print("n_glinted", n_glinted)
 
     water[water[:, 0] == 0] = numpy.nan
-    water7 = water[:, 6]
-    water8 = water[:, 7]
-    # Positive minimum Band 7 value used for deglinting
-    mnNIR1 = min(i for i in water7 if i > 0 and i < 1)
-    # Positive minimum Band 8 value used for deglinting
-    mnNIR2 = min(i for i in water8 if i > 0 and i < 1)
+    print("Calc (+) min of Band 7 for deglinting...")
+    # min(i for i in water[:, 6] if i > 0 and i < 1)
+    mnNIR1 = numpy.amin(water[water[:, 6] > 0], initial=1)
+    print("Calc (+) min of Band 8 for deglinting...")
+    # mnNIR2 = min(i for i in water[:, 7] if i > 0 and i < 1)
+    mnNIR2 = numpy.amin(water[water[:, 7] > 0], initial=1)
 
     # idx_gf = find(water[:, 9] == 1)  # Glint-free water
 
