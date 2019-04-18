@@ -118,6 +118,7 @@ def geotiffwrite(
         gdal data object used only to get the GeoTransform & projection info
     """
     DTYPE_MAP = {  # mappings of array cell data types to gdal data types
+        # numpy.uint8: gdal.GDT_UInt8,  # GDT_UInt8 doesn't exist :(
         numpy.uint16: gdal.GDT_UInt16,
         numpy.float32: gdal.GDT_Float32,
         numpy.float64: gdal.GDT_Float64,  # this might be too big
@@ -126,15 +127,16 @@ def geotiffwrite(
     if len(arr_out.shape) == 2:
         # single-band geotiff
         n_bands = 1
+        cell_dtype = type(arr_out[0, 0])
     else:
         # must have 3D output array
         assert len(arr_out.shape) == 3
         n_bands = arr_out.shape[band_index]
+        cell_dtype = type(arr_out[0, 0, 0])
 
     n_rows = arr_out.shape[row_index]
     n_cols = arr_out.shape[col_index]
     # === set up datatype for output file:
-    cell_dtype = type(arr_out[0, 0, 0])
     if cell_dtype not in DTYPE_MAP.keys():
         raise ValueError(
             "Unable to map array of type {} to gdal type.".format(cell_dtype) +
