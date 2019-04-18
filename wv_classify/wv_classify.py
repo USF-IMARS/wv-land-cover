@@ -442,7 +442,7 @@ def process_file(
                             (Rrs[j, k, 7] + Rrs[j, k, 4]) < 0.01 and
                             Rrs[j, k, 7] > 0.05
                         ):
-                            if BW(j, k) == 1:
+                            if BW[j, k] == 1:
                                 classif_map[j, k] = 11  # Developed
                             elif sum(Rrs[j, k, 5:8]) < avg_SD_sum:
                                 classif_map[j, k] = 22  # Mud (intertidal?)
@@ -478,7 +478,7 @@ def process_file(
                         (Rrs[j, k, 7] - Rrs[j, k, 4]) /
                         (Rrs[j, k, 7] + Rrs[j, k, 4]) < 0.1
                     ):
-                        if BW(j, k) == 1:
+                        if BW[j, k] == 1:
                             classif_map[j, k] = 11  # Shadow/Developed
                         else:
                             classif_map[j, k] = 22  # Mud
