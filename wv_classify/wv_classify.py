@@ -340,7 +340,7 @@ def process_file(
         (
             v, u, E_glint, mnNIR2, mnNIR1, BW,
             avg_SD_sum, avg_veg_sum, avg_mang_sum, avg_water_sum
-        ) = run_rrs(sz, Rrs, zeta, G, szA)
+        ) = run_rrs(sz, Rrs, zeta, G)
 
         # Preallocate for Bathymetry
         Bathy = numpy.zeros((szA[0], szA[1]), dtype=numpy.float)
@@ -422,8 +422,8 @@ def process_file(
         # map = zeros(szA[0], szA[1], 'uint8')
 
         # update = 'Running DT'
-        for j in range(1, szA[0]):
-            for k in range(1, szA[1]):
+        for j in range(1, sz[0]):
+            for k in range(1, sz[1]):
                 if isnan(Rrs[j, k, 0]) == 0:
                     # === Mud, Developed and Sand
                     if (

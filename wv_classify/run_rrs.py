@@ -9,7 +9,7 @@ from wv_classify.matlab_fns import rdivide
 
 
 # @profile
-def run_rrs(sz, Rrs, zeta, G, szA):
+def run_rrs(sz, Rrs, zeta, G):
     # Run DT and/or rrs conversion;
     print('Running DT and/or rrs conversion...')
 
