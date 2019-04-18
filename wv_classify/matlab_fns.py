@@ -123,7 +123,14 @@ def geotiffwrite(
         numpy.float64: gdal.GDT_Float64,  # this might be too big
     }
     driver = gdal.GetDriverByName("GTiff")
-    n_bands = arr_out.shape[band_index]
+    if len(arr_out.shape) == 2:
+        # single-band geotiff
+        n_bands = 1
+    else:
+        # must have 3D output array
+        assert len(arr_out.shape) == 3
+        n_bands = arr_out.shape[band_index]
+
     n_rows = arr_out.shape[row_index]
     n_cols = arr_out.shape[col_index]
     # === set up datatype for output file:
@@ -167,8 +174,15 @@ def geotiffwrite(
     #   ref: https://stackoverflow.com/a/24434707/1483986
     slicer = [slice(None)] * 3
     for band in range(n_bands):
-        slicer[band_index] = band
-        band_arr = arr_out[tuple(slicer)]
+        if n_bands > 1:
+            slicer[band_index] = band
+            band_arr = arr_out[tuple(slicer)]
+        elif len(arr_out.shape) == 2:
+            # can't have multiple bands without 3D output array
+            assert n_bands == 1
+            band_arr = arr_out
+        else:
+            raise AssertionError("< 1 bands?")
         print('\twriting band #{}...'.format(band+1))
         outdata.GetRasterBand(band+1).WriteArray(band_arr)
 
