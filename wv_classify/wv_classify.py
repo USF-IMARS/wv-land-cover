@@ -423,6 +423,7 @@ def process_file(
 
         # update = 'Running DT'
         for j in range(1, sz[0]):
+            print("\trow {}".format(j), end="\r")
             for k in range(1, sz[1]):
                 if isnan(Rrs[j, k, 0]) == 0:
                     # === Mud, Developed and Sand
@@ -789,7 +790,7 @@ def process_file(
         #     )
         # else:
         Z1 = ''.join([loc_out, id, '_', loc, '_Map_pytest.tif'])
-        geotiffwrite(Z1, map, R, CoordRefSysCode=coor_sys)
+        geotiffwrite(Z1, classif_map, R, CoordRefSysCode=coor_sys)
         # end
 
         # === Output images
