@@ -418,7 +418,7 @@ def process_file(
         # Execute Deglinting rrs, Bathymetery, and Decision Tree
         print('Executing Deglinting rrs, Bathymetery, and Decision Tree...')
         # Create empty matrix for classification output
-        classif_map = numpy.zeros((szA[0], szA[1]), dtype='uint8')
+        classif_map = numpy.zeros((szA[0], szA[1]), dtype='uint16')
         # map = zeros(szA[0], szA[1], 'uint8')
 
         # update = 'Running DT'
