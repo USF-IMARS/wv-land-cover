@@ -4,7 +4,6 @@ from numpy import mean
 from numpy import isnan
 # from memory_profiler import profile
 
-from wv_classify.matlab_fns import mldivide
 from wv_classify.matlab_fns import rdivide
 
 
@@ -190,40 +189,44 @@ def run_rrs(sz, Rrs, zeta, G):
     #   idx = find(water(:,1) == 0);
     #   water(idx,:) = [];
     # ```
-    water = water[water.any(axis=1)]  # water[water[:, 0] == 0] = numpy.nan
-    print("Calc (+) min of Band 7 for deglinting...")
-    # min(i for i in water[:, 6] if i > 0 and i < 1)
-    mnNIR1 = numpy.amin(water[water[:, 6] > 0], initial=1)
-    print("Calc (+) min of Band 8 for deglinting...")
-    # mnNIR2 = min(i for i in water[:, 7] if i > 0 and i < 1)
-    mnNIR2 = numpy.amin(water[water[:, 7] > 0], initial=1)
+    water_len = len(water)
+    water = water[water[:, 0] != 0]
+    print("{} px removed with band 0 == 0...".format(water_len - len(water)))
+
+    water_len = len(water)
+    water = water[water[:, 6] > 0]
+    print("{} px removed w/ band 6 < 0".format(water_len - len(water)))
+
+    water_len = len(water)
+    water = water[water[:, 7] > 0]
+    print("{} px removed w/ band 7 < 0".format(water_len - len(water)))
 
     # idx_gf = find(water[:, 9] == 1)  # Glint-free water
 
-    E_glint = [0]*6
+    E_glint_slope = [0]*6
+    E_glint_y_int = [0]*6
     if v > 0.25 * u:
         print("Deglinting")
         # idx_w1 = find(water(:, 9)==2) # Glinted water array1>array2
         # idx_w2 = find(water(:, 9)==3) # Glinted water array2>array1
         # water1 = [water(idx_gf, 1:8);water(idx_w1, 1:8)];
         # water2 = [water(idx_gf, 1:8);water(idx_w2, 1:8)];
-        # Calculate linear fitting of all MS bands vs NIR1 & NIR2
+        # === Calculate linear fitting of all MS bands vs NIR1 & NIR2
         # for deglinting in DT (Hedley et al. 2005)
         for b in range(6):
             if b == 0 or b == 3 or b == 5:
                 # slope1 = water(:, b)\water(:, 7)
-                slope1 = mldivide(
-                    water[:, b],
-                    water[:, 7]
-                )
+                correction_ind = 7
             else:
+                assert b == 1 or b == 2 or b == 4
+                correction_ind = 6
                 # slope1 = water(:, b)\water(:, 6)
-                slope1 = mldivide(
-                    water[:, b],
-                    water[:, 6]
-                )
             # end
-        E_glint[b] = float(slope1)
+            E_glint_slope[b], E_glint_y_int[b] = numpy.linalg.lstsq(
+                numpy.vstack([water[:, b], numpy.ones(len(water))]).T,
+                water[:, correction_ind]
+            )[0]
+
         # end
         # E_glint  # = [0.8075 0.7356 0.8697 0.7236 0.9482 0.7902]
     else:
@@ -318,6 +321,6 @@ def run_rrs(sz, Rrs, zeta, G):
     # end
 
     return (
-        v, u, E_glint, mnNIR2, mnNIR1, BW,
+        v, u, E_glint_slope, E_glint_y_int, BW,
         avg_SD_sum, avg_veg_sum, avg_mang_sum, avg_water_sum
     )
