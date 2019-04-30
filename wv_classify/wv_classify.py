@@ -591,43 +591,43 @@ def process_file(
                             Rrs_deglint[0, 0] = (
                                 Rrs[j, k, 0] -
                                 (
-                                    E_glint_slope[0] *
-                                    (Rrs[j, k, 7] - E_glint_y_int[0])
+                                    E_glint_slope[0] * Rrs[j, k, 7] -
+                                    E_glint_y_int[0]
                                 )
                             )
                             Rrs_deglint[1, 0] = (
                                 Rrs[j, k, 1] -
                                 (
-                                    E_glint_slope[1] *
-                                    (Rrs[j, k, 6] - E_glint_y_int[1])
+                                    E_glint_slope[1] * Rrs[j, k, 6] -
+                                    E_glint_y_int[1]
                                 )
                             )
                             Rrs_deglint[2, 0] = (
                                 Rrs[j, k, 2] -
                                 (
-                                    E_glint_slope[2] *
-                                    (Rrs[j, k, 6] - E_glint_y_int[2])
+                                    E_glint_slope[2] * Rrs[j, k, 6] -
+                                    E_glint_y_int[2]
                                 )
                             )
                             Rrs_deglint[3, 0] = (
                                 Rrs[j, k, 3] -
                                 (
-                                    E_glint_slope[3] *
-                                    (Rrs[j, k, 7] - E_glint_y_int[3])
+                                    E_glint_slope[3] * Rrs[j, k, 7] -
+                                    E_glint_y_int[3]
                                 )
                             )
                             Rrs_deglint[4, 0] = (
                                 Rrs[j, k, 4] -
                                 (
-                                    E_glint_slope[4] *
-                                    (Rrs[j, k, 6] - E_glint_y_int[4])
+                                    E_glint_slope[4] * Rrs[j, k, 6] -
+                                    E_glint_y_int[4]
                                 )
                             )
                             Rrs_deglint[5, 0] = (
                                 Rrs[j, k, 5] -
                                 (
-                                    E_glint_slope[5] *
-                                    (Rrs[j, k, 7] - E_glint_y_int[5])
+                                    E_glint_slope[5] * Rrs[j, k, 7] -
+                                    E_glint_y_int[5]
                                 )
                             )
 

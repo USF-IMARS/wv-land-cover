@@ -202,7 +202,8 @@ def run_rrs(sz, Rrs, zeta, G):
     print("{} px removed w/ band 7 < 0".format(water_len - len(water)))
 
     # idx_gf = find(water[:, 9] == 1)  # Glint-free water
-
+    water_len = len(water)
+    print("{} px remain".format(water_len))
     E_glint_slope = [0]*6
     E_glint_y_int = [0]*6
     if v > 0.25 * u:
@@ -229,6 +230,9 @@ def run_rrs(sz, Rrs, zeta, G):
 
         # end
         # E_glint  # = [0.8075 0.7356 0.8697 0.7236 0.9482 0.7902]
+        print("least-squares glint correction:\n\tslope:{}\n\ty-int:{}".format(
+            E_glint_slope, E_glint_y_int
+        ))
     else:
         print("Glint-free")
     # end
