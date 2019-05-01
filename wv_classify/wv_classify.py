@@ -587,10 +587,13 @@ def process_file(
                     ):
                         # classif_map[j, k] = 5
                         if v > u*0.25:
-                            print("deglint:\n\ty = {}*X - {}".format(
-                                E_glint_slope, E_glint_y_int
-                            ))
+                            print("deglint:")
                             # Deglint equation
+                            print("\t{}x{} - {}".format(
+                                float(E_glint_slope[0]),
+                                float(Rrs[j, k, 7]),
+                                float(E_glint_y_int[0]),
+                            ))
                             Rrs_deglint[0, 0] = (
                                 Rrs[j, k, 0] -
                                 (
@@ -599,6 +602,11 @@ def process_file(
                                     float(E_glint_y_int[0])
                                 )
                             )
+                            print("\t{}x{} - {}".format(
+                                float(E_glint_slope[1]),
+                                float(Rrs[j, k, 6]),
+                                float(E_glint_y_int[1]),
+                            ))
                             Rrs_deglint[1, 0] = (
                                 Rrs[j, k, 1] -
                                 (
@@ -607,6 +615,11 @@ def process_file(
                                     float(E_glint_y_int[1])
                                 )
                             )
+                            print("\t{}x{} - {}".format(
+                                float(E_glint_slope[2]),
+                                float(Rrs[j, k, 6]),
+                                float(E_glint_y_int[2]),
+                            ))
                             Rrs_deglint[2, 0] = (
                                 Rrs[j, k, 2] -
                                 (
@@ -615,6 +628,11 @@ def process_file(
                                     float(E_glint_y_int[2])
                                 )
                             )
+                            print("\t{}x{} - {}".format(
+                                float(E_glint_slope[3]),
+                                float(Rrs[j, k, 7]),
+                                float(E_glint_y_int[3]),
+                            ))
                             Rrs_deglint[3, 0] = (
                                 Rrs[j, k, 3] -
                                 (
@@ -623,6 +641,11 @@ def process_file(
                                     float(E_glint_y_int[3])
                                 )
                             )
+                            print("\t{}x{} - {}".format(
+                                float(E_glint_slope[4]),
+                                float(Rrs[j, k, 6]),
+                                float(E_glint_y_int[4]),
+                            ))
                             Rrs_deglint[4, 0] = (
                                 Rrs[j, k, 4] -
                                 (
@@ -631,6 +654,11 @@ def process_file(
                                     float(E_glint_y_int[4])
                                 )
                             )
+                            print("\t{}x{} - {}".format(
+                                float(E_glint_slope[5]),
+                                float(Rrs[j, k, 7]),
+                                float(E_glint_y_int[5]),
+                            ))
                             Rrs_deglint[5, 0] = (
                                 Rrs[j, k, 5] -
                                 (
