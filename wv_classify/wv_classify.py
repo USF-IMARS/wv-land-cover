@@ -22,7 +22,6 @@ import sys
 from os import path
 from glob import glob
 from math import pi
-from math import log
 
 import numpy
 from numpy import isnan
@@ -46,7 +45,7 @@ from wv_classify.matlab_fns import asind
 from wv_classify.matlab_fns import rdivide
 from wv_classify.read_wv_xml import read_wv_xml
 from wv_classify.run_rrs import run_rrs
-
+from wv_classify.stumpf_relative_depth import stumpf_relative_depth
 
 OUTPUT_NaN = numpy.nan
 BASE_DATATYPE = numpy.float32
@@ -379,16 +378,8 @@ def process_file(
         #         Rrs_deglint[0:5],
         #         (zeta + G*Rrs_deglint[0:5])
         #     )
-        #
-        #     # Relative depth estimate
-        #     # Calculate relative depth
-        #     # (Stumpf 2003 ratio transform scaled to 1-10)
-        #     dp = (log(1000*Rrs_0(1))/log(1000*Rrs_0(2)))
-        #     if dp > 0 and dp < 2:
-        #         Bathy[j, k] = dp
-        #     else:
-        #         dp = 0
-        #     # end
+        #     dp = stumpf_relative_depth(Rrs_0(1), Rrs_0(2))
+        #     Bathy[j, k] = dp
         #     # for d = 1:5
         #     #     # Calculate water-column corrected benthic reflectance
         #     #     # (Traganos 2017 & Maritorena 1994)
@@ -406,12 +397,8 @@ def process_file(
         #         (zeta + G*Rrs[j, k, 0:5])
         #     )
         #     # Calculate relative depth (Stumpf 2003 ratio transform)
-        #     dp = (log(1000*Rrs_0(2))/log(1000*Rrs_0(3)))
-        #     if dp > 0 and dp < 2:
-        #         Bathy[j, k] = dp
-        #     else:
-        #         dp = 0
-        #     # end
+        #     dp = stumpf_relative_depth(Rrs_0(2), Rrs_0(3))
+        #     Bathy[j, k] = dp
         # # end
 
     elif d_t == 2:
@@ -675,18 +662,8 @@ def process_file(
                                 # Was Rrs_0=
                                 (zeta + G*Rrs_deglint[0:5])
                             )
-
-                        # Relative depth estimate
-                        # Calculate relative depth
-                        # (Stumpf 2003 ratio transform scaled to 1-10)
-                        dp = (
-                            log(1000*Rrs[j, k, 1])/log(1000*Rrs[j, k, 2])
-                        )
-                        if dp > 0 and dp < 2:
-                            Bathy[j, k] = dp
-                        else:
-                            dp = 0
-                        # end
+                        dp = stumpf_relative_depth(Rrs[j, k, 1], Rrs[j, k, 2])
+                        Bathy[j, k] = dp
                         # dp_sc = (dp-low)*scale_dp
 
                         # for d = 1:5:
@@ -749,13 +726,8 @@ def process_file(
                         )
                         # Calculate relative depth
                         # (Stumpf 2003 ratio transform)
-                        dp = (
-                            log(1000*Rrs[j, k, 1])/log(1000*Rrs[j, k, 2])
-                        )
-                        if dp > 0 and dp < 2:
-                            Bathy[j, k] = dp
-                        else:
-                            dp = 0
+                        dp = stumpf_relative_depth(Rrs[j, k, 1], Rrs[j, k, 2])
+                        Bathy[j, k] = dp
                         # end
                         # dp_sc = (dp-low)*scale_dp
                         # for d = 1:5
