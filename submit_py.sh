@@ -1,31 +1,30 @@
 #!/bin/bash
-#
-# Example of submission script used for sending processing jobs to SLURM.
-#
 #SBATCH --job-name ="wv2_classification_py"
-#SBATCH --ntasks=1
+#SBATCH --nodes=1
 #SBATCH --mem-per-cpu=20480
-#SBATCH --time=3:00:00
-#SBATCH --array=0-3
+#SBATCH --time=1:00:00
+#SBATCH --array=0-611%20
+##-611%30
+##SBATCH --array=0-611%20
+## Can submit up to 10,000 jobs at once, but only 512 will run concurrently
 
 # Python code to check processing time:
-    starttime = datetime.today()
-    LogMsg('Image: %s' %(info.srcfn))
+#    starttime = datetime.today()
+#    LogMsg('Image: %s' %(info.srcfn))
 
 
 ## Setup input arguments & file locations
-images1=`ls $WORK/tmp/test/sunglint/*.[nN][tT][fF]`
-met=`ls $WORK/tmp/test/sunglint/*.[xX][mM][lL]`
-output_dir1=/work/m/mjm8/tmp/test/ortho/
-rrs_out=/work/m/mjm8/tmp/test/output/
-class_out=/work/m/mjm8/tmp/test/output/
+images1=`ls $WORK/tmp/NSF/raw/*.[nN][tT][fF]`
+met=`ls $WORK/tmp/NSF/raw/*.[xX][mM][lL]`
+output_dir1=/work/m/mjm8/output/Ortho/NSF_SWTX/
+rrs_out=/work/m/mjm8/output/Rrs/NSF_SWTX/
+class_out=/work/m/mjm8/output/DT/NSF_SWTX/
 
+# Setup Matlab arguments (dt 0 = Rrs, no DT or rrs; dt 1 = Rrs, DT & rrs; dt 2 = DT, Rrs & rrs | filt=moving-window filter)
+dt=2
 crd_sys=EPSG:4326
-dt=0
-sgw=5
-filt=0
-stat=3
-loc='testnew'
+filt=2
+loc='NSF_SWTX'
 
 ## Run Python code
 images1a=($images1)
@@ -35,23 +34,20 @@ python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyr
 
 
 ## Run Matlab code
-module add apps/matlab/r2013b
+#module add apps/matlab/r2013b
+module add apps/matlab/r2017a
 
-#images2=`ls $WORK/tmp/test/ortho/*.[tT][iI][fF]`
-#images2=($images2)
-#image2=${images2[$SLURM_ARRAY_TASK_ID]}
-
-input_img_basename=$(basename "${image%.[nN][tT][fF]")
+input_img_basename=$(basename "${image%.[nN][tT][fF]}")
 echo $input_img_basename
 image2="$output_dir1${input_img_basename}_u16ns4326.tif"
 echo $image2
 met=($met)
 met=${met[$SLURM_ARRAY_TASK_ID]}
 
-matlab -nodisplay -nodesktop -r "WV2_Processing('$image2','$met','$crd_sys','$dt','$sgw','$filt','$stat','$loc','$SLURM_ARRAY_TASK_ID','$rrs_out','$class_out')"
+matlab -nodisplay -nodesktop -r "WV_Processing('$image2','$input_img_basename','$met','$crd_sys','$dt','$filt','$loc','$SLURM_ARRAY_TASK_ID','$rrs_out','$class_out')"
 
 
-#    #### Calculate Total Time
-    endtime = datetime.today()
-    td = (endtime-starttime)
-    LogMsg("Total Processing Time: %s\n" %(td))
+    #### Calculate Total Time
+ #   endtime = datetime.today()
+ #   td = (endtime-starttime)
+ #   LogMsg("Total Processing Time: %s\n" %(td))
