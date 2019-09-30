@@ -10,7 +10,8 @@ The submit_py.sh also contains the Matlab script call, so you'll want to comment
     1. OS-level:
         * Ubuntu:
             * for gdal: `sudo apt istall -y python3-gdal`
-    2. remaining python packages w/ setup.py `pip install -e .`
+    2. remaining python packages w/ setup.py `pip3 install -e .`
+        * alternatively: `pip3 install -r requirements.txt` or manually install deps listed therein.
 
 ## github basics
 
@@ -28,6 +29,7 @@ The submit_py.sh also contains the Matlab script call, so you'll want to comment
 
 
 # Usage
+## Overview & Manual Steps
 Processing is broken into a few steps.
 Below are examples of how each step might be run.
 1. create resampled tifs using pgc_ortho:
@@ -55,3 +57,18 @@ Below are examples of how each step might be run.
             exit\
         "
         ```
+3. use gdal or similar tools to mosaic multiple outputs together
+
+## SLURM
+These processing tasks have been executed on USF Research Computing's research cluster, [CIRCE](https://wiki.rc.usf.edu/index.php/CIRCE) using the SLURM task scheduler.
+The slurm submission bash script is in the root of this repo at [./submit_py.sh](https://github.com/USF-IMARS/wv2-processing/blob/master/submit_py.sh)
+
+## Apache Airflow
+This task has been run as an airflow DAG on IMaRS's airflow cluster.
+The airflow dag definition file can be viewed at [USF-IMARS/imars_dags//dags/processing/wv2_classification/wv_classification.py](https://github.com/USF-IMARS/imars_dags/blob/master/dags/processing/wv2_classification/wv_classification.py).
+Accompanying wrapper scripts are in the [scripts subdir of the same location](https://github.com/USF-IMARS/imars_dags/tree/master/dags/processing/wv2_classification/scripts).
+Of particular note is [USF-IMARS/imars_dags//dags/processing/wv2_classification/scripts/ntf_to_rrs.sh](https://github.com/USF-IMARS/imars_dags/blob/master/dags/processing/wv2_classification/scripts/ntf_to_rrs.sh).
+
+USF-IMaRS/imars_dags expects a certain configuration & software suite is expected to exist on each node.
+This airflow cluster's software and configuration management is managed via puppet ([IMaRS-private puppet repo ln](https://github.com/usf-imars/imars_puppet)); related documentation can be found there and can be provided on request.
+One of the more important dependencies is [imars-etl](https://github.com/USF-IMARS/imars-etl), which wraps IMaRS's underlying object & metadata storage systems.
