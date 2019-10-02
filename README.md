@@ -59,6 +59,30 @@ Below are examples of how each step might be run.
         ```
 3. use gdal or similar tools to mosaic multiple outputs together
 
+## Script Parameter Ref
+
+```
+-p                 = projection (4326 is the EPSG code for WGS geographic projection)
+-c                 = stretch (ns means "no stretch")
+-t                 = output bit depth
+-f                 = file format
+--no-pyramids      =  prevents the code from creating pyramids in the output GeoTIFF
+$INPUT_DIR         = directory for NITF staging/input
+$ORTHO_OUTPUT_DIR' = directory for output of pgc_ortho code as GeoTIFF
+'$ORTH_FILE        = [this variable is outdated and should be deleted]
+$ID                = image file name
+$MET               = metadata file 
+$CRD               = coordinate system (e.g. EPSG 4326)
+$DT                = input variable for whether to run the decision tree (DT = 2) or to just run Rrs conversion (DT = 0)
+$SGW               = [this variable is outdated and should be deleted]
+$FILT              = input variable indicating the size of the moving window filter (1 = 3x2, 2 = 5x5, etc.)
+$STAT              = [this variable is outdated and should be deleted]
+$LOC               = string identifier (e.g. "NSF_Texas")
+$ID_N              = identifier based on the file number being run
+$RRS_OUT           = directory for output of Rrs GeoTIFFs
+$CLASS_OUT         = directory for output of mapped GeoTIFFs
+```
+
 ## SLURM
 These processing tasks have been executed on USF Research Computing's research cluster, [CIRCE](https://wiki.rc.usf.edu/index.php/CIRCE) using the SLURM task scheduler.
 The slurm submission bash script is in the root of this repo at [./submit_py.sh](https://github.com/USF-IMARS/wv2-processing/blob/master/submit_py.sh)
