@@ -13,12 +13,27 @@ The submit_py.sh also contains the Matlab script call, so you'll want to comment
     2. remaining python packages w/ setup.py `pip3 install -e .`
         * alternatively: `pip3 install -r requirements.txt` or manually install deps listed therein.
 
-## github basics
+## Testing
+### test data
+Test data is stored internally at IMaRS and mounted at `/srv/imars-objects/homes/common/wv2-processing/test_data/`.
+To run tests you should create a symlink from there to a dir named `test_data` in this project root `ln -s /srv/imars-objects/homes/common/wv2-processing/test_data/ test_data`.
 
-#### download repo to local machine
+Alternatively, you may download these files from google drive [here](test_data.tar.xz) if you have been granted the appropriate permissions.
+These files are restricted to IMaRS and collaborators; please do not share them in any form.
+Once the file is downloaded you must extract this file to `wv2-processing/test_data/`.
+
+### running tests
+Python tests herein are generally orchestrated by pytest and live alongside the code they are testing with the suffix `_test`.
+
+Note that comparing hashes on output files doesn't work well b/c of variations in the script and floating point errors so the tests are not very robust; they mostly just check things run without throwing exception.
+For much of my testing I had to resort to opening the geotiffs with QGIS and confirming that they look right.
+
+# github basics
+
+## download repo to local machine
 `git clone https://github.com/USF-IMARS/wv2-processing`
 
-#### basic git/github workflow
+## basic git/github workflow
 1. `git pull origin master` - this updates your local to match the remote
 2. make your file edits
 3. `git status` to review the changes you have made
