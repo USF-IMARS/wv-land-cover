@@ -19,6 +19,7 @@ Test data is stored internally at IMaRS and mounted at `/srv/imars-objects/homes
 To run tests you should create a symlink from there to a dir named `test_data` in this project root `ln -s /srv/imars-objects/homes/common/wv2-processing/test_data/ test_data`.
 
 Alternatively, you may download these files from google drive [here](test_data.tar.xz) if you have been granted the appropriate permissions.
+**TODO: fix this link!**
 These files are restricted to IMaRS and collaborators; please do not share them in any form.
 Once the file is downloaded you must extract this file to `wv2-processing/test_data/`.
 
