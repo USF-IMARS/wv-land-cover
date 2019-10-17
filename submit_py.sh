@@ -46,6 +46,9 @@ met=${met[$SLURM_ARRAY_TASK_ID]}
 
 matlab -nodisplay -nodesktop -r "WV_Processing('$image2','$input_img_basename','$met','$crd_sys','$dt','$filt','$loc','$SLURM_ARRAY_TASK_ID','$rrs_out','$class_out')"
 
+other_ortho_fpath="$output_dir1${input_img_basename}_u16ns4326.prj"
+rm $image2 
+rm $other_ortho_fpath
 
     #### Calculate Total Time
  #   endtime = datetime.today()
