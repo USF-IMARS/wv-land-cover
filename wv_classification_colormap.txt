@@ -1,4 +1,5 @@
 # QGIS Generated Color Map Export File
+# pixel_value,r,g,b,a,class_name
 INTERPOLATION:EXACT
 0,29,29,30,255,shadow
 1,240,234,244,255,1
