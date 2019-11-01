@@ -4,8 +4,8 @@ import filecmp
 import os.path
 import warnings
 
-from matlab_fns import geotiffread
-from matlab_fns import geotiffwrite
+from wv_classify.matlab_fns import geotiffread
+from wv_classify.matlab_fns import geotiffwrite
 
 
 class Test_geotiff_io(TestCase):

@@ -1,7 +1,7 @@
 import os
 import warnings
 
-from wv_classify import process_file
+from wv_classify.wv_classify import process_file
 
 
 def test_process_file():

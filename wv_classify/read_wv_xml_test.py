@@ -1,7 +1,7 @@
 # std modules:
 from unittest import TestCase
 
-from read_wv_xml import read_wv_xml
+from wv_classify.read_wv_xml import read_wv_xml
 
 
 class Test_read_wv_xml(TestCase):

@@ -1,3 +1,5 @@
 # python packages needed to run wv2-processing
 scikit-image
-# gdal -- better to install this w/ system package manager
+# NOTE: the pygdal version below *must* match the gdal version from
+#    `gdal-config --version`
+pygdal==3.0.1.*
