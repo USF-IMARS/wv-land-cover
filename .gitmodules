@@ -1,0 +1,4 @@
+[submodule "wv_classify/pgc_imagery_utils"]
+	path = wv_classify/pgc_imagery_utils
+	url = https://github.com/PolarGeospatialCenter/imagery_utils.git
+	branch = v1.5.2
