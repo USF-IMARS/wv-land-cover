@@ -2,4 +2,4 @@
 scikit-image
 # NOTE: the pygdal version below *must* match the gdal version from
 #    `gdal-config --version`
-pygdal==3.0.1.*
+#pygdal==3.0.1.*
