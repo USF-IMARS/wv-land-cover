@@ -4,6 +4,19 @@ Processing scripts for decision-tree land use classification on WorldView-2 imag
 The submit_py.sh file is what I use in Circe to call the pgc_ortho.py script, which has a number of sub-scripts called.
 The submit_py.sh also contains the Matlab script call, so you'll want to comment out those lines before testing it.
 
+## Software Dependencies
+* pygdal
+* TODO: more here
+
+## Installation
+### PSC Bridges
+```
+$ git clone https://github.com/iceberg-project/Seals.git
+# TODO: more here
+```
+
+-----------------------------------------------------------------------------------------------------------------
+
 # Installation
 NOTE: if you are running this code on IMaRS's servers (eg userproc or seashell) jump directly to the [IMaRS user quickstart section below](README.md#IMaRS-User-Quickstart).
 
