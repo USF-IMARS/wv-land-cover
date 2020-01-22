@@ -37,6 +37,8 @@ Alternatively, you may download a version of these files from google drive [here
 These files are restricted to IMaRS and collaborators; please do not share them in any form.
 Once the file is downloaded you must extract this file to `wv2-processing/test_data/`.
 
+TODO: add PGC's files here & merge directories.
+
 ### running tests
 Python tests herein are generally orchestrated by pytest and live alongside the code they are testing with the suffix `_test`.
 
@@ -101,7 +103,7 @@ $INPUT_DIR         = directory for NITF staging/input
 $ORTHO_OUTPUT_DIR' = directory for output of pgc_ortho code as GeoTIFF
 '$ORTH_FILE        = [this variable is outdated and should be deleted]
 $ID                = image file name
-$MET               = metadata file 
+$MET               = metadata file
 $CRD               = coordinate system (e.g. EPSG 4326)
 $DT                = input variable for whether to run the decision tree (DT = 2) or to just run Rrs conversion (DT = 0)
 $SGW               = [this variable is outdated and should be deleted]
@@ -191,7 +193,7 @@ Assuming we are using the `WV02_20170103155753_0000000000000000_17Jan03155753-M1
 mkdir ortho_data
 mkdir output_data
 
-# 1st step is to run pgy ortho 
+# 1st step is to run pgy ortho
 python pgc_ortho.py \
     -p 4326 \
     -c ns \
@@ -199,7 +201,7 @@ python pgc_ortho.py \
     -f GTiff \
     ./input_data \
     ./ortho_data
-    
+
 # if this was successful we should now have files in ortho_data
 ls -lh ./ortho_data
 
@@ -209,6 +211,6 @@ python36 -m wv_classify.wv_classify \
     ./ortho_data/WV02_20170103155753_0000000000000000_17Jan03155753-M1BS-058526494010_01_P005_u16ns4326.tif \
     ./input_data/WV02_20170103155753_0000000000000000_17Jan03155753-M1BS-058526494010_01_P005.xml \
     ./output_data MONROE "EPSG:4326" 2 1
-    
+
 # if this was successful we should now have rrs, Rrs, and classification_map files in ./output_data/
 ```
