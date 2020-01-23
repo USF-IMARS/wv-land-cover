@@ -10,13 +10,13 @@ python:
   - "3.8"
   - "nightly"
 before_install:
-  - docker pull 7yl4r:wv_img_proc_docker
-  - docker run -d 7yl4r:wv_img_proc_docker
+  - docker pull 7yl4r/wv_img_proc_docker
+  - docker run -d 7yl4r/wv_img_proc_docker
   - docker ps -a
-  - docker run 7yl4r:wv_img_proc_docker -v requirements.txt:/requirements.txt -v requirements_tests.txt:/requirements.txt
+  - docker run 7yl4r/wv_img_proc_docker -v requirements.txt:/requirements.txt -v requirements_tests.txt:/requirements.txt
 install:
-  - docker exec 7yl4r:wv_img_proc_docker pip install -r /requirements.txt
+  - docker exec 7yl4r/wv_img_proc_docker pip install -r /requirements.txt
 before_script:
-  - docker exec 7yl4r:wv_img_proc_docker pip install -r /requirements_tests.txt
+  - docker exec 7yl4r/wv_img_proc_docker pip install -r /requirements_tests.txt
 script:
-  - docker exec 7yl4r:wv_img_proc_docker pytest -v -m "not testdata_required"
+  - docker exec 7yl4r/wv_img_proc_docker pytest -v -m "not testdata_required"
