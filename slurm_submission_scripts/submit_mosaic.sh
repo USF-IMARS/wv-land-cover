@@ -33,4 +33,4 @@ export GDAL_VRT_ENABLE_PYTHON=YES
 export GDAL_VERT_ENABLE_PYTHON
 export BIGTIFF=YES
 
-gdaladdo -ro my_overview_file.vrt 1
+gdaladdo --config BIGTIFF_OVERIEW YES -ro my_overview_file.vrt 1
