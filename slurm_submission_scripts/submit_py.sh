@@ -37,6 +37,7 @@ image2="$output_dir1${input_img_basename}_u16ns4326.tif"
 echo $image2
 
 if [ ! -f $image2 ]; then  # if output file DNE
+    module add apps/python/2.7.5
     python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyramids $image $output_dir1
 fi
 
