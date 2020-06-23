@@ -16,7 +16,7 @@
 ## Setup input arguments & file locations
 images1=`ls $WORK/tmp/NSF/raw/*.[nN][tT][fF]`
 met=`ls $WORK/tmp/NSF/raw/*.[xX][mM][lL]`
-output_dir1=/work/m/mjm8/output/Ortho/NSF_SWTX/  # ortho_out
+ortho_out=/work/m/mjm8/output/Ortho/NSF_SWTX/  # ortho_out
 rrs_out=/work/m/mjm8/output/Rrs/NSF_SWTX/
 class_out=/work/m/mjm8/output/DT/NSF_SWTX/
 
@@ -33,12 +33,12 @@ image=${images1a[$SLURM_ARRAY_TASK_ID]}
 # figure out output filepaths
 input_img_basename=$(basename "${image%.[nN][tT][fF]}")
 echo $input_img_basename
-image2="$output_dir1${input_img_basename}_u16ns4326.tif"
+image2="$ortho_out${input_img_basename}_u16ns4326.tif"
 echo $image2
 
 if [ ! -f $image2 ]; then  # if output file DNE
     module add apps/python/2.7.5
-    python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyramids $image $output_dir1
+    python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyramids $image $ortho_out
 fi
 
 ## === Run Matlab code
@@ -51,7 +51,7 @@ if [ ! -f $final_output_path ]; then  # if output file DNE
     module add apps/matlab/r2017a
     matlab -nodisplay -nodesktop -r "WV_Processing('$image2','$input_img_basename','$met','$crd_sys','$dt','$filt','$loc','$SLURM_ARRAY_TASK_ID','$rrs_out','$class_out')"
 fi
-other_ortho_fpath="$output_dir1${input_img_basename}_u16ns4326.prj"
+other_ortho_fpath="$ortho_out${input_img_basename}_u16ns4326.prj"
 rm $image2 
 rm $other_ortho_fpath
 
