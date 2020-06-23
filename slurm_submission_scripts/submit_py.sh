@@ -27,18 +27,20 @@ filt=2
 loc='NSF_SWTX'
 
 ## === Run Python code
-images1a=($images1)
-image=${images1a[$SLURM_ARRAY_TASK_ID]}
+images1a=($images1)  # cast to array
+input_image=${images1a[$SLURM_ARRAY_TASK_ID]}
 
 # figure out output filepaths
-input_img_basename=$(basename "${image%.[nN][tT][fF]}")
+input_img_basename=$(basename "${input_image%.[nN][tT][fF]}")
 echo $input_img_basename
 image2="$ortho_out${input_img_basename}_u16ns4326.tif"
 echo $image2
+other_ortho_fpath="$ortho_out${input_img_basename}_u16ns4326.prj"
+
 
 if [ ! -f $image2 ]; then  # if output file DNE
     module add apps/python/2.7.5
-    python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyramids $image $ortho_out
+    python /work/m/mjm8/progs/pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no_pyramids $input_image $ortho_out
 fi
 
 ## === Run Matlab code
@@ -51,7 +53,7 @@ if [ ! -f $final_output_path ]; then  # if output file DNE
     module add apps/matlab/r2017a
     matlab -nodisplay -nodesktop -r "WV_Processing('$image2','$input_img_basename','$met','$crd_sys','$dt','$filt','$loc','$SLURM_ARRAY_TASK_ID','$rrs_out','$class_out')"
 fi
-other_ortho_fpath="$ortho_out${input_img_basename}_u16ns4326.prj"
+
 rm $image2 
 rm $other_ortho_fpath
 
