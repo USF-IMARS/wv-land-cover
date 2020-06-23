@@ -16,7 +16,7 @@
 ## Setup input arguments & file locations
 images1=`ls $WORK/tmp/NSF/raw/*.[nN][tT][fF]`
 met=`ls $WORK/tmp/NSF/raw/*.[xX][mM][lL]`
-output_dir1=/work/m/mjm8/output/Ortho/NSF_SWTX/
+output_dir1=/work/m/mjm8/output/Ortho/NSF_SWTX/  # ortho_out
 rrs_out=/work/m/mjm8/output/Rrs/NSF_SWTX/
 class_out=/work/m/mjm8/output/DT/NSF_SWTX/
 
@@ -42,15 +42,15 @@ if [ ! -f $image2 ]; then  # if output file DNE
 fi
 
 ## === Run Matlab code
-#module add apps/matlab/r2013b
-module add apps/matlab/r2017a
-
-
 met=($met)
 met=${met[$SLURM_ARRAY_TASK_ID]}
 
-matlab -nodisplay -nodesktop -r "WV_Processing('$image2','$input_img_basename','$met','$crd_sys','$dt','$filt','$loc','$SLURM_ARRAY_TASK_ID','$rrs_out','$class_out')"
+final_output_path="$rrs_out${input_img_basename}_$loc_SOALCHI_filt_$filt.tif"
 
+if [ ! -f $final_output_path ]; then  # if output file DNE
+    module add apps/matlab/r2017a
+    matlab -nodisplay -nodesktop -r "WV_Processing('$image2','$input_img_basename','$met','$crd_sys','$dt','$filt','$loc','$SLURM_ARRAY_TASK_ID','$rrs_out','$class_out')"
+fi
 other_ortho_fpath="$output_dir1${input_img_basename}_u16ns4326.prj"
 rm $image2 
 rm $other_ortho_fpath
