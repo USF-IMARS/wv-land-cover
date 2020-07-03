@@ -51,7 +51,7 @@ final_output_path="$rrs_out${input_img_basename}_$loc_SOALCHI_filt_$filt.tif"
 
 if [ ! -f $final_output_path ]; then  # if output file DNE
     module add apps/matlab/r2017a
-    matlab -nodisplay -nodesktop -r "WV_Processing('$image2','$input_img_basename','$met','$crd_sys','$dt','$filt','$loc','$SLURM_ARRAY_TASK_ID','$rrs_out','$class_out')"
+    matlab -nodisplay -nodesktop -r "wv_classify('$image2','$input_img_basename','$met','$crd_sys','$dt','$filt','$loc','$SLURM_ARRAY_TASK_ID','$rrs_out','$class_out')"
 fi
 
 rm $image2 
