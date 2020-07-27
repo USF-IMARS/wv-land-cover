@@ -1,16 +1,17 @@
 #!/bin/bash
+#SBATCH --partition=circe
 #SBATCH --job-name ="wv_mosaic_gdal"
 #SBATCH --nodes=1
 ##SBATCH --ntasks-per-node=4
-#SBATCH --mem-per-cpu=20480
-#SBATCH --time=3:00:00
+#SBATCH --mem-per-cpu=60480
+#SBATCH --time=40:00:00
 #SBATCH --array=0
 
 module purge
 module load apps/python/3.7.3
 module load apps/gdal/3.0.1_el7_gcc
 
-gdalbuildvrt -a_srs EPSG:4326 my_overview_file.vrt $WORK/output/Rrs/NSF_SWTX/.*tif
+#gdalbuildvrt -a_srs EPSG:4326 my_overview_file.vrt $WORK/output/Rrs/NSF_SWTX/.*tif
 
 
 ## TODO: load & edit my_overview_file.vrt xml:
@@ -30,7 +31,6 @@ gdalbuildvrt -a_srs EPSG:4326 my_overview_file.vrt $WORK/output/Rrs/NSF_SWTX/.*t
 #    ]]></PixelFunctionCode>
     
 export GDAL_VRT_ENABLE_PYTHON=YES
-export GDAL_VERT_ENABLE_PYTHON
 export BIGTIFF=YES
 
 gdaladdo --config BIGTIFF_OVERIEW YES -ro my_overview_file.vrt 1
