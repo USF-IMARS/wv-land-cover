@@ -1,6 +1,33 @@
 # wv2-processing
 Processing scripts for decision-tree land use classification on WorldView-2 images.
 
+## Habitat Cover Classes
+Below are the habitat classes created by this code. `wv_classification_colormap.txt` Provides a colormap with similar values and associated colors for use in QGIS (and others).
+
+```
+BA = bare soil
+WA = water
+DG = degraded mangrove
+MA = marsh
+SC = scrub/shrub
+FW = forested wetland (this is mangrove forest in southwest Florida)
+FU = forested upland
+UG = upland grass
+dev = developed
+```
+
+For the NERRS Mangrove Coast Collective project and related publications the can be consolidated as follows:
+
+```
+Bare/Developed = BA, dev
+Water = WA
+Degraded mangrove = DG, MA
+Healthy mangrove = FW
+Upland = FU, UG, SC
+```
+
+---------------------------------------------------------------------------------------------------------------
+
 ## Software Dependencies
 * gdal
 * pygdal
