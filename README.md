@@ -73,13 +73,14 @@ For much of my testing I had to resort to opening the geotiffs with QGIS and con
 # Usage
 ## Overview & Manual Steps
 Processing is broken into a few steps.
-Below are examples of how each step might be run.
+Below is an overview of how each step might be run manually.
+For specific, detailed examples of running the code see the `./docs/examples/` folder.
 0. `INPUT_DIR`, `ORTHO_OUTPUT_DIR`, and other variables below must be set (eg `INPUT_DIR=/home/tylar/wv_proc/my_input_files`).
 1. create resampled tifs using pgc_ortho:
     * `python ./pgc_ortho.py -p 4326 -c ns -t UInt16 -f GTiff --no-pyramids $INPUT_DIR $ORTHO_OUTPUT_DIR`
 2. run the wv_classify script on the resampled tifs
-    1. python `python ./wv_classify.py $ORTH_FILE $ID $MET $CRD $DT $SGW $FILT $STAT $LOC $ID_N $RRS_OUT $CLASS_OUT`
-
+    1. the (now outdated) python version: `python ./wv_classify.py $ORTH_FILE $ID $MET $CRD $DT $SGW $FILT $STAT $LOC $ID_N $RRS_OUT $CLASS_OUT`
+    2. the MATLAB version: `matlab -nodisplay -nodesktop -r "wv_classify('$image2','$input_img_basename','$met','$crd_sys','$dt','$filt','$loc','$SLURM_ARRAY_TASK_ID','$rrs_out','$class_out')"`
 3. use gdal or similar tools to mosaic multiple outputs together
     * see [this gist](https://gist.github.com/7yl4r/d03f9617212db5efded1f8a0d34550d3)
 
