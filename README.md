@@ -1,5 +1,6 @@
 # wv2-processing
-Processing scripts for decision-tree land use classification on WorldView-2 images.
+Processing scripts for decision-tree land use classification on WorldView images.
+This project funded by NSF South Big Data Hub and then by the RB & JB NERRs.
 
 ## Habitat Cover Classes
 Below are the habitat classes created by this code. `wv_classification_colormap.txt` Provides a colormap with similar values and associated colors for use in QGIS (and others).
