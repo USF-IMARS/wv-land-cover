@@ -49,11 +49,19 @@ def read_wv_xml(filename, output_format="list"):
     # Extract Mean Sun Elevation angle from metadata.Text(18:26))
     # Extract Mean Off Nadir View angle from metadata
     for param in [
-        "MEANSUNEL", "MEANOFFNADIRVIEWANGLE", "MEANSUNAZ", "MEANSATAZ",
-        "MEANSATEL", "CLOUDCOVER"
+        "MEANSUNEL", "MEANSUNAZ",
+        "MEANSATEL", "MEANSATAZ",
+        "MEANOFFNADIRVIEWANGLE", "CLOUDCOVER", "SATID", 
+        "MODE", "SCANDIRECTION",
+        "MEANINTRACKVIEWANGLE", "MEANCROSSTRACKVIEWANGLE", "MEANOFFNADIRVIEWANGLE"
     ]:
         metadata[param] = float(imd.find("IMAGE").find(param).text)
 
+    for param in [
+        "FILENAME"
+    ]:
+        metadata[param] = float(imd.find("TIL").find("TILE").find(param).text)
+        
     if output_format == "list":
         szB = [
             metadata["IMD_NUMROWS"],
