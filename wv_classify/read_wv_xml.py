@@ -86,3 +86,13 @@ def read_wv_xml(filename, output_format="list"):
         raise ValueError(
             f"user requested unknown output_format '{output_format}'"
         )
+
+
+if __name__ == "__main__":
+    import pprint
+    import sys
+    pp = pprint.PrettyPrinter(indent=2)
+    fpath = sys.argv[1]
+    pp.pprint(
+        read_wv_xml(fpath, output_format="dict")
+    )
