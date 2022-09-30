@@ -2,10 +2,20 @@ from xml.etree import ElementTree
 from datetime import datetime
 
 
-def read_wv_xml(filename):
-    # ==================================================================
-    # === read values from xml file
-    # ==================================================================
+def read_wv_xml(filename, output_format="list"):
+    """ read metadata values from xml file
+    params
+    ------
+    filename : filepath
+        The .xml file to read
+    output_format : str
+        The format to return output.
+        Note that "list" output may not support all metadata.
+        valid values:
+            "list" - [param1Value, param2Value]
+            "dict" - {param1:value, param2:value]
+    """
+    metadata = {}
     # Extract calibration factors & acquisition time from
     # metadata for each band
     tree = ElementTree.parse(filename)
@@ -20,39 +30,59 @@ def read_wv_xml(filename):
             " (isd, IMD)"
         )
     imd = root.find('IMD')  # assumes only one element w/ 'IMD' tag
-    szB = [
-        int(imd.find('NUMROWS').text),
-        int(imd.find('NUMCOLUMNS').text),
-        0
+    metadata["IMD_NUMROWS"]    = int(imd.find('NUMROWS').text)
+    metadata["IMD_NUMCOLUMNS"] = int(imd.find('NUMCOLUMNS').text)
+    BANDNAMES = [
+        'BAND_C', 'BAND_B', 'BAND_G', 'BAND_Y', 'BAND_R', 'BAND_RE',
+        'BAND_N', 'BAND_N2'
     ]
-    kf = [
-        float(imd.find(band).find('ABSCALFACTOR').text) for band in [
-            'BAND_C', 'BAND_B', 'BAND_G', 'BAND_Y', 'BAND_R', 'BAND_RE',
-            'BAND_N', 'BAND_N2'
-        ]
-    ]
+    for band in BANDNAMES:
+        metadata[f"ABSCALFACTOR_{band}"] = float(
+            imd.find(band).find('ABSCALFACTOR').text
+        )
     # Extract Acquisition Time from metadata
-    aq_dt = datetime.strptime(
+    metadata["FIRSTLINETIME"] = datetime.strptime(
         imd.find('IMAGE').find('FIRSTLINETIME').text,
         # "2017-12-22T16:48:10.923850Z"
         "%Y-%m-%dT%H:%M:%S.%fZ"
     )
-    aqyear = aq_dt.year
-    aqmonth = aq_dt.month
-    aqday = aq_dt.day
-    aqhour = aq_dt.hour
-    aqminute = aq_dt.minute
-    aqsecond = aq_dt.second
     # Extract Mean Sun Elevation angle from metadata.Text(18:26))
-    sunel = float(imd.find('IMAGE').find('MEANSUNEL').text)
     # Extract Mean Off Nadir View angle from metadata
-    satview = float(imd.find('IMAGE').find('MEANOFFNADIRVIEWANGLE').text)
-    sunaz = float(imd.find('IMAGE').find('MEANSUNAZ').text)
-    sensaz = float(imd.find('IMAGE').find('MEANSATAZ').text)
-    satel = float(imd.find('IMAGE').find('MEANSATEL').text)
-    cl_cov = float(imd.find('IMAGE').find('CLOUDCOVER').text)
-    # ==================================================================
-    return (
-        szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel,
-        satel, sensaz, aqday, satview, kf, cl_cov
-    )
+    for param in [
+        "MEANSUNEL", "MEANOFFNADIRVIEWANGLE", "MEANSUNAZ", "MEANSATAZ",
+        "MEANSATEL", "CLOUDCOVER"
+    ]:
+        metadata[param] = float(imd.find("IMAGE").find(param).text)
+
+    if output_format == "list":
+        szB = [
+            metadata["IMD_NUMROWS"],
+            metadata["IMD_NUMCOLUMNS"],
+            0
+        ]
+        kf = [
+            metadata[f"ABSCALFACTOR_{band}"] for band in BANDNAMES
+        ]
+        aq_dt = metadata["FIRSTLINETIME"]
+        aqyear = aq_dt.year
+        aqmonth = aq_dt.month
+        aqday = aq_dt.day
+        aqhour = aq_dt.hour
+        aqminute = aq_dt.minute
+        aqsecond = aq_dt.second
+        sunel = metadata['MEANSUNEL']
+        satview = metadata['MEANOFFNADIRVIEWANGLE']
+        sunaz = metadata['MEANSUNAZ']
+        sensaz = metadata['MEANSATAZ']
+        satel = metadata['MEANSATEL']
+        cl_cov = metadata['CLOUDCOVER']
+        return (
+            szB, aqmonth, aqyear, aqhour, aqminute, aqsecond, sunaz, sunel,
+            satel, sensaz, aqday, satview, kf, cl_cov
+        )
+    elif output_format == "dict":
+        return metadata
+    else:
+        raise ValueError(
+            f"user requested unknown output_format '{output_format}'"
+        )
