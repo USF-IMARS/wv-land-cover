@@ -35,7 +35,7 @@ generator="Tylar Murray & Digna Rueda"
 classifier="NERRS-mangroves-decision-tree"
 echo_if_test="echo "  # set this to "echo " to test the script, else set to ""
 xml_reader_cmd="python3 ./wv_classify/read_wv_xml.py "
-filepanther_cmd="python3 -m ~/filepanther/filepanther/__main__.py "
+filepanther_cmd="python3 -m filepanther "
 
 echo creating the collection "$3"...
 result=`${echo_if_test} earthengine create collection $3`
@@ -58,8 +58,8 @@ for geotiff in `gsutil ls gs://$1/*.tif`; do
 	tile=${asset_id:0:6}
 	tile_id="${tile%_*}" 
 	code=${asset_id:11:4}
-
-	${echo_if_test} $filepanther_cmd parse --json $filepath > filepath_metadata.json
+	# python3 filepanther -q parse /srv/imars-objects/rookery/Processed/wv_classMaps_rgb/20180501T160614_01_P003_WV02_ClassificMap_fullClass_Rookery.tif --pattern /srv/imars-objects/rookery/Processed/wv_classMaps_rgb/%Y%m%dT%H%M%S_{number}_P{pass_n}_WV{sat_n}_ClassificMap_fullClass_Rookery.tif > metadata.json
+	${echo_if_test} $filepanther_cmd -q parse $filename --pattern %Y%m%dT%H%M%S_{number}_P{pass_n}_WV{sat_n}_ClassificMap_fullClass_Rookery.tif > filepath_metadata.json
 	xml_filename=`${echo_if_test} $filepanther_cmd format --type=wv_xml --json_file=filepath_metadata.json`
 	xml_vars=`${xml_reader_cmd} $2/${filename}.xml`
 	echo "xml_vars : ${xml_vars}"
