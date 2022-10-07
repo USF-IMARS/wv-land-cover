@@ -21,9 +21,10 @@
 # 		./seagrass_mosiacs/xml_files/ \
 #		users/lizcanosandoval/Seagrass/Sentinel/01_OriginalMosaics
 #
-# ./gbucket_to_gee_w_metadata.sh \
+# ./gee-upload/gbucket_to_gee_w_metadata.sh \
 # 		rookery-wv-classmaps \
 #		/srv/imars-objects/rookery/Processed/wv_classMaps_rgb \       
+#               users/tylarmurray/nerrs/rookery
 #
 # Modified from: https://www.tucson.ars.ag.gov/notebooks/uploading_data_2_gee.html
 
@@ -33,6 +34,8 @@ satellite="WV0(2|3)"
 generator="Tylar Murray & Digna Rueda"
 classifier="NERRS-mangroves-decision-tree"
 echo_if_test="echo "  # set this to "echo " to test the script, else set to ""
+xml_reader_cmd="python3 ./wv_classify/read_wv_xml.py "
+filepanther_cmd="python3 -m ~/filepanther/filepanther/__main__.py "
 
 echo creating the collection "$3"...
 result=`${echo_if_test} earthengine create collection $3`
@@ -45,9 +48,9 @@ fi
 # Each file will have a format like this: `gs://my_gee_bucket/FILE_January2000.tif`.
 # Each call to earthengine will launch a task that you can monitor in the JS Code editor "tasks" tab.
 for geotiff in `gsutil ls gs://$1/*.tif`; do  
-    #filename=${geotiff%.*}
-    filename=${geotiff##*/} 
-    asset_id="${filename%.*}" 
+	#filename=${geotiff%.*}
+	filename=${geotiff##*/} 
+	asset_id="${filename%.*}" 
 	echo "*** Transfering file " $asset_id "***"
 
 	year=${asset_id:6:4}
@@ -55,7 +58,12 @@ for geotiff in `gsutil ls gs://$1/*.tif`; do
 	tile=${asset_id:0:6}
 	tile_id="${tile%_*}" 
 	code=${asset_id:11:4}
-    
+
+	${echo_if_test} $filepanther_cmd parse --json $filepath > filepath_metadata.json
+	xml_filename=`${echo_if_test} $filepanther_cmd format --type=wv_xml --json_file=filepath_metadata.json`
+	xml_vars=`${xml_reader_cmd} $2/${filename}.xml`
+	echo "xml_vars : ${xml_vars}"
+
 	${echo_if_test} earthengine upload image gs://$1/$filename \
 		-f --asset_id=$3/$asset_id \
 		--nodata_value=0 --crs="EPSG:4326" -ts=$date \
