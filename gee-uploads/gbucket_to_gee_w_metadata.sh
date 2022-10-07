@@ -32,17 +32,14 @@ country="USA"
 satellite="WV0(2|3)"
 generator="Tylar Murray & Digna Rueda"
 classifier="NERRS-mangroves-decision-tree"
+echo_if_test="echo "  # set this to "echo " to test the script, else set to ""
 
-# create the collection
-result=`earthengine create collection $2`
+echo creating the collection "$3"...
+result=`${echo_if_test} earthengine create collection $3`
 if `test -z "$result"`; then  # exit if creation failed
     echo $result
     exit 1
 fi
-
-# TODO: implement .xml file reading using https://github.com/USF-IMARS/wv-land-cover/blob/master/wv_classify/read_wv_xml.py
-echo xml reading not yet implemented
-exit 1
 
 # In the following loop we get the entire path to all the geotifs using the specified Gcloud bucket. 
 # Each file will have a format like this: `gs://my_gee_bucket/FILE_January2000.tif`.
@@ -52,14 +49,15 @@ for geotiff in `gsutil ls gs://$1/*.tif`; do
     filename=${geotiff##*/} 
     asset_id="${filename%.*}" 
 	echo "*** Transfering file " $asset_id "***"
-	
+
 	year=${asset_id:6:4}
 	date="${year}-01-01T12:00:00"
 	tile=${asset_id:0:6}
 	tile_id="${tile%_*}" 
 	code=${asset_id:11:4}
     
-	earthengine upload image gs://$1/$filename -f --asset_id=$2/$asset_id \
+	${echo_if_test} earthengine upload image gs://$1/$filename \
+		-f --asset_id=$3/$asset_id \
 		--nodata_value=0 --crs="EPSG:4326" -ts=$date \
 		-p="year=${year}" \
 		-p="name_code=${code}" \
