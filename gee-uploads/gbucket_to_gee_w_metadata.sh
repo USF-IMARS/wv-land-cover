@@ -30,10 +30,11 @@
 
 # hardcoded metadata
 country="USA"
-satellite="WV0(2|3)"
 generator="Tylar Murray & Digna Rueda"
 classifier="NERRS-mangroves-decision-tree"
-echo_if_test="echo "  # set this to "echo " to test the script, else set to ""
+
+echo_if_test=""  # set this to "echo " to test the script, else set to ""
+
 xml_reader_cmd="python3 ./wv_classify/read_wv_xml.py "
 filepanther_cmd="python3 -m filepanther "
 
@@ -53,11 +54,6 @@ for geotiff in `gsutil ls gs://$1/*.tif`; do
 	asset_id="${filename%.*}" 
 	echo ""
 	echo "*** Transfering file " $asset_id "***"
-	year=${asset_id:6:4}
-	date="${year}-01-01T12:00:00"
-	tile=${asset_id:0:6}
-	tile_id="${tile%_*}" 
-	code=${asset_id:11:4}
 	echo "*** parsing metadata..."
 	# python3 filepanther -q parse /srv/imars-objects/rookery/Processed/wv_classMaps_rgb/20180501T160614_01_P003_WV02_ClassificMap_fullClass_Rookery.tif --pattern /srv/imars-objects/rookery/Processed/wv_classMaps_rgb/%Y%m%dT%H%M%S_{number}_P{pass_n}_WV{sat_n}_ClassificMap_fullClass_Rookery.tif > metadata.json
 	$filepanther_cmd -q parse $filename \
@@ -86,21 +82,25 @@ for geotiff in `gsutil ls gs://$1/*.tif`; do
 		echo "found file: ${xml_fpath}"
 	fi
 
-	echo "extracting properties from .xml..."
+	echo "*** extracting properties from .xml..."
 	xml_vars=`${xml_reader_cmd} ${xml_fpath}`
 	echo "${xml_vars}"
 
-	echo "transferring image and metadata..."
+	echo "*** formatting ts for gee..."
+	datetime=`$filepanther_cmd -q format --pattern '%Y-%m-%dT%H:%M:%S' --pickle_file metadata.pickle`
+	echo "$datetime"
+
+	echo "*** transferring image and metadata..."
 	${echo_if_test} earthengine upload image gs://$1/$filename \
 		-f --asset_id=$3/$asset_id \
-		--nodata_value=0 --crs="EPSG:4326" -ts=$date \
-		-p="year=${year}" \
-		-p="name_code=${code}" \
-		-p="tile_id=${tile_id}" \
-		-p="country=${country}" \
-		-p="satellite=${satellite}" \
-		-p="generator=${generator}" \
-		-p="classifier=${classifier}"
+		--nodata_value=0 \
+		--crs="EPSG:4326" \
+		--pyramiding_policy=mode \
+		-ts=$datetime \
+		${xml_vars} \
+		-p \'country=${country}\' \
+		-p \'generator=${generator}\' \
+		-p \'classifier=${classifier}\'
 	echo "done!"
 	echo ""
 done

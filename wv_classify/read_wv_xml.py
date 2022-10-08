@@ -93,6 +93,11 @@ def read_wv_xml(filename, output_format="list"):
         )
     elif output_format == "dict":
         return metadata
+    elif output_format == "gee_props":
+        res = ""
+        for key in metadata:
+            res += f" -p '{key}={metadata[key]}' "
+        return res
     else:
         raise ValueError(
             f"user requested unknown output_format '{output_format}'"
@@ -100,10 +105,11 @@ def read_wv_xml(filename, output_format="list"):
 
 
 if __name__ == "__main__":
-    import pprint
+    #import pprint
     import sys
-    pp = pprint.PrettyPrinter(indent=2)
+    #pp = pprint.PrettyPrinter(indent=2)
     fpath = sys.argv[1]
-    pp.pprint(
-        read_wv_xml(fpath, output_format="dict")
-    )
+    #pp.pprint(
+    #    read_wv_xml(fpath, output_format="dict")
+    #)
+    print(read_wv_xml(fpath, output_format="gee_props"))
