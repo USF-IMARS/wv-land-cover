@@ -100,7 +100,7 @@ def read_wv_xml(filename, output_format="list"):
                 val = str(metadata[key]).replace(" ", "_")
             except:
                 val = metadata[key]
-            res += f" -p '{key}={val}' "
+            res += f" -p {key}={val} "
         return res
     else:
         raise ValueError(

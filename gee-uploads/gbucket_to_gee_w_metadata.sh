@@ -38,12 +38,12 @@ echo_if_test=""  # set this to "echo " to test the script, else set to ""
 xml_reader_cmd="python3 ./wv_classify/read_wv_xml.py "
 filepanther_cmd="python3 -m filepanther "
 
-echo creating the collection "$3"...
+echo checking if the collection "$3" exists...
 result=`${echo_if_test} earthengine create collection $3`
 if `test -z "$result"`; then  # exit if creation failed
-    echo $result
-    exit 1
+    echo collection created.
 fi
+echo $result
 
 # In the following loop we get the entire path to all the geotifs using the specified Gcloud bucket. 
 # Each file will have a format like this: `gs://my_gee_bucket/FILE_January2000.tif`.
@@ -98,9 +98,9 @@ for geotiff in `gsutil ls gs://$1/*.tif`; do
 		--pyramiding_policy=mode \
 		-ts=$datetime \
 		${xml_vars} \
-		-p \'country=${country}\' \
-		-p \'generator=${generator}\' \
-		-p \'classifier=${classifier}\'
+		-p country=${country} \
+		-p generator=${generator} \
+		-p classifier=${classifier}
 	echo "done!"
 	echo ""
 done
