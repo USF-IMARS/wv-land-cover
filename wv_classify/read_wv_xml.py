@@ -51,16 +51,19 @@ def read_wv_xml(filename, output_format="list"):
     for param in [
         "MEANSUNEL", "MEANSUNAZ",
         "MEANSATEL", "MEANSATAZ",
-        "MEANOFFNADIRVIEWANGLE", "CLOUDCOVER", "SATID", 
-        "MODE", "SCANDIRECTION",
+        "MEANOFFNADIRVIEWANGLE", "CLOUDCOVER",
         "MEANINTRACKVIEWANGLE", "MEANCROSSTRACKVIEWANGLE", "MEANOFFNADIRVIEWANGLE"
     ]:
         metadata[param] = float(imd.find("IMAGE").find(param).text)
+    for param in [
+        "SATID", "MODE", "SCANDIRECTION",
+    ]:
+        metadata[param] = imd.find("IMAGE").find(param).text
 
     for param in [
         "FILENAME"
     ]:
-        metadata[param] = float(imd.find("TIL").find("TILE").find(param).text)
+        metadata[param] = root.find("TIL").find("TILE").find(param).text
         
     if output_format == "list":
         szB = [
