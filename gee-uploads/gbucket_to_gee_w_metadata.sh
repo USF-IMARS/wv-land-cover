@@ -30,7 +30,7 @@
 
 # hardcoded metadata
 country="USA"
-generator="Tylar Murray & Digna Rueda"
+generator="Tylar_Murray+Digna_Rueda"
 classifier="NERRS-mangroves-decision-tree"
 
 echo_if_test=""  # set this to "echo " to test the script, else set to ""

@@ -96,7 +96,11 @@ def read_wv_xml(filename, output_format="list"):
     elif output_format == "gee_props":
         res = ""
         for key in metadata:
-            res += f" -p '{key}={metadata[key]}' "
+            try:
+                val = str(metadata[key]).replace(" ", "_")
+            except:
+                val = metadata[key]
+            res += f" -p '{key}={val}' "
         return res
     else:
         raise ValueError(
