@@ -19,13 +19,21 @@
 # ./gbucket_to_gee_w_metadata.sh \
 #		seagrass_mosaics/original_mosaics \
 # 		./seagrass_mosiacs/xml_files/ \
+#               
 #		users/lizcanosandoval/Seagrass/Sentinel/01_OriginalMosaics
 #
 # ./gee-uploads/gbucket_to_gee_w_metadata.sh \
 # 		rookery-wv-classmaps \
 #		/srv/imars-objects/rookery/Processed/wv_classMaps_rgb \       
-#               users/tylarmurray/nerrs/rookery
+#               users/tylarmurray/nerrs_rookery
 #
+# bash gee-uploads/gbucket_to_gee_w_metadata_jobos.sh \
+#    jobos-wv-classmaps \
+#    /srv/imars-objects/jobos/Processed/wv_ortho_xml \
+#    users/tylarmurray/nerrs_jobos \
+#    | tee jobos_upload-2022_10.log
+
+
 # Modified from: https://www.tucson.ars.ag.gov/notebooks/uploading_data_2_gee.html
 
 # hardcoded metadata
