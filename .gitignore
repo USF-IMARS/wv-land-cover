@@ -1,6 +1,9 @@
 # test data
 test_data/
 
+# emacs backups
+*~
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
