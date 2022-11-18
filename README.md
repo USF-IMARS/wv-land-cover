@@ -32,9 +32,17 @@ Upland = FU, UG, SC
 ## Software Dependencies
 * gdal
 * pygdal
-* TODO: more here
 
 ## Installation
+```
+git clone https://github.com/USF-IMARS/wv-land-cover.git
+git submodule update --init --recursive --remote
+```
+
+The above will install the scripts needed for this project, but some features require additional steps.
+* MATLAB scripts require matlab
+* some python scripts may need dependences that can be installed using the `requirements.txt` file
+
 ### PSC Bridges
 ```
 $ git clone https://github.com/iceberg-project/Seals.git
