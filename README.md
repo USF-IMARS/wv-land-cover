@@ -34,15 +34,34 @@ Upland = FU, UG, SC
 * pygdal
 
 ## Installation
+### basic installation
+This will install all needed scripts and the easy-to-install dependencies.
+
 ```
 git clone https://github.com/USF-IMARS/wv-land-cover.git
 cd wv-land-cover
 git submodule update --init --recursive --remote
 ```
 
-The above will install the scripts needed for this project, but some features require additional steps.
-* MATLAB scripts require matlab
-* some python scripts may need dependences that can be installed using the `requirements.txt` file
+### detailed dependencies setup
+If you are getting errors after performing the basic installation, then your system may need more advanced configuration.
+For detailed dependency setup you will need to work with your system administrator.
+
+#### linux
+MATLAB scripts will require matlab. Installation instructions for that are elsewhere.
+
+```
+# gdal
+sudo apt install -y python3-gdal
+
+# remaining python packages w/ setup.py `pip3 install -e .`
+pip3 install -r requirements.txt
+```
+
+NOTE: python bindings for gdal need to be setup manually. See the relevant section in requirements.txt.
+
+#### SLURM setup
+SLURM dependency setup is managed via `module add [...]` commands. These will be included in the job submission scripts.
 
 ### PSC Bridges
 ```
@@ -51,17 +70,6 @@ $ git clone https://github.com/iceberg-project/Seals.git
 ```
 
 -----------------------------------------------------------------------------------------------------------------
-
-## General Installation
-NOTE: if you are running this code on IMaRS's servers (eg userproc or seashell) jump directly to the IMaRS user quickstart document (./docs/imars-local.md).
-
-1. download: `git clone https://github.com/USF-IMARS/wv2-processing.git`
-2. install dependencies
-    1. OS-level:
-        * Ubuntu:
-            * for gdal: `sudo apt istall -y python3-gdal`
-    2. remaining python packages w/ setup.py `pip3 install -e .`
-        * alternatively: `pip3 install -r requirements.txt` or manually install deps listed therein.
 
 ## Testing
 ### test data
