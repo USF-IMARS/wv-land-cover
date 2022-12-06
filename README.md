@@ -3,7 +3,9 @@ Processing scripts for decision-tree land use classification on WorldView images
 This project funded by NSF South Big Data Hub and then by the RB & JB NERRs.
 
 ## Habitat Cover Classes
-Below are the habitat classes created by this code. `wv_classification_colormap.txt` Provides a colormap with similar values and associated colors for use in QGIS (and others).
+### 3D wetlands
+Below are the habitat classes created by the 3D wetlands version of this code. 
+`wv_classification_colormap.txt` Provides a colormap with similar values and associated colors for use in QGIS (and others).
 
 ```
 BA = bare soil
@@ -17,15 +19,8 @@ UG = upland grass
 dev = developed
 ```
 
-For the NERRS Mangrove Coast Collective project and related publications the can be consolidated as follows:
-
-```
-Bare/Developed = BA, dev
-Water = WA
-Degraded mangrove = DG, MA
-Healthy mangrove = FW
-Upland = FU, UG, SC
-```
+## NERRS+IMaRS MCC
+For the NERRS Mangrove Coast Collective project and related publications see the [MCC mapping class detials gsheet](https://docs.google.com/spreadsheets/d/1ay7N4hZMNwbxTpRnwHpxpMUNkTmbJZGTEDaQGiepDiU/edit?usp=sharing).
 
 ---------------------------------------------------------------------------------------------------------------
 
@@ -34,15 +29,43 @@ Upland = FU, UG, SC
 * pygdal
 
 ## Installation
+### basic installation
+This will install all needed scripts and the easy-to-install dependencies.
+
 ```
 git clone https://github.com/USF-IMARS/wv-land-cover.git
 cd wv-land-cover
 git submodule update --init --recursive --remote
 ```
 
-The above will install the scripts needed for this project, but some features require additional steps.
-* MATLAB scripts require matlab
-* some python scripts may need dependences that can be installed using the `requirements.txt` file
+### detailed dependencies setup
+If you are getting errors after performing the basic installation, then your system may need more advanced configuration.
+For detailed dependency setup you will need to work with your system administrator.
+
+#### MATLAB setup
+Installation instructions for MATLAB are elsewhere.
+No special configuration is needed
+
+#### setup for PGC/imagery_utils on linux
+```
+# gdal
+sudo apt install libgdal-dev
+sudo apt install gdal-bin
+sudo apt install -y python3-gdal
+
+
+# remaining python packages w/ setup.py `pip3 install -e .`
+pip3 install -r requirements.txt
+
+# proj
+sudo conda install -y -c conda-forge proj
+sudo conda install -y -c conda-forge proj-data
+```
+
+NOTE: python bindings for gdal need to be setup manually. See the relevant section in requirements.txt.
+
+#### SLURM setup
+SLURM dependency setup is managed via `module add [...]` commands. These will be included in the job submission scripts.
 
 ### PSC Bridges
 ```
@@ -51,17 +74,6 @@ $ git clone https://github.com/iceberg-project/Seals.git
 ```
 
 -----------------------------------------------------------------------------------------------------------------
-
-## General Installation
-NOTE: if you are running this code on IMaRS's servers (eg userproc or seashell) jump directly to the IMaRS user quickstart document (./docs/imars-local.md).
-
-1. download: `git clone https://github.com/USF-IMARS/wv2-processing.git`
-2. install dependencies
-    1. OS-level:
-        * Ubuntu:
-            * for gdal: `sudo apt istall -y python3-gdal`
-    2. remaining python packages w/ setup.py `pip3 install -e .`
-        * alternatively: `pip3 install -r requirements.txt` or manually install deps listed therein.
 
 ## Testing
 ### test data
