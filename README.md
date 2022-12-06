@@ -52,10 +52,17 @@ MATLAB scripts will require matlab. Installation instructions for that are elsew
 
 ```
 # gdal
+sudo apt install libgdal-dev
+sudo apt install gdal-bin
 sudo apt install -y python3-gdal
+
 
 # remaining python packages w/ setup.py `pip3 install -e .`
 pip3 install -r requirements.txt
+
+# proj
+sudo conda install -y -c conda-forge proj
+sudo conda install -y -c conda-forge proj-data
 ```
 
 NOTE: python bindings for gdal need to be setup manually. See the relevant section in requirements.txt.
