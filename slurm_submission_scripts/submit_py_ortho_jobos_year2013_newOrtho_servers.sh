@@ -1,11 +1,12 @@
 #!/bin/bash
 # bash file to run wv processing on a single IMaRS server
 
-IMAGERY_UTILS_PATH=/home1/scratch/WV_ortho/wv-land-cover/pgc_duplication/
-IMAGES_ROOT_PATH=/home1/scratch/digna/WV_varios/img/Jobos_2013b
-LOGS_OUTPUT_DIR=/home1/scratch/WV_ortho/wv-land-cover/slurm_submission_scripts/SlurmOutput/
-ortho_out=/home1/scratch/digna/WV_varios/Ortho/Jobos_2013b/
-rrs_out=/home1/scratch/digna/WV_varios/Rrs/Jobos_2013b/
+IMARS_HOMES_DIR=/srv/imars-objects/homes/
+IMAGERY_UTILS_PATH=${IMARS_HOMES_DIR}/scratch/WV_ortho/wv-land-cover/pgc_duplication/
+IMAGES_ROOT_PATH=${IMARS_HOMES_DIR}/scratch/digna/WV_varios/img/Jobos_2013b
+LOGS_OUTPUT_DIR=${IMARS_HOMES_DIR}/scratch/WV_ortho/wv-land-cover/slurm_submission_scripts/SlurmOutput/
+ortho_out=${IMARS_HOMES_DIR}/scratch/digna/WV_varios/Ortho/Jobos_2013b/
+rrs_out=${IMARS_HOMES_DIR}/scratch/digna/WV_varios/Rrs/Jobos_2013b/
 
 # Python code to check processing time:
 #    starttime = datetime.today()
