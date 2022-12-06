@@ -1,4 +1,4 @@
-
+⚠️ This file is *very* out of date. Please defer to the README.md.
 
 # IMaRS User Quickstart
 This section is for IMaRS researchers running this code on IMaRS's servers (eg userproc or seashell).
