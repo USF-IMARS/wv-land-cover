@@ -36,6 +36,7 @@ Upland = FU, UG, SC
 ## Installation
 ```
 git clone https://github.com/USF-IMARS/wv-land-cover.git
+cd wv-land-cover
 git submodule update --init --recursive --remote
 ```
 
