@@ -3,7 +3,9 @@ Processing scripts for decision-tree land use classification on WorldView images
 This project funded by NSF South Big Data Hub and then by the RB & JB NERRs.
 
 ## Habitat Cover Classes
-Below are the habitat classes created by this code. `wv_classification_colormap.txt` Provides a colormap with similar values and associated colors for use in QGIS (and others).
+### 3D wetlands
+Below are the habitat classes created by the 3D wetlands version of this code. 
+`wv_classification_colormap.txt` Provides a colormap with similar values and associated colors for use in QGIS (and others).
 
 ```
 BA = bare soil
@@ -17,15 +19,8 @@ UG = upland grass
 dev = developed
 ```
 
-For the NERRS Mangrove Coast Collective project and related publications the can be consolidated as follows:
-
-```
-Bare/Developed = BA, dev
-Water = WA
-Degraded mangrove = DG, MA
-Healthy mangrove = FW
-Upland = FU, UG, SC
-```
+## NERRS+IMaRS MCC
+For the NERRS Mangrove Coast Collective project and related publications see the [MCC mapping class detials gsheet](https://docs.google.com/spreadsheets/d/1ay7N4hZMNwbxTpRnwHpxpMUNkTmbJZGTEDaQGiepDiU/edit?usp=sharing).
 
 ---------------------------------------------------------------------------------------------------------------
 
@@ -47,9 +42,11 @@ git submodule update --init --recursive --remote
 If you are getting errors after performing the basic installation, then your system may need more advanced configuration.
 For detailed dependency setup you will need to work with your system administrator.
 
-#### linux
-MATLAB scripts will require matlab. Installation instructions for that are elsewhere.
+#### MATLAB setup
+Installation instructions for MATLAB are elsewhere.
+No special configuration is needed
 
+#### setup for PGC/imagery_utils on linux
 ```
 # gdal
 sudo apt install libgdal-dev
