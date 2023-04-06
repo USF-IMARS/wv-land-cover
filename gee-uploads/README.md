@@ -1,5 +1,6 @@
 # general gist of how to update the dataset
-1. create a bucket on google cloud.
+1. create a empty bucket in google cloud storage.
+    1. delete old images if any exist. Images already transfered to GEE will stay there.
 2. upload files from server using `gsutil cp *.tif gs://{{bucket_name}}` (use bucket name from (1))
 3. transfer gbucket files into GEE using something like:
     ```
