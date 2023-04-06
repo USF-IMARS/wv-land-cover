@@ -72,6 +72,7 @@ done!
 
 ## updated GEE module & assets
 * /users/tylarmurray/nerrs_jobos_v03 set to be publicly visible
-* /users/tylarmurray/nerrs_jobos/classmap_helpers::habitat_jobos set to use /users/tylarmurray/nerrs_jobos_v03
-
+* variables updated in `/users/tylarmurray/nerrs_jobos/classmap_helpers`
+  * `habitat_jobos` imported asset set to use `/users/tylarmurray/nerrs_jobos_v03`
+  * `data.collection_id` variable for jobos set to `"users/tylarmurray/nerrs_jobos_v03"`
 
