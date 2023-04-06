@@ -64,7 +64,7 @@ for geotiff in `gsutil ls gs://$1/*.tif`; do
 	echo "*** parsing metadata..."
 	# python3 filepanther -q parse /srv/imars-objects/rookery/Processed/wv_classMaps_rgb/20180501T160614_01_P003_WV02_ClassificMap_fullClass_Rookery.tif --pattern /srv/imars-objects/rookery/Processed/wv_classMaps_rgb/%Y%m%dT%H%M%S_{number}_P{pass_n}_WV{sat_n}_ClassificMap_fullClass_Rookery.tif > metadata.json
 	$filepanther_cmd -q parse $filename \
-	    --pattern %Y%m%dT%H%M%S_{number}_P{pass_n}_WV{sat_n}_ClassificMap_fullClass_v{algorithm_version}_Jobos.tif \
+	    --pattern %Y%m%dT%H%M%S_{number}_P{pass_n}_WV{sat_n}_ClassMap_v{algorithm_version}_Jobos_wDEM.tif \
 	    --pickle_fpath metadata.pickle
 
 	echo "*** estimating xml filename..."
