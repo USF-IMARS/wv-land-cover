@@ -86,6 +86,7 @@ for geotiff in `gsutil ls gs://$1/*.tif`; do
 	echo "*** extracting properties from .xml..."
 	xml_vars=`${xml_reader_cmd} ${xml_fpath}`
 	echo "${xml_vars}"
+        # NOTE: other vars extracted from the filename patter will also be included in xml_vars
 
 	echo "*** formatting ts for gee..."
 	datetime=`$filepanther_cmd -q format --pattern '%Y-%m-%dT%H:%M:%S' --pickle_file metadata.pickle`
@@ -99,7 +100,6 @@ for geotiff in `gsutil ls gs://$1/*.tif`; do
 		--pyramiding_policy=mode \
 		-ts=$datetime \
 		${xml_vars} \
-                # TODO: add adjustments_version (& others?) here?
 		-p country=${country} \
 		-p generator=${generator} \
 		-p classifier=${classifier}
