@@ -58,7 +58,7 @@ for geotiff in `gsutil ls gs://$1/*.tif`; do
 	# python3 filepanther -q parse /srv/imars-objects/rookery/Processed/wv_classMaps_rgb/20180501T160614_01_P003_WV02_ClassificMap_fullClass_Rookery.tif --pattern /srv/imars-objects/rookery/Processed/wv_classMaps_rgb/%Y%m%dT%H%M%S_{number}_P{pass_n}_WV{sat_n}_ClassificMap_fullClass_Rookery.tif > metadata.json
 	# ...*ClassificMap_fullClass_ Rookery-wDEM_v3_DEM.tif
 	$filepanther_cmd -q parse $filename \
-	    --pattern "%Y%m%dT%H%M%S_{number}_P{pass_n}_WV{sat_n}_ClassificMap_fullClass_Rookery-wDEM_v3_DEM.tif" \
+	    --pattern "%Y%m%dT%H%M%S_{number}_P{pass_n}_WV{sat_n}_ClassMap_{adjustments_version}_Rookery_wDEM.tif" \
 	    --pickle_fpath metadata.pickle
 
 	echo "*** estimating xml filename..."
@@ -99,6 +99,7 @@ for geotiff in `gsutil ls gs://$1/*.tif`; do
 		--pyramiding_policy=mode \
 		-ts=$datetime \
 		${xml_vars} \
+                # TODO: add adjustments_version (& others?) here?
 		-p country=${country} \
 		-p generator=${generator} \
 		-p classifier=${classifier}
