@@ -100,7 +100,6 @@ for geotiff in `gsutil ls gs://$1/*.tif`; do
 		--crs="EPSG:4326" \
 		-ts=$datetime \
 		${xml_vars} \
-                # TODO: add adjustments_version (& others?) here?
 		-p country=${country} \
 		-p generator=${generator} \
 		-p classifier=${classifier}
