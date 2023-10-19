@@ -13,6 +13,7 @@ In these screenshots:
 * left, bottom, newer (2018-01-06)
 
 The difference between these true-color views is huge.
+The max shown on each histogram x-axis is approximately the same (around .06).
 I cannot explain the difference.
 
 ## Scaling?
