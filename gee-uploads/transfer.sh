@@ -32,11 +32,11 @@ for geotiff in `gsutil ls gs://$1/*.tif`; do
 	echo "*** parsing metadata..."
 	# python3 filepanther -q parse /srv/imars-objects/rookery/Processed/wv_classMaps_rgb/20180501T160614_01_P003_WV02_ClassificMap_fullClass_Rookery.tif --pattern /srv/imars-objects/rookery/Processed/wv_classMaps_rgb/%Y%m%dT%H%M%S_{number}_P{pass_n}_WV{sat_n}_ClassificMap_fullClass_Rookery.tif > metadata.json
 	# ...*ClassificMap_fullClass_ Rookery-wDEM_v3_DEM.tif
-        # wv 2025-03 : 20210109T145803_01_P001_WV03_ClassMap_vB1_Jobos_wDEM.tif 
-	$filepanther_cmd -q parse $filename \
-	    --pattern "%Y%m%dT%H%M%S_{number}_P{pass_n}_WV{sat_n}_ClassMap_{adjustments_version}_${2}_wDEM.tif" \
-	    --pickle_fpath metadata.pickle
-
+        # wv 2025-03 : 20210109T145803_01_P001_WV03_ClassMap_vB1_Jobos_wDEM.tif
+        $filepanther_cmd -q parse $filename \
+          --pattern "%Y%m%dT%H%M%S_{number}_P{pass_n}_WV{sat_n}_ClassMap_{adjustments_version}_${2}_wDEM_adjustedLatLon.tif" \
+          --pickle_fpath metadata.pickle
+	    
 #	echo "*** estimating xml filename..."
 #	# to get the XML filename we need to do a few weird things:
 #	# * the xml filename contains 12 numbers that we don't know
